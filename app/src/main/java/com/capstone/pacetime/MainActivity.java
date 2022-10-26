@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.capstone.pacetime.databinding.ActivityMainBinding;
@@ -24,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
         breathPattern = new BreathPattern();
         binding.setPattern(breathPattern);
-
     }
 
     public void onStartClick(View v){
@@ -33,19 +33,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Start", Toast.LENGTH_SHORT).show();
         });
     }
-    public void onCheckClick(View v){
-        Log.d("MainActivity", "" + v.getId());
-        runOnUiThread(()->{
-            Toast.makeText(this, "Check", Toast.LENGTH_SHORT).show();
-        });
-    }
-    public void onHistoryClick(View v){
 
+    public void onHistoryClick(View v){
         Log.d("MainActivity", "" + v.getId());
         runOnUiThread(()->{
             Toast.makeText(this, "History", Toast.LENGTH_SHORT).show();
         });
     }
-
-
 }

@@ -16,58 +16,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
-        <LinearLayout
-            android:id="@+id/ll_inhale"
+
+
+        <NumberPicker
+            android:id="@+id/picker_inhale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/button_start_running"
-            app:layout_constraintEnd_toStartOf="@id/ll_exhale">
-            <Button
-                android:id="@+id/button_inhale_inc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <EditText
-                android:id="@+id/edittext_inhale"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:text="@={pattern.inhale}"/>
-            <Button
-                android:id="@+id/button_inhale_dec"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_exhale"
+            app:layout_constraintEnd_toStartOf="@+id/picker_exhale"
+            app:layout_constraintBottom_toBottomOf="@id/guideline3"
+            />
+        <NumberPicker
+            android:id="@+id/picker_exhale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/button_start_running"
-            app:layout_constraintStart_toEndOf="@+id/ll_inhale"
-            app:layout_constraintEnd_toEndOf="parent">
-            <Button
-                android:id="@+id/button_exhale_inc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <EditText
-                android:id="@+id/edittext_exhale"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:text="@={pattern.exhale}"
-                />
-            <Button
-                android:id="@+id/button_exhale_dec"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/picker_inhale"
+            app:layout_constraintBottom_toBottomOf="@id/guideline3"/>
 
-
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="300dp" />
 
         <Button
             android:id="@+id/button_start_running"
@@ -75,10 +47,12 @@
             android:layout_height="80dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideline3"
+            app:layout_constraintBottom_toTopOf="@id/button_view_history"
             android:onClick="@{(v) -> activity.onStartClick(v)}"
+            android:text="START"
             />
+
         <Button
             android:id="@+id/button_view_history"
             android:layout_width="0dp"
@@ -87,8 +61,9 @@
             app:layout_constraintStart_toStartOf="@id/button_start_running"
             app:layout_constraintEnd_toEndOf="@id/button_start_running"
             app:layout_constraintTop_toBottomOf="@id/button_start_running"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:onClick="@{(v) -> activity.onHistoryClick(v)}"
+            android:text="HISTORY"
             />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
