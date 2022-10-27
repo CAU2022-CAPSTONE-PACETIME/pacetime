@@ -1,14 +1,7 @@
 package com.capstone.pacetime;
 
 import android.util.Log;
-import android.widget.EditText;
-
-import androidx.databinding.BaseObservable;
-import androidx.databinding.Bindable;
 import androidx.databinding.ObservableInt;
-import androidx.lifecycle.MutableLiveData;
-
-import java.util.Objects;
 
 public class BreathPattern {
     private static final String TAG = "BreathPattern";
@@ -16,33 +9,30 @@ public class BreathPattern {
     private final ObservableInt exhale;
 
     public BreathPattern(){
-        inhale = new ObservableInt(0);
-        exhale = new ObservableInt(0);
+        inhale = new ObservableInt(1);
+        exhale = new ObservableInt(1);
     }
 
-    public CharSequence getInhale(){
-        return "" + inhale.get();
+    public BreathPattern(int inhaleNum, int exhaleNum){
+        inhale = new ObservableInt(inhaleNum);
+        exhale = new ObservableInt(exhaleNum);
     }
 
-    public void setInhale(CharSequence val){
-        Log.d(TAG, "Set Inhale: " + val);
-        if(val.equals("")){
-            return;
-        }
-        inhale.set(Integer.parseInt((String) val));
+    public int getInhale(){
+        return inhale.get();
     }
 
-    public CharSequence getExhale(){
-        return "" + exhale.get();
+    public void setInhale(int val){
+        Log.d(TAG, "Set Inhale: " + String.valueOf(val));
+        inhale.set(val);
     }
 
-    public void setExhale(CharSequence val){
-        Log.d(TAG, "Set Exhale: " + val);
-        if(val.equals("")){
-            return;
-        }
-        exhale.set(Integer.parseInt((String) val));
+    public int getExhale(){
+        return exhale.get();
     }
 
-
+    public void setExhale(int val){
+        Log.d(TAG, "Set Exhale: " + String.valueOf(val));
+        exhale.set(val);
+    }
 }

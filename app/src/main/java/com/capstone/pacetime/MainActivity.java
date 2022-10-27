@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.capstone.pacetime.databinding.ActivityMainBinding;
@@ -23,8 +24,32 @@ public class MainActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
 
-        breathPattern = new BreathPattern();
+        breathPattern = new BreathPattern(1, 1);
         binding.setPattern(breathPattern);
+
+        binding.pickerInhale.setMinValue(1);
+        binding.pickerInhale.setMaxValue(9);
+
+        binding.pickerExhale.setMinValue(1);
+        binding.pickerExhale.setMaxValue(9);
+
+        binding.pickerInhale.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                // Save the value in the number picker
+                binding.getPattern().setInhale(newVal);
+            }
+        });
+
+        binding.pickerExhale.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                // Save the value in the number picker
+                binding.getPattern().setExhale(newVal);
+            }
+        });
+
+
+        binding.switchBreath.setTextOff("Breath Off");
+        binding.switchBreath.setTextOn("Breath On");
     }
 
     public void onStartClick(View v){
