@@ -3,7 +3,7 @@
     <data>
         <variable
             name="basicRunInfo"
-            type="com.capstone.pacetime.RunBasicInfoViewModel" />
+            type="com.capstone.pacetime.viewmodel.RunBasicInfoViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
