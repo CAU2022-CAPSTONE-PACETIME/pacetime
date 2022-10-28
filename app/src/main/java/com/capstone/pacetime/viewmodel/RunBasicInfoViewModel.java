@@ -1,8 +1,7 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.viewmodel;
 
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
-import androidx.lifecycle.ViewModel;
 
 public class RunBasicInfoViewModel extends RunInfoViewModel {
     private final ObservableField<String> distanceStr;
