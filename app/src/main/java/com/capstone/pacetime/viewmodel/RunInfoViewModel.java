@@ -1,4 +1,6 @@
 package com.capstone.pacetime.viewmodel;
 
-public abstract class RunInfoViewModel {
+import androidx.databinding.BaseObservable;
+
+public abstract class RunInfoViewModel extends BaseObservable {
 }
