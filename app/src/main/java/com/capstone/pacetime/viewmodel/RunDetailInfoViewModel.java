@@ -8,6 +8,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
     private final ObservableField<String> stepCountStr;
 
     public RunDetailInfoViewModel() {
+        super();
         cadenceStr = new ObservableField<>();
         stepCountStr = new ObservableField<>();
     }
