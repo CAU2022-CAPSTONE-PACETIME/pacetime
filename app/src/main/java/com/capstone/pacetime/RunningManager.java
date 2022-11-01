@@ -1,6 +1,9 @@
 package com.capstone.pacetime;
 
+import android.content.Context;
+import android.hardware.SensorManager;
 import android.location.Location;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -29,7 +32,11 @@ public class RunningManager implements StartStopInterface {
 
     public RunningManager(AppCompatActivity activity){
         thread = new HandlerThread("DataHandlerThread");
+
+        SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
+
         gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity), handler);
+        breathReceiver = new BreathReceiver((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
     }
 
     @Override
