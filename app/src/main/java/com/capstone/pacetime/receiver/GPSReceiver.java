@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.renderscript.RenderScript;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -63,11 +64,14 @@ public class GPSReceiver implements StartStopInterface{
     @Override
     public void start(){
         receiveTimer.schedule(receiveTask, 0, 1000);
+        Log.i("GPSReceiver", "STARTED");
     }
     @Override
     public void stop(){
         receiveTask.cancel();
         receiveTimer.cancel();
         receiveTimer.purge();
+
+        Log.i("GPSReceiver", "STOPPED");
     }
 }
