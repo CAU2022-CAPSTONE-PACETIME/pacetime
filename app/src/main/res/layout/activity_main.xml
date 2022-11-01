@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="activity"
+            type="com.capstone.pacetime.MainActivity" />
+        <variable
+            name="pattern"
+            type="com.capstone.pacetime.BreathPattern" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+<!--        <TextView-->
+<!--            android:id="@+id/background"-->
+<!--            android:layout_width="fill_parent"-->
+<!--            android:layout_height="fill_parent"-->
+<!--            android:layout_margin="20dp"-->
+<!--            android:background="#000000"-->
+<!--            android:gravity="center"-->
+<!--            android:text="weather"-->
+<!--            android:textAlignment="center"-->
+<!--            android:textColor="#FFFFFF"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent" />-->
+
+        <TextView
+            android:id="@+id/text_weather"
+            android:layout_width="fill_parent"
+            android:layout_height="150dp"
+            android:layout_margin="20dp"
+            android:background="#006D35"
+            android:textAlignment="center"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="weather"
+            android:textColor="#FFFFFF"
+            />
+
+        <TextView
+            android:id="@+id/text_place"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:background="#00F57E"
+            android:textAlignment="center"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="@id/text_weather"
+            app:layout_constraintTop_toTopOf="@id/text_weather"
+            android:text="current place"
+            android:textColor="#FFFFFF"
+            />
+
+
+        <TextView
+            android:id="@+id/button_bluetooth"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_margin="20dp"
+            android:background="#000080"
+            android:textAlignment="center"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_weather"
+            android:text="bluetooth"
+            android:textColor="#FFFFFF"
+            />
+
+        <TextView
+            android:id="@+id/text_inhale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="inhale"
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/text_exhale"
+            app:layout_constraintBottom_toTopOf="@id/picker_inhale"
+            />
+
+        <TextView
+            android:id="@+id/text_exhale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="exhale"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@id/picker_exhale"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/text_inhale" />
+
+        <NumberPicker
+            android:id="@+id/picker_inhale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/picker_exhale"
+            app:layout_constraintBottom_toBottomOf="@id/guideline3"
+            />
+        <NumberPicker
+            android:id="@+id/picker_exhale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/picker_inhale"
+            app:layout_constraintBottom_toBottomOf="@id/guideline3"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="250dp" />
+
+        <Button
+            android:id="@+id/button_start_running"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="90dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:onClick="@{(v) -> activity.onStartClick(v)}"
+            android:text="RUN"
+            />
+
+        <Button
+            android:id="@+id/button_view_history"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginBottom="90dp"
+            android:onClick="@{(v) -> activity.onHistoryClick(v)}"
+            android:text="HISTORY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_breath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/button_start_running"
+            app:layout_constraintEnd_toEndOf="@id/button_start_running"
+            app:layout_constraintTop_toBottomOf="@id/button_start_running"
+            app:showText="true"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
