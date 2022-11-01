@@ -59,7 +59,15 @@ public class RunActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        manager.start();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
+
+        manager.stop();
     }
 }
