@@ -17,6 +17,20 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+        <ImageButton
+            android:id="@+id/button_refresh"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#00F57E"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="@id/text_temperature"
+            app:layout_constraintTop_toTopOf="@id/text_temperature"
+            android:elevation="1dp"
+            android:contentDescription="F5" />
+        <!--            android:text="F5"-->
+
 <!--        <TextView-->
 <!--            android:id="@+id/background"-->
 <!--            android:layout_width="fill_parent"-->
@@ -34,18 +48,41 @@
 
         <TextView
             android:id="@+id/text_weather"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="150dp"
-            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:background="#006D35"
+            android:gravity="center"
+            android:text="weather"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="@id/guideline2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_temperature"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
             android:background="#006D35"
             android:textAlignment="center"
             android:gravity="center"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="weather"
+            android:text="temperature"
             android:textColor="#FFFFFF"
             />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
         <TextView
             android:id="@+id/text_place"
@@ -59,6 +96,8 @@
             android:text="current place"
             android:textColor="#FFFFFF"
             />
+
+
 
 
         <TextView
@@ -150,6 +189,7 @@
             app:layout_constraintEnd_toEndOf="@id/button_start_running"
             app:layout_constraintTop_toBottomOf="@id/button_start_running"
             app:showText="true"
+            android:checked="true"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
