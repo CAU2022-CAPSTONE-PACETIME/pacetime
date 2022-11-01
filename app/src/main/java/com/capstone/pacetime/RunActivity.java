@@ -29,7 +29,10 @@ import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 
+import java.util.Arrays;
+
 public class RunActivity extends AppCompatActivity {
+    private static final String TAG = "RunActivity";
     private ActivityRunBinding binding;
     private RunDetailInfoViewModel viewModel;
     private RunInfoUpdateCommand command;
@@ -46,35 +49,13 @@ public class RunActivity extends AppCompatActivity {
         command.setViewModel(viewModel);
         binding.setDetailRunInfo(viewModel);
 
-        manager = new RunningManager(this);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            ActivityResultLauncher<String[]> locationPermissionRequest =
-                    registerForActivityResult(new ActivityResultContracts
-                                    .RequestMultiplePermissions(), result -> {
-                                Boolean fineLocationGranted = result.getOrDefault(
-                                        Manifest.permission.ACCESS_FINE_LOCATION, false);
-                                Boolean coarseLocationGranted = result.getOrDefault(
-                                        Manifest.permission.ACCESS_COARSE_LOCATION,false);
-                                if (fineLocationGranted != null && fineLocationGranted) {
-                                    // Precise location access granted.
-                                } else if (coarseLocationGranted != null && coarseLocationGranted) {
-                                    // Only approximate location access granted.
-                                } else {
-                                    // No location access granted.
-                                }
-                            }
-                    );
-
-            locationPermissionRequest.launch(new String[] {
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            });
+        for(String[] permissions: RunningManager.getPermissionSets()){
+            if(!PermissionChecker.checkPermissions(this, permissions)){
+                Log.d(TAG, Arrays.toString(permissions));
+            }
         }
 
+        manager = new RunningManager(this);
     }
 
     @Override
