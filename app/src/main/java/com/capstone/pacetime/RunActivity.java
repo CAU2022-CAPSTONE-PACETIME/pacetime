@@ -33,9 +33,8 @@ public class RunActivity extends AppCompatActivity {
     private ActivityRunBinding binding;
     private RunDetailInfoViewModel viewModel;
     private RunInfoUpdateCommand command;
+    private RunningManager manager;
 
-    private FusedLocationProviderClient client;
-    private GPSReceiver gps;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +45,8 @@ public class RunActivity extends AppCompatActivity {
 
         command.setViewModel(viewModel);
         binding.setDetailRunInfo(viewModel);
-        client = LocationServices.getFusedLocationProviderClient(this);
+
+        manager = new RunningManager(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
@@ -74,30 +74,11 @@ public class RunActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION
             });
         }
-        HandlerThread thread = new HandlerThread("GPSHandlerThread");
-        thread.start();
-        Handler handler = new Handler(thread.getLooper()){
-            @Override
-            public void handleMessage(Message message){
-                Bundle data = message.getData();
-                if(data == null){
-                    return;
-                }
-                if(data.keySet().contains("location")){
-                    Location loc = data.getParcelable("location");
 
-                    Log.i("RunActivity", "GPS: " + loc.toString());
-                }
-            }
-        };
-
-        gps = new GPSReceiver(client, handler);
-        gps.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        gps.stop();
     }
 }
