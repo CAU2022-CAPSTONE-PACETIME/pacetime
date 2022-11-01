@@ -65,4 +65,12 @@ public class RunningManager implements StartStopInterface {
         gpsReceiver.stop();
     }
 
+    public static String[][] getPermissionSets(){
+        return new String[][]{
+                GPSReceiver.PERMISSIONS,
+                BreathReceiver.PERMISSIONS,
+                StepCounter.PERMISSIONS
+        };
+    }
+
 }

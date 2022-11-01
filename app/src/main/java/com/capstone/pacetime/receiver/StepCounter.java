@@ -1,5 +1,9 @@
 package com.capstone.pacetime.receiver;
 
-public class StepCounter {
+import android.Manifest;
 
+public class StepCounter {
+    public static final String[] PERMISSIONS = {
+            Manifest.permission.ACTIVITY_RECOGNITION
+    };
 }

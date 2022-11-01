@@ -5,6 +5,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.media.AudioManager;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 public class BreathReceiver implements StartStopInterface, SensorEventListener {
     private AudioManager audioManager;
@@ -12,6 +15,8 @@ public class BreathReceiver implements StartStopInterface, SensorEventListener {
 
     public static String[] PERMISSIONS = new String[]{
             Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN
     };
 
     public BreathReceiver(AudioManager audioManager){
