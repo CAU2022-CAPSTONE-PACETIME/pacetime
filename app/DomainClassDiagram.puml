@@ -1,0 +1,166 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+RunInfo -> RunInfoUpdateCommand : use
+RunInfo --> BreathAnalyzerSetting
+RunInfo --> RunInfoUpdateFlag
+Breath - RunInfo
+
+RunInfoUpdateCommand .> RunInfo : parameter
+RunInfoUpdateCommand <|-- RunBasicInfoUpdateCommand
+RunBasicInfoUpdateCommand <|-- RunDetailInfoUpdateCommand
+RunInfoUpdateCommand -> RunInfoViewModel : contains
+
+RunInfoViewModel <|-- RunBasicInfoViewModel
+RunBasicInfoViewModel <|-- RunDetailInfoViewModel
+
+Breath --> BreathState
+
+RunningManager -- RunInfo
+BreathProcessThread  .. RunningManager
+BreathReceiver  .. RunningManager
+BreathAnalysisThread .. RunningManager
+StepReceiver .. RunningManager
+GPSReceiver . RunningManager
+RunningManager -> RunState
+
+StartStopInterface <|... GPSReceiver
+StartStopInterface <|.. BreathReceiver
+StartStopInterface <|.. StepReceiver
+
+enum RunState{
+    PAUSE
+    RUN
+    STOP
+    NONE
+}
+
+class RunningManager{
+    -runState: RunState
+}
+
+class BreathProcessThread{
+    -soundQueue: Queue<Short>
+}
+
+class Breath{
+    -breathState: BreathState
+    -timestamp: long
+}
+
+enum BreathState{
+    INHALE
+    EXHALE
+}
+
+abstract class RunInfoViewModel
+
+abstract class RunInfoUpdateCommand{
+    #viewModel: RunInfoViewModel
+    {abstract}+update(RunInfo): void
+    +setViewModel(RunInfoViewModel): void
+}
+
+class RunInfo{
+    <<Base Information>>
+    -startDateTime: LocalDateTime
+    -endDateTime: LocalDateTime
+    -breathAnalyzerSetting: BreathAnalyzerSetting
+    --
+    <<Basic Running Information>>
+    #breathItems: List<Breath>
+    #distance: float
+    #pace: Time
+    #runningTime: Time
+    +getDistance(): float
+    +setDistance(float): void
+    +getBreathItems(): List<Breath>
+    +setBreathItems(List<Breath>): void
+    +addBreathItem(Breath): void
+    +getPace(): Time
+    +setPace(Time): void
+    +getRunningTime(): Time
+    +setRunningTime(Time): void
+    -updateRunningTime(): void
+    --
+    <<Detail Running Information>>
+    -cadence: int
+    +getCadence(): int
+    +setCadence(int): void
+    -calculateCadence(): void
+    #stepCount: int
+    +getStepCount(): int
+    +setStepCount(int): void
+    #trace: List<Location>
+    +getTrace(): List<Location>
+    +setTrace(List<Location>): void
+    +addTrace(Location): void
+    --
+    <<for View Update>>
+    -updateFlag: EnumSet<RunInfoUpdateFlag>
+    -command: Command
+    -update(): void
+}
+
+enum RunInfoUpdateFlag{
+    TRACE
+    DISTANCE
+    PACE
+    RUNNING_TIME
+    STEP_COUNT
+    CADENCE
+}
+
+class RunBasicInfoUpdateCommand{
+    +update(RunInfo): void
+    -updateDistance(): void
+    -updatePace(): void
+    -updateRunningTime(): void
+}
+
+class RunBasicInfoViewModel{
+    -distanceStr: Observable<String>
+    -paceStr: Observable<String>
+    -runningTimeStr: Observable<String>
+    --
+    +getDistanceStr(): String
+    +setDistanceStr(float): void
+    +getPaceStr(): String
+    +setPaceStr(Time): void
+    +getRunningTimeStr(): String
+    +setRunningTimeStr(Time): void
+}
+
+class RunDetailInfoUpdateCommand{
+    +update(RunInfo): void
+    -updateStepCount(): void
+    -updateCadence(): void
+}
+
+class RunDetailInfoViewModel{
+    -cadenceStr: Observable<String>
+    -stepCountStr: Observable<String>
+    --
+    +getCadenceStr(): String
+    +setCadenceStr(int): void
+    +getStepCountStr(): String
+    +setStepCountStr(int): void
+}
+
+class BreathAnalyzerSetting{
+    -inhale: int
+    -exhale: int
+    -doAnalyze: boolean
+    --
+    +BreathAnalyzerSetting(int, int, boolean)
+    +doAnalyze(): boolean
+    +getInhale(): int
+    +getExhale(): int
+}
+
+interface StartStopInterface{
+    +start(): void {abstract}
+    +stop(): void {abstract}
+}
+
+@enduml
