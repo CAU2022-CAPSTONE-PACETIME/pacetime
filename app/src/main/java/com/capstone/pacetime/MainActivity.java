@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
@@ -50,6 +51,23 @@ public class MainActivity extends AppCompatActivity {
 
         binding.switchBreath.setTextOff("Breath Off");
         binding.switchBreath.setTextOn("Breath On");
+        binding.switchBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    binding.pickerInhale.setVisibility(View.VISIBLE);
+                    binding.pickerExhale.setVisibility(View.VISIBLE);
+                    binding.textInhale.setVisibility(View.VISIBLE);
+                    binding.textExhale.setVisibility(View.VISIBLE);
+                }
+                else{
+                    binding.pickerInhale.setVisibility(View.INVISIBLE);
+                    binding.pickerExhale.setVisibility(View.INVISIBLE);
+                    binding.textInhale.setVisibility(View.INVISIBLE);
+                    binding.textExhale.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 
     public void onStartClick(View v){
