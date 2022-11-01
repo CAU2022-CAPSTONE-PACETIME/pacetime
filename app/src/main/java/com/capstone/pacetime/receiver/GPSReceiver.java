@@ -2,6 +2,7 @@ package com.capstone.pacetime.receiver;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,7 +28,6 @@ public class GPSReceiver implements StartStopInterface{
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
 
-    @SuppressLint("MissingPermission")
     public GPSReceiver(FusedLocationProviderClient client, Handler dataHandler) {
         this.client = client;
         this.dataHandler = dataHandler;
@@ -45,6 +45,11 @@ public class GPSReceiver implements StartStopInterface{
         receiveTask = null;
 
         Log.i("GPSReceiver", "STOPPED");
+    }
+
+    public void getLocation(){
+        this.receiveTask = new ReceiveTask();
+        receiveTimer.schedule(receiveTask, 0);
     }
 
     private class ReceiveTask extends TimerTask{
@@ -66,4 +71,5 @@ public class GPSReceiver implements StartStopInterface{
                     );
         }
     }
+
 }
