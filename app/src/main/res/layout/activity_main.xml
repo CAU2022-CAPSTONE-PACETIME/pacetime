@@ -188,8 +188,29 @@
             app:layout_constraintStart_toStartOf="@id/button_start_running"
             app:layout_constraintEnd_toEndOf="@id/button_start_running"
             app:layout_constraintTop_toBottomOf="@id/button_start_running"
-            app:showText="true"
             android:checked="true"
+            />
+
+        <ImageView
+            android:id="@+id/image_no_breath"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/no_breath"
+            app:layout_constraintEnd_toStartOf="@id/switch_breath"
+            app:layout_constraintTop_toTopOf="@id/switch_breath"
+            app:layout_constraintBottom_toBottomOf="@id/switch_breath"
+            android:visibility="invisible"
+            />
+
+        <ImageView
+            android:id="@+id/image_breath"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/breath"
+            app:layout_constraintStart_toEndOf="@id/switch_breath"
+            app:layout_constraintTop_toTopOf="@id/switch_breath"
+            app:layout_constraintBottom_toBottomOf="@id/switch_breath"
+            android:visibility="visible"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -63,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
 
-
-
-
         if(requestQueue == null){
             requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
@@ -82,34 +79,58 @@ public class MainActivity extends AppCompatActivity {
         binding.pickerInhale.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 // Save the value in the number picker
-                binding.getPattern().setInhale(newVal);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.getPattern().setInhale(newVal);
+                    }
+                });
             }
         });
 
         binding.pickerExhale.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                // Save the value in the number picker
-                binding.getPattern().setExhale(newVal);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Save the value in the number picker
+                        binding.getPattern().setExhale(newVal);
+                    }
+                });
             }
         });
 
 
-        binding.switchBreath.setTextOff("Breath Off");
-        binding.switchBreath.setTextOn("Breath On");
+//        binding.switchBreath.setTextOff("Breath Off");
+//        binding.switchBreath.setTextOn("Breath On");
         binding.switchBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    binding.pickerInhale.setVisibility(View.VISIBLE);
-                    binding.pickerExhale.setVisibility(View.VISIBLE);
-                    binding.textInhale.setVisibility(View.VISIBLE);
-                    binding.textExhale.setVisibility(View.VISIBLE);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            binding.pickerInhale.setVisibility(View.VISIBLE);
+                            binding.pickerExhale.setVisibility(View.VISIBLE);
+                            binding.textInhale.setVisibility(View.VISIBLE);
+                            binding.textExhale.setVisibility(View.VISIBLE);
+                            binding.imageBreath.setVisibility(View.VISIBLE);
+                            binding.imageNoBreath.setVisibility(View.INVISIBLE);
+                        }
+                    });
                 }
                 else{
-                    binding.pickerInhale.setVisibility(View.INVISIBLE);
-                    binding.pickerExhale.setVisibility(View.INVISIBLE);
-                    binding.textInhale.setVisibility(View.INVISIBLE);
-                    binding.textExhale.setVisibility(View.INVISIBLE);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            binding.pickerInhale.setVisibility(View.INVISIBLE);
+                            binding.pickerExhale.setVisibility(View.INVISIBLE);
+                            binding.textInhale.setVisibility(View.INVISIBLE);
+                            binding.textExhale.setVisibility(View.INVISIBLE);
+                            binding.imageBreath.setVisibility(View.INVISIBLE);
+                            binding.imageNoBreath.setVisibility(View.VISIBLE);
+                        }
+                    });
                 }
             }
         });
