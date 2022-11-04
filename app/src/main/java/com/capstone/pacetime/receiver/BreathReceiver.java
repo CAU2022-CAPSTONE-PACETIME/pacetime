@@ -10,8 +10,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 
-import com.capstone.pacetime.Breath;
-import com.capstone.pacetime.BreathState;
+import com.capstone.pacetime.data.Breath;
+import com.capstone.pacetime.data.BreathState;
 import com.capstone.pacetime.RunningDataType;
 
 import java.util.Arrays;
@@ -23,13 +23,13 @@ public class BreathReceiver implements StartStopInterface{
 
     private final Handler dataHandler;
 
-    private AudioManager audioManager;
-    private AudioRecord audioRecord;
+    private final AudioManager audioManager;
+    private final AudioRecord audioRecord;
 
     private final int AUDIO_SAMP_RATE = 44100;
     private final float recordSeconds = 0.5f;
-    private short[] bufferRecord;
-    private int bufferRecordSize;
+    private final short[] bufferRecord;
+    private final int bufferRecordSize;
     private final int MAX_QUEUE_SIZE = 11025 * 3;
 
     private final Queue<Short> soundQueue;
@@ -65,24 +65,26 @@ public class BreathReceiver implements StartStopInterface{
 
     class SaveSoundRunnable implements Runnable{
         private final short[] buffer;
-        private final long timestamp;
 
         public SaveSoundRunnable(short[] buffer, long timestamp){
             this.buffer = buffer;
-            this.timestamp = timestamp;
         }
 
         @Override
         public void run(){
             for(short val : buffer){
-                soundQueue.add(val);
-                if(soundQueue.size() > AUDIO_SAMP_RATE * recordSeconds){
-                    soundQueue.poll();
+                synchronized (soundQueue){
+                    soundQueue.add(val);
+                    if(soundQueue.size() > AUDIO_SAMP_RATE * recordSeconds){
+                        soundQueue.poll();
+                    }
                 }
             }
-
-            soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.toArray(), timestamp));
         }
+    }
+
+    public void doConvert(long timestamp){
+        soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.toArray(), timestamp));
     }
 
     class SoundToBreathThread extends HandlerThread{
