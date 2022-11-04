@@ -43,6 +43,7 @@ public class RunActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_run);
+
         viewModel = new RunDetailInfoViewModel();
         command = new RunDetailInfoUpdateCommand();
 
@@ -50,12 +51,17 @@ public class RunActivity extends AppCompatActivity {
         binding.setDetailRunInfo(viewModel);
 
         for(String[] permissions: RunningManager.getPermissionSets()){
+            Log.d(TAG, "Permissions: " + Arrays.toString(permissions));
+
             if(!PermissionChecker.checkPermissions(this, permissions)){
-                Log.d(TAG, Arrays.toString(permissions));
+                Log.d(TAG, "Permissions Denied");
             }
         }
 
-        manager = new RunningManager(this);
+        RunInfo runInfo = new RunInfo();
+        runInfo.setCommand(command);
+
+        manager = new RunningManager(this, runInfo);
     }
 
     @Override
@@ -69,5 +75,11 @@ public class RunActivity extends AppCompatActivity {
         super.onPause();
 
         manager.stop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "Destroy");
     }
 }
