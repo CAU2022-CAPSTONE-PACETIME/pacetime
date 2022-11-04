@@ -36,24 +36,27 @@ public class RunningManager implements StartStopInterface {
         SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
         gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity), handler);
-        breathReceiver = new BreathReceiver((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
+        breathReceiver = new BreathReceiver((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE), handler);
     }
 
     @Override
     public void start(){
         thread.start();
         handler = new Handler(thread.getLooper(), (@NonNull Message message) -> {
-                Bundle data = message.getData();
-                if(data == null){
-                    return false;
+                if(message.arg1 == RunningDataType.BREATH.ordinal()){
+
                 }
-                if(data.keySet().contains("location")){
+                else if(message.arg1 == RunningDataType.LOCATION.ordinal()){
+                    Bundle data = message.getData();
+                    if(data == null){
+                        return false;
+                    }
                     Location loc = data.getParcelable("location");
 
                     Log.i("RunningManager", "GPS: " + loc.toString());
+                }else if(message.arg1 == RunningDataType.STEP.ordinal()){
+
                 }
-                if(data.keySet().contains("breath")){}
-                if(data.keySet().contains("step")){}
                 return true;
             }
         );
