@@ -49,9 +49,6 @@ public class BreathReceiver implements StartStopInterface{
         public SaveSoundThread(String name) {
             super(name);
         }
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
         @Override
         public synchronized void start() {
