@@ -11,8 +11,13 @@ public class RunDetailInfoUpdateCommand extends RunBasicInfoUpdateCommand{
     public void update(RunInfo info){
         super.update(info);
         EnumSet<RunInfoUpdateFlag> flag = info.getUpdateFlags();
+
+        if(flag == null){
+            return;
+        }
+
         if(flag.contains(RunInfoUpdateFlag.STEP_COUNT)){
-            updateStepCount(info.getStepCount());
+            updateStepCount(info.getStepCount().get(info.getStepCount().size()-1).getCount());
         }
         if(flag.contains(RunInfoUpdateFlag.CADENCE)){
             updateCadence(info.getCadence());
