@@ -12,18 +12,20 @@ import com.capstone.pacetime.RunningDataType;
 import com.capstone.pacetime.data.Step;
 
 public class StepCounter implements StartStopInterface{
-    private final Handler dataHandler;
+    private Handler dataHandler;
     private final StartStopInterface command;
     private final SensorEventListener sensorEventListener;
 
     private final Sensor counter;
 
     public static final String[] PERMISSIONS = {
-            Manifest.permission.ACTIVITY_RECOGNITION
+//            Manifest.permission.ACTIVITY_RECOGNITION
     };
-
-    public StepCounter(SensorManager sensorManager, Handler dataHandler){
+    public void setDataHandler(Handler dataHandler){
         this.dataHandler = dataHandler;
+    }
+    public StepCounter(SensorManager sensorManager){
+        this.dataHandler = null;
 
         this.counter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 

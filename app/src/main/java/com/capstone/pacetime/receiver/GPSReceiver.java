@@ -16,7 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class GPSReceiver implements StartStopInterface{
-    private final Handler dataHandler;
+    private Handler dataHandler;
     private final Timer receiveTimer;
     private TimerTask receiveTask;
 
@@ -24,15 +24,21 @@ public class GPSReceiver implements StartStopInterface{
 
     public static String[] PERMISSIONS = new String[]{
                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION
+//                Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
 
-    public GPSReceiver(FusedLocationProviderClient client, Handler dataHandler) {
+    public GPSReceiver(FusedLocationProviderClient client) {
         this.client = client;
-        this.dataHandler = dataHandler;
+        this.dataHandler = null;
         this.receiveTimer = new Timer();
     }
+
+    public void setDataHandler(Handler dataHandler){
+        this.dataHandler = dataHandler;
+    }
+
+
     @Override
     public void start(){
         this.receiveTask = new ReceiveTask();
