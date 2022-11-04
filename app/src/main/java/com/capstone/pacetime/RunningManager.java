@@ -61,6 +61,7 @@ public class RunningManager implements StartStopInterface {
             }
         );
         gpsReceiver.start();
+        breathReceiver.start();
     }
 
     @Override
