@@ -20,9 +20,9 @@ import com.capstone.pacetime.receiver.StepCounter;
 import com.google.android.gms.location.LocationServices;
 
 public class RunningManager implements StartStopInterface {
-    private GPSReceiver gpsReceiver;
-    private BreathReceiver breathReceiver;
-    private StepCounter stepCounter;
+    private final GPSReceiver gpsReceiver;
+    private final BreathReceiver breathReceiver;
+    private final StepCounter stepCounter;
 
     private RunInfo runInfo;
     private RunningState state;
@@ -32,37 +32,45 @@ public class RunningManager implements StartStopInterface {
 
     public RunningManager(AppCompatActivity activity){
         thread = new HandlerThread("DataHandlerThread");
+        thread.start();
 
         SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
         gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity), handler);
-        breathReceiver = new BreathReceiver((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
+        breathReceiver = new BreathReceiver((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE), handler);
+        stepCounter = new StepCounter(sensorManager, handler);
     }
 
     @Override
     public void start(){
-        thread.start();
-        handler = new Handler(thread.getLooper(), (@NonNull Message message) -> {
-                Bundle data = message.getData();
-                if(data == null){
-                    return false;
+        handler = new Handler(thread.getLooper(), (@NonNull Message msg) -> {
+                if(msg.arg1 == RunningDataType.BREATH.ordinal()){
+
                 }
-                if(data.keySet().contains("location")){
+                else if(msg.arg1 == RunningDataType.LOCATION.ordinal()){
+                    Bundle data = msg.getData();
+                    if(data == null){
+                        return false;
+                    }
                     Location loc = data.getParcelable("location");
 
                     Log.i("RunningManager", "GPS: " + loc.toString());
+                }else if(msg.arg1 == RunningDataType.STEP.ordinal()){
+                    breathReceiver.doConvert(System.currentTimeMillis());
                 }
-                if(data.keySet().contains("breath")){}
-                if(data.keySet().contains("step")){}
                 return true;
             }
         );
         gpsReceiver.start();
+        breathReceiver.start();
+        stepCounter.start();
     }
 
     @Override
     public void stop() {
         gpsReceiver.stop();
+        breathReceiver.stop();
+        stepCounter.stop();
     }
 
     public static String[][] getPermissionSets(){
