@@ -3,6 +3,7 @@ package com.capstone.pacetime;
 import android.location.Location;
 
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
+import com.capstone.pacetime.data.Breath;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
