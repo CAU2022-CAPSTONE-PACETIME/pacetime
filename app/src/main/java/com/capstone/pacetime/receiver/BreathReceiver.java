@@ -2,6 +2,7 @@ package com.capstone.pacetime.receiver;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class BreathReceiver implements StartStopInterface{
     private static final String TAG = "BreathReceiver";
 
-    private final Handler dataHandler;
+    private Handler dataHandler;
 
     private final AudioManager audioManager;
     private final AudioRecord audioRecord;
@@ -133,7 +134,7 @@ public class BreathReceiver implements StartStopInterface{
     };
 
     @SuppressLint("MissingPermission")
-    public BreathReceiver(AudioManager audioManager, Handler dataHandler){
+    public BreathReceiver(AudioManager audioManager){
         this.audioManager = audioManager;
 
         bufferRecordSize = AudioRecord.getMinBufferSize(
@@ -147,15 +148,19 @@ public class BreathReceiver implements StartStopInterface{
         soundQueue = new ConcurrentLinkedQueue<>();
 
         audioRecord = new AudioRecord(
-                MediaRecorder.AudioSource.VOICE_CALL,
+                AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
                 AUDIO_SAMP_RATE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 bufferRecordSize);
 
-        this.dataHandler = dataHandler;
+        this.dataHandler = null;
 
         setPipeline();
+    }
+
+    public void setDataHandler(Handler dataHandler){
+        this.dataHandler = dataHandler;
     }
 
     private void setPipeline(){
