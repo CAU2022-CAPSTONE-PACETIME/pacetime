@@ -19,7 +19,7 @@ public class StepCounter implements StartStopInterface{
     private final Sensor counter;
 
     public static final String[] PERMISSIONS = {
-//            Manifest.permission.ACTIVITY_RECOGNITION
+            Manifest.permission.ACTIVITY_RECOGNITION
     };
     public void setDataHandler(Handler dataHandler){
         this.dataHandler = dataHandler;
