@@ -18,6 +18,8 @@ public class StepCounter implements StartStopInterface{
 
     private final Sensor counter;
 
+    private int startStep = -1;
+
     public static final String[] PERMISSIONS = {
             Manifest.permission.ACTIVITY_RECOGNITION
     };
@@ -34,7 +36,15 @@ public class StepCounter implements StartStopInterface{
             public void onSensorChanged(SensorEvent sensorEvent) {
                 Message msg = new Message();
                 msg.arg1 = RunningDataType.STEP.ordinal();
-                msg.obj = new Step((int)sensorEvent.values[0], System.currentTimeMillis());
+
+                int step;
+                if(startStep == -1){
+                    step = startStep = (int)sensorEvent.values[0];
+                }else{
+                    step = (int)sensorEvent.values[0] - startStep;
+                }
+
+                msg.obj = new Step(step, System.currentTimeMillis());
                 dataHandler.sendMessage(msg);
             }
 
