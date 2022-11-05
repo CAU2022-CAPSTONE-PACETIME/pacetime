@@ -67,7 +67,7 @@ public class BreathReceiver implements StartStopInterface{
     class SaveSoundRunnable implements Runnable{
         private final short[] buffer;
 
-        public SaveSoundRunnable(short[] buffer, long timestamp){
+        public SaveSoundRunnable(short[] buffer){
             this.buffer = buffer;
         }
 
@@ -112,7 +112,7 @@ public class BreathReceiver implements StartStopInterface{
         private final long timestamp;
 
         public SoundToBreathRunnable(Object[] sound, long timestamp){
-            this.sound = (Short[]) sound;
+            this.sound = (Short[]) sound; // 22050
             this.timestamp = timestamp;
         }
 
@@ -148,7 +148,8 @@ public class BreathReceiver implements StartStopInterface{
         soundQueue = new ConcurrentLinkedQueue<>();
 
         audioRecord = new AudioRecord(
-                AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
+                MediaRecorder.AudioSource.MIC,
+//                AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
                 AUDIO_SAMP_RATE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
@@ -171,7 +172,7 @@ public class BreathReceiver implements StartStopInterface{
             soundToBreathThread.start();
             while (!receiveThread.isInterrupted()) {
                 int size = audioRecord.read(bufferRecord, 0, bufferRecordSize);
-                saveSoundHandler.post(new SaveSoundRunnable(Arrays.copyOfRange(bufferRecord.clone(), 0, size), System.currentTimeMillis()));
+                saveSoundHandler.post(new SaveSoundRunnable(Arrays.copyOfRange(bufferRecord.clone(), 0, size)));
             }
             saveSoundThread.interrupt();
             soundToBreathThread.interrupt();
