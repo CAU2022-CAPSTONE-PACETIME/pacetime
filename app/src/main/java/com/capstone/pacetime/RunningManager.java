@@ -22,6 +22,7 @@ import com.capstone.pacetime.receiver.StartStopInterface;
 import com.capstone.pacetime.receiver.StepCounter;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -120,20 +121,31 @@ public class RunningManager implements StartStopInterface {
 
     @Override
     public void stop() {
-        updateTask.cancel();
-        updateTask = null;
-
-        gpsReceiver.stop();
-        breathReceiver.stop();
+        if(updateTask != null){
+            updateTask.cancel();
+            updateTask = null;
+        }
+//        gpsReceiver.stop();
+//        breathReceiver.stop();
         stepCounter.stop();
     }
 
-    public static String[][] getPermissionSets(){
-        return new String[][]{
-                BreathReceiver.PERMISSIONS,
-                GPSReceiver.PERMISSIONS,
-                StepCounter.PERMISSIONS
-        };
+    public static String[] getPermissionSets(){
+        String[] ret = new String[
+                BreathReceiver.PERMISSIONS.length +
+                        GPSReceiver.PERMISSIONS.length +
+                        StepCounter.PERMISSIONS.length
+                ];
+
+        int cnt = 0;
+        for(String[] permissions : new String[][]{ BreathReceiver.PERMISSIONS, GPSReceiver.PERMISSIONS, StepCounter.PERMISSIONS }){
+            for(String permission : permissions){
+                ret[cnt] = permission;
+                cnt++;
+            }
+        }
+
+        return ret;
     }
 
 }
