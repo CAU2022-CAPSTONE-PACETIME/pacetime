@@ -50,13 +50,10 @@ public class RunActivity extends AppCompatActivity {
         command.setViewModel(viewModel);
         binding.setDetailRunInfo(viewModel);
 
-        for(String[] permissions: RunningManager.getPermissionSets()){
-            Log.d(TAG, "Permissions: " + Arrays.toString(permissions));
-
-            if(!PermissionChecker.checkPermissions(this, permissions)){
-                Log.d(TAG, "Permissions Denied");
-            }
-        }
+        PermissionChecker.checkPermissions(
+                this,
+                RunningManager.getPermissionSets()
+                );
 
         RunInfo runInfo = new RunInfo();
         runInfo.setCommand(command);
