@@ -125,8 +125,8 @@ public class RunningManager implements StartStopInterface {
             updateTask.cancel();
             updateTask = null;
         }
-//        gpsReceiver.stop();
-//        breathReceiver.stop();
+        gpsReceiver.stop();
+        breathReceiver.stop();
         stepCounter.stop();
     }
 
