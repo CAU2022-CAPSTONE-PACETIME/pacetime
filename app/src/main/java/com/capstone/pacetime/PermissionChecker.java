@@ -6,50 +6,54 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.WindowManager;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class PermissionChecker {
-
+    private static final String TAG = "PERMISSION_CHECKER";
     public static boolean checkPermissions(AppCompatActivity activity, String[] permissions){
 
-        List<String> abortedPermissions = new ArrayList<>();
+        List<String> deniedPermissions = new ArrayList<>();
 
-        for(String permission: permissions) {
-            if (activity.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                abortedPermissions.add(permission);
+        for(String permission: permissions){
+            if(activity.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED){
+                deniedPermissions.add(permission);
+                Log.d(TAG, "DENIED: " + permission);
             }
         }
-        if(!abortedPermissions.isEmpty()){
-            ActivityResultLauncher<String[]> permissionLauncher;
-            permissionLauncher = activity.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
-                    (Map<String, Boolean> result) -> new AlertDialog.Builder(activity.getApplicationContext())
-                            .setMessage("앱을 사용 하기 위해 모든 권한을 허용 해야 합니다.")
-                            .setPositiveButton("확인", (DialogInterface dialog, int which) -> {
-                                        Intent intent = new Intent();
-                                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                        Uri uri = Uri.fromParts("package",
-                                                BuildConfig.APPLICATION_ID, null);
-                                        intent.setData(uri);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        activity.startActivity(intent);
-                                    }
-                            )
-                            .create()
-                            .show()
-                    );
 
-            permissionLauncher.launch(abortedPermissions.toArray(new String[0]));
-            return false;
+        if(deniedPermissions.isEmpty()){
+            return true;
         }
+        else{
+            ActivityResultLauncher<String[]> permissionLauncher = activity.registerForActivityResult(
+                    new ActivityResultContracts.RequestMultiplePermissions(),
+                    result -> {
+                        for(String permission: deniedPermissions){
+                            if(Boolean.FALSE.equals(result.get(permission))){
+                                activity.finish();
+                            }
+                        }
+                    }
+            );
+
+            permissionLauncher.launch(deniedPermissions.toArray(new String[]{}));
+        }
+
+
         return true;
     }
 
