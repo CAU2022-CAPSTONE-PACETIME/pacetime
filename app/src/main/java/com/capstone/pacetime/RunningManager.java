@@ -67,6 +67,8 @@ public class RunningManager implements StartStopInterface {
 
                     }else if(msg.arg1 == RunningDataType.STEP.ordinal()){
                         runInfo.addStepCount((Step)msg.obj);
+                        Log.d("RunningManager", "Step: " + ((Step) msg.obj).getCount());
+
                         breathReceiver.doConvert(System.currentTimeMillis());
                     }
                 }

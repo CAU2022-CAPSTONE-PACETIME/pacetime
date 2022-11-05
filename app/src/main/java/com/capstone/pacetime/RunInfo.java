@@ -1,6 +1,7 @@
 package com.capstone.pacetime;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
 import com.capstone.pacetime.data.Breath;
