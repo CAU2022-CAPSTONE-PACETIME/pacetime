@@ -27,8 +27,7 @@
             android:textColor="#FFFFFF"
             app:layout_constraintEnd_toEndOf="@id/text_temperature"
             app:layout_constraintTop_toTopOf="@id/text_temperature"
-            android:elevation="1dp"
-            android:contentDescription="F5" />
+            android:elevation="1dp" />
         <!--            android:text="F5"-->
 
 <!--        <TextView-->
