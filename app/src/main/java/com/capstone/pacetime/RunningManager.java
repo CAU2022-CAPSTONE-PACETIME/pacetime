@@ -22,7 +22,7 @@ import com.capstone.pacetime.receiver.StartStopInterface;
 import com.capstone.pacetime.receiver.StepCounter;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.List;
+import java.time.OffsetDateTime;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -95,10 +95,12 @@ public class RunningManager implements StartStopInterface {
         stepCounter = new StepCounter(sensorManager);
     }
 
-    public void changeState(RunningState state){
+    public void setState(RunningState state){
         this.state = state;
     }
-
+    public RunningState getState(){
+        return this.state;
+    }
 
     private class UpdateTask extends TimerTask {
         @SuppressLint("MissingPermission")
@@ -111,12 +113,15 @@ public class RunningManager implements StartStopInterface {
     @Override
     public void start(){
         thread.start();
+        runInfo.setStartDateTime(OffsetDateTime.now());
         this.updateTask = new UpdateTask();
-        updateTimer.schedule(updateTask, 1000, 1000);
+        updateTimer.schedule(updateTask, 1000, 500);
 
         gpsReceiver.start();
         breathReceiver.start();
         stepCounter.start();
+
+        setState(RunningState.RUN);
     }
 
     @Override
