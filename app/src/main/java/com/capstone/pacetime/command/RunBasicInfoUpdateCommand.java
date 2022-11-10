@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
+import java.util.Locale;
 
 public class RunBasicInfoUpdateCommand extends RunInfoUpdateCommand {
     @Override
@@ -34,24 +35,10 @@ public class RunBasicInfoUpdateCommand extends RunInfoUpdateCommand {
     }
     private void updatePace(long pace){
         ((RunBasicInfoViewModel)viewModel).setPaceStr(
-                LocalDateTime.ofEpochSecond(
-                        pace,
-                        0,
-                        ZoneOffset.of("Asia/Seoul")
-                ).format(
-                    DateTimeFormatter.ofPattern("mm'ss\"")
-                )
-        );
+                String.format(Locale.getDefault(), "%02d'%02d\"", pace / 60, pace % 60) );
     }
     private void updateRunningTime(long time){
         ((RunBasicInfoViewModel)viewModel).setRunningTimeStr(
-                LocalDateTime.ofEpochSecond(
-                        time,
-                        0,
-                        ZoneOffset.of("Asia/Seoul")
-                ).format(
-                        DateTimeFormatter.ofPattern("mm:ss")
-                )
-        );
+                String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60) );
     }
 }
