@@ -27,6 +27,13 @@ import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
@@ -35,7 +42,7 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RunActivity extends AppCompatActivity {
+public class RunActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "RunActivity";
     private ActivityRunBinding binding;
     private RunDetailInfoViewModel viewModel;
@@ -50,6 +57,8 @@ public class RunActivity extends AppCompatActivity {
     private final int PAUSE2RUN     = 2;
     private final int PAUSE2STOP    = 3;
 
+    private MapView mapView;
+    private GoogleMap mMap;
 
 
     @Override
@@ -62,6 +71,9 @@ public class RunActivity extends AppCompatActivity {
         binding.setDetailRunInfo(viewModel);
         binding.constraintReady.setVisibility(View.VISIBLE);
         binding.constraintRun.setVisibility(View.INVISIBLE);
+
+        mapView = binding.includeDetailRunInfo.mapView;
+        mapView.getMapAsync(this);
 
         PermissionChecker.checkPermissions(
                 this,
@@ -96,12 +108,16 @@ public class RunActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (msg.what == READY2RUN) {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
+                        binding.buttonPause.setVisibility(View.INVISIBLE);
                         binding.constraintReady.setVisibility(View.GONE);
                         binding.constraintRun.setVisibility(View.VISIBLE);
+
                     } else if (msg.what == RUN2PAUSE) {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.VISIBLE);
+                        binding.buttonPause.setVisibility(View.VISIBLE);
                     } else if (msg.what == PAUSE2RUN) {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
+                        binding.buttonPause.setVisibility(View.INVISIBLE);
                     }
                 });
             }
@@ -116,6 +132,20 @@ public class RunActivity extends AppCompatActivity {
                 uiHandler.sendEmptyMessage(RUN2PAUSE);
             }
         });
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+
+        LatLng seoul = new LatLng(37.56, 126.97);
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(seoul);
+        markerOptions.title("서울");
+        mMap.addMarker(markerOptions);
+
+        mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(seoul, 10)));
     }
 
     class ReadyTimerTask extends TimerTask{
@@ -142,7 +172,7 @@ public class RunActivity extends AppCompatActivity {
         super.onStart();
 
         Timer timer = new Timer();
-        timer.schedule(new ReadyTimerTask(3), 1000, 1000);
+        timer.schedule(new ReadyTimerTask(3), 0, 1000);
     }
 
     @Override
