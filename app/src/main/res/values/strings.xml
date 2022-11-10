@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">pacetime</string>
+    <string name="startbutton">StartButton</string>
 </resources>
