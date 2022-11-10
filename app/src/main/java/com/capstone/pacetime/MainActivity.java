@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
@@ -168,17 +169,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onStartClick(View v){
-        Log.d("MainActivity", "" + v.getId());
-        runOnUiThread(()->{
-            Toast.makeText(this, "Start", Toast.LENGTH_SHORT).show();
-        });
+//        Log.d("MainActivity", "" + v.getId());
+//        runOnUiThread(()->{
+//            Toast.makeText(this, "Start", Toast.LENGTH_SHORT).show();
+//        });
+        Intent intent = new Intent(this, RunActivity.class);
+        startActivity(intent);
     }
 
     public void onHistoryClick(View v){
-        Log.d("MainActivity", "" + v.getId());
-        runOnUiThread(()->{
-            Toast.makeText(this, "History", Toast.LENGTH_SHORT).show();
-        });
+//        Log.d("MainActivity", "" + v.getId());
+//        runOnUiThread(()->{
+//            Toast.makeText(this, "History", Toast.LENGTH_SHORT).show();
+//        });
+        Intent intent = new Intent(this, HistoryActivity.class);
+        startActivity(intent);
     }
 
     private String currentCityCall(double lat, double lon) {
