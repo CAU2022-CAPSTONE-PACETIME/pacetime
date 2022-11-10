@@ -114,6 +114,11 @@ public class BreathReceiver implements StartStopInterface{
 
         public SoundToBreathRunnable(Object[] sound, long timestamp){
             this.sound = new Short[22050]; // 22050
+
+            for(int i = 0; i < 22050; i++){
+                this.sound[i] = (Short)sound[i];
+            }
+
             this.timestamp = timestamp;
         }
 
