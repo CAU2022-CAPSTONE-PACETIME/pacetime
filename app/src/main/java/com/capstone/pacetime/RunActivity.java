@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
 
 import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
@@ -30,6 +32,8 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RunActivity extends AppCompatActivity {
     private static final String TAG = "RunActivity";
@@ -38,17 +42,26 @@ public class RunActivity extends AppCompatActivity {
     private RunInfoUpdateCommand command;
     private RunningManager manager;
 
+    private HandlerThread runTriggerThread;
+    private Handler runTriggerHandler, uiHandler;
+
+    private final int READY2RUN     = 0;
+    private final int RUN2PAUSE     = 1;
+    private final int PAUSE2RUN     = 2;
+    private final int PAUSE2STOP    = 3;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_run);
-
         viewModel = new RunDetailInfoViewModel();
         command = new RunDetailInfoUpdateCommand();
-
         command.setViewModel(viewModel);
         binding.setDetailRunInfo(viewModel);
+        binding.constraintReady.setVisibility(View.VISIBLE);
+        binding.constraintRun.setVisibility(View.INVISIBLE);
 
         PermissionChecker.checkPermissions(
                 this,
@@ -59,12 +72,77 @@ public class RunActivity extends AppCompatActivity {
         runInfo.setCommand(command);
 
         manager = new RunningManager(this, runInfo);
+        manager.setState(RunningState.COUNT);
+
+        runTriggerThread = new HandlerThread("RunTriggerThread");
+        runTriggerThread.start();
+
+        runTriggerHandler = new Handler(runTriggerThread.getLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                if(msg.what == 0){
+                    manager.start();
+                    runTriggerThread.interrupt();
+                    runTriggerHandler = null;
+                }
+            }
+        };
+
+        uiHandler = new Handler(getMainLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                runOnUiThread(() -> {
+                    if (msg.what == READY2RUN) {
+                        binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
+                        binding.constraintReady.setVisibility(View.GONE);
+                        binding.constraintRun.setVisibility(View.VISIBLE);
+                    } else if (msg.what == RUN2PAUSE) {
+                        binding.includeDetailRunInfo.getRoot().setVisibility(View.VISIBLE);
+                    } else if (msg.what == PAUSE2RUN) {
+                        binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
+                    }
+                });
+            }
+        };
+
+        binding.buttonRun.setOnClickListener((view)->{
+            if(manager.getState() == RunningState.RUN){
+                manager.setState(RunningState.PAUSE);
+                uiHandler.sendEmptyMessage(PAUSE2RUN);
+            }else{
+                manager.setState(RunningState.RUN);
+                uiHandler.sendEmptyMessage(RUN2PAUSE);
+            }
+        });
+    }
+
+    class ReadyTimerTask extends TimerTask{
+        private int time;
+
+        public ReadyTimerTask(int time){
+            this.time = time;
+        }
+
+        @Override
+        public void run() {
+            runOnUiThread(()->binding.textviewReadyTimer.setText(String.valueOf(time)));
+            time--;
+            if(time < 0){
+                uiHandler.sendEmptyMessage(READY2RUN);
+                runTriggerHandler.sendEmptyMessage(READY2RUN);
+                this.cancel();
+            }
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        manager.start();
+
+        Timer timer = new Timer();
+        timer.schedule(new ReadyTimerTask(3), 1000, 1000);
     }
 
     @Override
@@ -79,4 +157,5 @@ public class RunActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d(TAG, "Destroy");
     }
+
 }
