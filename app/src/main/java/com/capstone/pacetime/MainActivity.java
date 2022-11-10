@@ -161,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        gps = new GPSReceiver(LocationServices.getFusedLocationProviderClient(this), handler);
+        gps = new GPSReceiver(LocationServices.getFusedLocationProviderClient(this));
+        gps.setDataHandler(handler);
         binding.buttonRefresh.setOnClickListener((view)->{
             gps.getLocation();
         });
