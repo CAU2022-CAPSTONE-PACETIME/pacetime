@@ -14,6 +14,10 @@ public class RunBasicInfoUpdateCommand extends RunInfoUpdateCommand {
     public void update(RunInfo info){
         EnumSet<RunInfoUpdateFlag> flag = info.getUpdateFlags();
 
+        if(flag == null){
+            return;
+        }
+
         if(flag.contains(RunInfoUpdateFlag.DISTANCE)){
             updateDistance(info.getDistance());
         }

@@ -17,14 +17,12 @@ RunBasicInfoViewModel <|-- RunDetailInfoViewModel
 Breath --> BreathState
 
 RunningManager -- RunInfo
-BreathProcessThread  .. RunningManager
 BreathReceiver  .. RunningManager
-BreathAnalysisThread .. RunningManager
 StepReceiver .. RunningManager
 GPSReceiver . RunningManager
 RunningManager -> RunState
 
-StartStopInterface <|... GPSReceiver
+StartStopInterface <|.. GPSReceiver
 StartStopInterface <|.. BreathReceiver
 StartStopInterface <|.. StepReceiver
 

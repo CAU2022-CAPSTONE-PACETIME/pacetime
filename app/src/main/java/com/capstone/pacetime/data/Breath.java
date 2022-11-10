@@ -1,4 +1,4 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.data;
 
 public class Breath {
     private final BreathState breathState;
