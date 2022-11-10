@@ -178,6 +178,9 @@ public class BreathReceiver implements StartStopInterface{
             soundToBreathThread.start();
             while (!receiveThread.isInterrupted()) {
                 int size = audioRecord.read(bufferRecord, 0, bufferRecordSize);
+                if(size < 0){
+                    continue;
+                }
                 saveSoundHandler.post(new SaveSoundRunnable(Arrays.copyOfRange(bufferRecord.clone(), 0, size)));
             }
             saveSoundThread.interrupt();
