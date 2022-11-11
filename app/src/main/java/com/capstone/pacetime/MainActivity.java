@@ -1,28 +1,19 @@
 package com.capstone.pacetime;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -33,18 +24,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capstone.pacetime.databinding.ActivityMainBinding;
 import com.capstone.pacetime.receiver.GPSReceiver;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -102,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-//        binding.switchBreath.setTextOff("Breath Off");
-//        binding.switchBreath.setTextOn("Breath On");
         binding.switchBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -151,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     Location loc = data.getParcelable("location");
 
                     currentCityCall(loc.getLatitude(), loc.getLongitude());
-                    Log.i("MainActivity", "GPS: " + loc.toString());
+                    Log.i("MainActivity", "GPS: " + loc);
 
                 }
                 if(data.keySet().contains("city")){
@@ -170,19 +154,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onStartClick(View v){
-//        Log.d("MainActivity", "" + v.getId());
-//        runOnUiThread(()->{
-//            Toast.makeText(this, "Start", Toast.LENGTH_SHORT).show();
-//        });
         Intent intent = new Intent(this, RunActivity.class);
         startActivity(intent);
     }
 
     public void onHistoryClick(View v){
-//        Log.d("MainActivity", "" + v.getId());
-//        runOnUiThread(()->{
-//            Toast.makeText(this, "History", Toast.LENGTH_SHORT).show();
-//        });
         Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
@@ -225,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("WEATHERCALLFAIL2", "weather call failed!");
             }
         }) {
-            @Nullable
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
@@ -282,7 +257,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("WEATHERCALLFAIL2", "weather call failed!");
             }
         }) {
-            @Nullable
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
