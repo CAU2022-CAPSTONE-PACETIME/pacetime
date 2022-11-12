@@ -41,8 +41,10 @@ public class GPSReceiver implements StartStopInterface{
     }
     @Override
     public void stop(){
-        receiveTask.cancel();
-        receiveTask = null;
+        if(receiveTask != null){
+            receiveTask.cancel();
+            receiveTask = null;
+        }
 
         Log.i("GPSReceiver", "STOPPED");
     }
