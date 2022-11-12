@@ -25,6 +25,8 @@
         tools:targetApi="31"
         android:allowBackup="true"
         android:usesCleartextTraffic="true">
+
+
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -46,7 +48,9 @@
             android:name=".HistoryActivity"
             android:exported="true">
         </activity>
-
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
     </application>
 
 </manifest>
