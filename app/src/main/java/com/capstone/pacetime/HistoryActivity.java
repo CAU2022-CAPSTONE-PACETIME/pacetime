@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.capstone.pacetime.data.LayoutHistoryViewItem;
 import com.capstone.pacetime.databinding.ActivityHistoryBinding;
 import com.capstone.pacetime.databinding.LayoutHistoryViewBinding;
 

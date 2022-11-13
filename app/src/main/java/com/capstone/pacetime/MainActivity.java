@@ -3,8 +3,12 @@ package com.capstone.pacetime;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     private HandlerThread thread;
 
+    BluetoothHelper bluetoothHelper;
+    MutableLiveData<String> whichDevice = new MutableLiveData<String>(null);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
+
+        bluetoothHelper = new BluetoothHelper(this);
 
         if(requestQueue == null){
             requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -91,32 +100,7 @@ public class MainActivity extends AppCompatActivity {
         binding.switchBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            binding.pickerInhale.setVisibility(View.VISIBLE);
-                            binding.pickerExhale.setVisibility(View.VISIBLE);
-                            binding.textInhale.setVisibility(View.VISIBLE);
-                            binding.textExhale.setVisibility(View.VISIBLE);
-                            binding.imageBreath.setVisibility(View.VISIBLE);
-                            binding.imageNoBreath.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                }
-                else{
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            binding.pickerInhale.setVisibility(View.INVISIBLE);
-                            binding.pickerExhale.setVisibility(View.INVISIBLE);
-                            binding.textInhale.setVisibility(View.INVISIBLE);
-                            binding.textExhale.setVisibility(View.INVISIBLE);
-                            binding.imageBreath.setVisibility(View.INVISIBLE);
-                            binding.imageNoBreath.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+                breathSwitch(isChecked);
             }
         });
 
@@ -150,6 +134,30 @@ public class MainActivity extends AppCompatActivity {
         gps.setDataHandler(handler);
         binding.buttonRefresh.setOnClickListener((view)->{
             gps.getLocation();
+        });
+
+        whichDevice.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String nameDevice) {
+                if(nameDevice != null){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            binding.textBluetooth.setBackgroundColor(Color.parseColor("#000080"));
+                            binding.textBluetooth.setText(nameDevice);
+                        }
+                    });
+                }
+                else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            binding.textBluetooth.setBackgroundColor(Color.parseColor("#F00000"));
+                            binding.textBluetooth.setText("Device\nUnconnected");
+                        }
+                    });
+                }
+            }
         });
     }
 
@@ -269,4 +277,45 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(requestCity);
     }
 
+    public void onDeviceChanged(boolean isHeadset){
+        if(isHeadset){
+            whichDevice.setValue(bluetoothHelper.getMyDeviceName());
+            binding.switchBreath.setVisibility(View.VISIBLE);
+        }
+        else{
+            binding.switchBreath.setVisibility(View.INVISIBLE);
+            binding.switchBreath.setChecked(false);
+            breathSwitch(false);
+            whichDevice.setValue(null);
+        }
+    }
+
+    public void breathSwitch(boolean isOn){
+        if(isOn){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    binding.pickerInhale.setVisibility(View.VISIBLE);
+                    binding.pickerExhale.setVisibility(View.VISIBLE);
+                    binding.textInhale.setVisibility(View.VISIBLE);
+                    binding.textExhale.setVisibility(View.VISIBLE);
+                    binding.imageBreath.setVisibility(View.VISIBLE);
+                    binding.imageNoBreath.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
+        else{
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    binding.pickerInhale.setVisibility(View.INVISIBLE);
+                    binding.pickerExhale.setVisibility(View.INVISIBLE);
+                    binding.textInhale.setVisibility(View.INVISIBLE);
+                    binding.textExhale.setVisibility(View.INVISIBLE);
+                    binding.imageBreath.setVisibility(View.INVISIBLE);
+                    binding.imageNoBreath.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    }
 }

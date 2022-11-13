@@ -1,4 +1,4 @@
-package com.capstone.pacetime.data;
+package com.capstone.pacetime;
 
 public class LayoutHistoryViewItem{
     private String runTime;
