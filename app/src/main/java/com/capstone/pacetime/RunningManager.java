@@ -18,7 +18,7 @@ import com.capstone.pacetime.data.Breath;
 import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.receiver.BreathReceiver;
 import com.capstone.pacetime.receiver.GPSReceiver;
-import com.capstone.pacetime.receiver.StartStopInterface;
+import com.capstone.pacetime.receiver.ReceiverLifeCycleInterface;
 import com.capstone.pacetime.receiver.StepCounter;
 import com.google.android.gms.location.LocationServices;
 
@@ -26,7 +26,8 @@ import java.time.OffsetDateTime;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RunningManager implements StartStopInterface {
+public class RunningManager implements ReceiverLifeCycleInterface {
+    private static final String TAG = "RunningManager";
     private final GPSReceiver gpsReceiver;
     private final BreathReceiver breathReceiver;
     private final StepCounter stepCounter;
@@ -62,13 +63,13 @@ public class RunningManager implements StartStopInterface {
                             return ;
                         }
                         Location loc = data.getParcelable("location");
-                        Log.i("RunningManager", "GPS: " + loc.toString());
+                        Log.d(TAG, "GPS: " + loc.toString());
 
                         runInfo.addTrace(loc);
 
                     }else if(msg.arg1 == RunningDataType.STEP.ordinal()){
                         runInfo.addStepCount((Step)msg.obj);
-                        Log.d("RunningManager", "Step: " + ((Step) msg.obj).getCount());
+                        Log.d(TAG, "Step: " + ((Step) msg.obj).getCount());
 
                         breathReceiver.doConvert(System.currentTimeMillis());
                     }
@@ -102,18 +103,29 @@ public class RunningManager implements StartStopInterface {
         return this.state;
     }
 
-    private class UpdateTask extends TimerTask {
+    class UpdateTask extends TimerTask {
+        private boolean paused = false;
         @SuppressLint("MissingPermission")
         @Override
         public void run() {
+            if(paused)
+                return;
             runInfo.update();
+        }
+
+        public void pause(){
+            paused = true;
+            runInfo.update();
+        }
+
+        public void resume(){
+            paused = false;
         }
     }
 
     @Override
     public void start(){
         thread.start();
-        runInfo.setStartDateTime(OffsetDateTime.now());
         this.updateTask = new UpdateTask();
         updateTimer.schedule(updateTask, 1000, 500);
 
@@ -121,11 +133,14 @@ public class RunningManager implements StartStopInterface {
         breathReceiver.start();
         stepCounter.start();
 
+        runInfo.setStartDateTime(OffsetDateTime.now());
+        runInfo.setEndDateTime(OffsetDateTime.now());
         setState(RunningState.RUN);
     }
 
     @Override
     public void stop() {
+        setState(RunningState.STOP);
         if(updateTask != null){
             updateTask.cancel();
             updateTask = null;
@@ -133,6 +148,32 @@ public class RunningManager implements StartStopInterface {
         gpsReceiver.stop();
         breathReceiver.stop();
         stepCounter.stop();
+        thread.interrupt();
+    }
+
+    @Override
+    public void pause() {
+        gpsReceiver.pause();
+        breathReceiver.pause();
+        stepCounter.pause();
+        updateTask.pause();
+        setState(RunningState.PAUSE);
+//        if(updateTask != null){
+//            updateTask.cancel();
+//            updateTask = null;
+//        }
+
+    }
+
+    @Override
+    public void resume() {
+        setState(RunningState.RUN);
+        runInfo.setEndDateTime(OffsetDateTime.now());
+        runInfo.updateLastDateTime();
+        updateTask.resume();
+        gpsReceiver.resume();
+        breathReceiver.resume();
+        stepCounter.resume();
     }
 
     public static String[] getPermissionSets(){
