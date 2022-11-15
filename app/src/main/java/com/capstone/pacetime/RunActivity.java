@@ -1,47 +1,29 @@
 package com.capstone.pacetime;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 
 import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
 import com.capstone.pacetime.databinding.ActivityRunBinding;
-import com.capstone.pacetime.receiver.GPSReceiver;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
-import com.google.android.gms.location.CurrentLocationRequest;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.CancellationToken;
-import com.google.android.gms.tasks.CancellationTokenSource;
-import com.google.android.gms.tasks.OnTokenCanceledListener;
 
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,10 +37,10 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     private HandlerThread runTriggerThread;
     private Handler runTriggerHandler, uiHandler;
 
-    private final int READY2RUN     = 0;
-    private final int RUN2PAUSE     = 1;
-    private final int PAUSE2RUN     = 2;
-    private final int PAUSE2STOP    = 3;
+    private final int READY_RUN = 0;
+    private final int RUN_PAUSE = 1;
+    private final int PAUSE_RUN = 2;
+    private final int PAUSE_STOP = 3;
 
     private MapView mapView;
     private GoogleMap mMap;
@@ -108,18 +90,22 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
                 runOnUiThread(() -> {
-                    if (msg.what == READY2RUN) {
+                    if (msg.what == READY_RUN) { // READY -> RUN
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
                         binding.buttonPause.setVisibility(View.INVISIBLE);
                         binding.constraintReady.setVisibility(View.GONE);
                         binding.constraintRun.setVisibility(View.VISIBLE);
-
-                    } else if (msg.what == RUN2PAUSE) {
+                    }
+                    else if (msg.what == RUN_PAUSE) { // RUN -> PAUSE
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.VISIBLE);
                         binding.buttonPause.setVisibility(View.VISIBLE);
-                    } else if (msg.what == PAUSE2RUN) {
+                    }
+                    else if (msg.what == PAUSE_RUN) { // PAUSE -> RUN
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
                         binding.buttonPause.setVisibility(View.INVISIBLE);
+                    }
+                    else { // PAUSE -> RUN
+
                     }
                 });
             }
@@ -127,11 +113,13 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
 
         binding.buttonRun.setOnClickListener((view)->{
             if(manager.getState() == RunningState.RUN){
-                manager.setState(RunningState.PAUSE);
-                uiHandler.sendEmptyMessage(PAUSE2RUN);
+                manager.pause();
+                uiHandler.sendEmptyMessage(RUN_PAUSE);
+                Log.d(TAG, "State RUN -> PAUSE");
             }else{
-                manager.setState(RunningState.RUN);
-                uiHandler.sendEmptyMessage(RUN2PAUSE);
+                manager.resume();
+                uiHandler.sendEmptyMessage(PAUSE_RUN);
+                Log.d(TAG, "State PAUSE -> RUN");
             }
         });
 
@@ -179,8 +167,8 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
             runOnUiThread(()->binding.textviewReadyTimer.setText(String.valueOf(time)));
             time--;
             if(time < 0){
-                uiHandler.sendEmptyMessage(READY2RUN);
-                runTriggerHandler.sendEmptyMessage(READY2RUN);
+                uiHandler.sendEmptyMessage(READY_RUN);
+                runTriggerHandler.sendEmptyMessage(READY_RUN);
                 this.cancel();
             }
         }
@@ -198,7 +186,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onPause() {
         super.onPause();
 
-        manager.stop();
+        manager.pause();
     }
 
     @Override
