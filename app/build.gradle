@@ -1,20 +1,18 @@
+
 plugins {
     id 'com.android.application'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
-
 }
-
 android {
     namespace 'com.capstone.pacetime'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.capstone.pacetime"
         minSdk 29
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

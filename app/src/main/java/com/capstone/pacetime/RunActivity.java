@@ -29,8 +29,11 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,7 +45,7 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RunActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class RunActivity extends AppCompatActivity implements OnMapReadyCallback, OnMapsSdkInitializedCallback {
     private static final String TAG = "RunActivity";
     private ActivityRunBinding binding;
     private RunDetailInfoViewModel viewModel;
@@ -64,6 +67,8 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MapsInitializer.initialize(this, MapsInitializer.Renderer.LATEST, this);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_run);
         viewModel = new RunDetailInfoViewModel();
         command = new RunDetailInfoUpdateCommand();
@@ -71,9 +76,6 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         binding.setDetailRunInfo(viewModel);
         binding.constraintReady.setVisibility(View.VISIBLE);
         binding.constraintRun.setVisibility(View.INVISIBLE);
-
-        mapView = binding.includeDetailRunInfo.mapView;
-        mapView.getMapAsync(this);
 
         PermissionChecker.checkPermissions(
                 this,
@@ -132,7 +134,12 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 uiHandler.sendEmptyMessage(RUN2PAUSE);
             }
         });
+
+        mapView = binding.includeDetailRunInfo.mapView;
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
     }
+
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -146,6 +153,18 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.addMarker(markerOptions);
 
         mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(seoul, 10)));
+    }
+
+    @Override
+    public void onMapsSdkInitialized(@NonNull MapsInitializer.Renderer renderer) {
+        switch (renderer) {
+            case LATEST:
+                Log.d("MapsDemo", "The latest version of the renderer is used.");
+                break;
+            case LEGACY:
+                Log.d("MapsDemo", "The legacy version of the renderer is used.");
+                break;
+        }
     }
 
     class ReadyTimerTask extends TimerTask{
