@@ -6,7 +6,6 @@ import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -19,7 +18,7 @@ import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class BreathReceiver implements StartStopInterface{
+public class BreathReceiver implements ReceiverLifeCycleInterface {
     private static final String TAG = "BreathReceiver";
 
     private Handler dataHandler;
@@ -36,6 +35,7 @@ public class BreathReceiver implements StartStopInterface{
     private final Queue<Short> soundQueue;
 
     private Handler
+            receiveHandler,
             soundToBreathHandler,
             saveSoundHandler
     ;
@@ -44,6 +44,56 @@ public class BreathReceiver implements StartStopInterface{
             saveSoundThread
     ;
     private Thread receiveThread;
+    private SoundReceiveRunnable receiveRunnable;
+
+    class SoundReceiveRunnable implements Runnable{
+        boolean isRunning = false;
+        boolean paused = false;
+        Object pauseLock = new Object();
+
+        @Override
+        public void run() {
+            saveSoundThread.start();
+            soundToBreathThread.start();
+
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+                }
+                int size = audioRecord.read(bufferRecord, 0, bufferRecordSize);
+                if(size < 0){
+                    continue;
+                }
+                saveSoundHandler.post(new SaveSoundRunnable(Arrays.copyOfRange(bufferRecord.clone(), 0, size)));
+            }
+            saveSoundThread.interrupt();
+            soundToBreathThread.interrupt();
+        }
+
+        public void stop(){
+            isRunning = false;
+        }
+
+        public void pause(){
+            paused = true;
+        }
+
+        public void resume(){
+            synchronized (pauseLock){
+                paused = false;
+                pauseLock.notifyAll();
+            }
+        }
+    }
 
     class SaveSoundThread extends HandlerThread{
 
@@ -171,30 +221,35 @@ public class BreathReceiver implements StartStopInterface{
     }
 
     private void setPipeline(){
+        receiveRunnable = new SoundReceiveRunnable();
         saveSoundThread = new SaveSoundThread("postSoundThread");
         soundToBreathThread = new SoundToBreathThread("soundToBreathThread");
-        receiveThread = new Thread(()->{
-            saveSoundThread.start();
-            soundToBreathThread.start();
-            while (!receiveThread.isInterrupted()) {
-                int size = audioRecord.read(bufferRecord, 0, bufferRecordSize);
-                if(size < 0){
-                    continue;
-                }
-                saveSoundHandler.post(new SaveSoundRunnable(Arrays.copyOfRange(bufferRecord.clone(), 0, size)));
-            }
-            saveSoundThread.interrupt();
-            soundToBreathThread.interrupt();
-        });
+        receiveThread = new Thread(receiveRunnable);
     }
 
     @Override
     public void start() {
-        receiveThread.start();
+        if(!receiveThread.isAlive())
+            receiveThread.start();
+        else{
+            receiveRunnable.resume();
+        }
     }
 
     @Override
     public void stop() {
+        receiveRunnable.stop();
         receiveThread.interrupt();
+        dataHandler = null;
+    }
+
+    @Override
+    public void pause() {
+        receiveRunnable.pause();
+    }
+
+    @Override
+    public void resume() {
+        receiveRunnable.resume();
     }
 }

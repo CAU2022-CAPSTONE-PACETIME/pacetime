@@ -8,13 +8,19 @@ import com.capstone.pacetime.data.Breath;
 import com.capstone.pacetime.data.Step;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 public class RunInfo {
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
+    private static final String TAG = "RUNINFO";
+    private OffsetDateTime startDateTime;
+    private OffsetDateTime endDateTime;
+    private OffsetDateTime lastDateTime;
 
     private List<Location> trace;
     private List<Breath> breathItems;
@@ -30,7 +36,8 @@ public class RunInfo {
     private RunInfoUpdateCommand command;
 
     public RunInfo(){
-        startDateTime = LocalDateTime.now();
+        startDateTime = OffsetDateTime.now();
+        endDateTime = OffsetDateTime.now();
         distance = 0;
         runningTime = 0;
         pace = 0;
@@ -46,19 +53,24 @@ public class RunInfo {
         return flag;
     }
 
-    public LocalDateTime getStartDateTime() {
+    public OffsetDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(LocalDateTime startDateTime) {
+    public void setStartDateTime(OffsetDateTime startDateTime) {
         this.startDateTime = startDateTime;
+        this.lastDateTime = this.startDateTime;
     }
 
-    public LocalDateTime getEndDateTime() {
+    public void updateLastDateTime(){
+        this.lastDateTime = endDateTime;
+    }
+
+    public OffsetDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(LocalDateTime endDateTime) {
+    public void setEndDateTime(OffsetDateTime endDateTime) {
         this.endDateTime = endDateTime;
         addFlag(RunInfoUpdateFlag.RUNNING_TIME);
         addFlag(RunInfoUpdateFlag.PACE);
@@ -136,6 +148,16 @@ public class RunInfo {
     }
 
     public void update(){
+        long beforeRT = endDateTime.toEpochSecond() - lastDateTime.toEpochSecond();
+
+        setEndDateTime(OffsetDateTime.now());
+
+        long nowRT = endDateTime.toEpochSecond() - lastDateTime.toEpochSecond();
+
+        setRunningTime(
+                getRunningTime() + (nowRT - beforeRT)
+        );
+
         command.update(this);
     }
 
