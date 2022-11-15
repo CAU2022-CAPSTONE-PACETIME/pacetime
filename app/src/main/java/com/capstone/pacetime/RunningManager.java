@@ -92,7 +92,10 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
         gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity));
-        breathReceiver = new BreathReceiver((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
+        breathReceiver = new BreathReceiver((
+                AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
+                activity.getApplicationContext()
+        );
         stepCounter = new StepCounter(sensorManager);
     }
 
