@@ -2,7 +2,6 @@ package com.capstone.pacetime.receiver;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,10 +14,12 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GPSReceiver implements StartStopInterface{
+public class GPSReceiver implements ReceiverLifeCycleInterface {
     private Handler dataHandler;
     private final Timer receiveTimer;
     private TimerTask receiveTask;
+
+    private boolean paused = false;
 
     private final FusedLocationProviderClient client;
 
@@ -52,7 +53,18 @@ public class GPSReceiver implements StartStopInterface{
             receiveTask = null;
         }
 
+        dataHandler = null;
         Log.i("GPSReceiver", "STOPPED");
+    }
+
+    @Override
+    public void pause() {
+        paused = true;
+    }
+
+    @Override
+    public void resume() {
+        paused = false;
     }
 
     public void getLocation(){
@@ -68,6 +80,12 @@ public class GPSReceiver implements StartStopInterface{
             client.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, receiverCts.getToken())
                     .addOnSuccessListener(
                             (location) -> {
+                                if(paused){
+                                    return;
+                                }
+                                if(dataHandler == null){
+                                    return;
+                                }
                                 if (location != null) {
                                     Bundle loc = new Bundle();
                                     loc.putParcelable("location", location);
