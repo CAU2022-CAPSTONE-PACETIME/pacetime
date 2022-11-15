@@ -20,6 +20,7 @@ public class RunInfo {
     private static final String TAG = "RUNINFO";
     private OffsetDateTime startDateTime;
     private OffsetDateTime endDateTime;
+    private OffsetDateTime lastDateTime;
 
     private List<Location> trace;
     private List<Breath> breathItems;
@@ -58,6 +59,11 @@ public class RunInfo {
 
     public void setStartDateTime(OffsetDateTime startDateTime) {
         this.startDateTime = startDateTime;
+        this.lastDateTime = this.startDateTime;
+    }
+
+    public void updateLastDateTime(){
+        this.lastDateTime = endDateTime;
     }
 
     public OffsetDateTime getEndDateTime() {
@@ -142,10 +148,14 @@ public class RunInfo {
     }
 
     public void update(){
+        long beforeRT = endDateTime.toEpochSecond() - lastDateTime.toEpochSecond();
+
         setEndDateTime(OffsetDateTime.now());
 
+        long nowRT = endDateTime.toEpochSecond() - lastDateTime.toEpochSecond();
+
         setRunningTime(
-                endDateTime.toEpochSecond() - startDateTime.toEpochSecond()
+                getRunningTime() + (nowRT - beforeRT)
         );
 
         command.update(this);
