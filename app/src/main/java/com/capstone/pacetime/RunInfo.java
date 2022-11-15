@@ -53,6 +53,10 @@ public class RunInfo {
         return flag;
     }
 
+    public void setUpdateFlags(EnumSet<RunInfoUpdateFlag> flag){
+        this.flag = flag;
+    }
+
     public OffsetDateTime getStartDateTime() {
         return startDateTime;
     }
