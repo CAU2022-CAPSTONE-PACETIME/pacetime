@@ -56,7 +56,7 @@
             android:text="weather"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            app:layout_constraintEnd_toEndOf="@id/guideline2"
+            app:layout_constraintEnd_toEndOf="@id/guideline_vertical_half"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -69,7 +69,7 @@
             android:background="#006D35"
             android:textAlignment="center"
             android:gravity="center"
-            app:layout_constraintStart_toStartOf="@id/guideline2"
+            app:layout_constraintStart_toStartOf="@id/guideline_vertical_half"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:text="temperature"
@@ -77,7 +77,7 @@
             />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
+            android:id="@+id/guideline_vertical_half"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -141,7 +141,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/picker_exhale"
-            app:layout_constraintBottom_toBottomOf="@id/guideline3"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_end"
             />
         <NumberPicker
             android:id="@+id/picker_exhale"
@@ -149,14 +149,28 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/picker_inhale"
-            app:layout_constraintBottom_toBottomOf="@id/guideline3"/>
+            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_end"/>
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline3"
+            android:id="@+id/guideline_horizontal_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_end="250dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_horizontal_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="60dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="90dp" />
 
         <Button
             android:id="@+id/button_start_running"
@@ -187,7 +201,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/button_start_running"
             app:layout_constraintEnd_toEndOf="@id/button_start_running"
-            app:layout_constraintTop_toBottomOf="@id/button_start_running"
+            app:layout_constraintTop_toTopOf="@id/guideline_horizontal_switch"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_switch"
             android:checked="true"
             />
 
@@ -196,9 +211,10 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/no_breath"
-            app:layout_constraintEnd_toStartOf="@id/switch_breath"
-            app:layout_constraintTop_toTopOf="@id/switch_breath"
-            app:layout_constraintBottom_toBottomOf="@id/switch_breath"
+            android:layout_marginEnd="30dp"
+            app:layout_constraintEnd_toEndOf="@id/guideline_vertical_switch"
+            app:layout_constraintTop_toTopOf="@id/guideline_horizontal_switch"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_switch"
             android:visibility="invisible"
             />
 
@@ -207,11 +223,14 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/breath"
-            app:layout_constraintStart_toEndOf="@id/switch_breath"
-            app:layout_constraintTop_toTopOf="@id/switch_breath"
-            app:layout_constraintBottom_toBottomOf="@id/switch_breath"
+            android:layout_marginStart="30dp"
+            app:layout_constraintStart_toStartOf="@id/guideline_vertical_switch"
+            app:layout_constraintTop_toTopOf="@id/guideline_horizontal_switch"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_horizontal_switch"
             android:visibility="visible"
             />
+
+        <!--            app:layout_constraintEnd_toEndOf="@id/guideline_vertical_switch"-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

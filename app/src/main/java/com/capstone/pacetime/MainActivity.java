@@ -2,6 +2,8 @@ package com.capstone.pacetime;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -279,11 +281,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void onDeviceChanged(boolean isHeadset){
         if(isHeadset){
+            ConstraintLayout.LayoutParams constraintLayoutParams = (ConstraintLayout.LayoutParams) binding.imageNoBreath.getLayoutParams();
+            constraintLayoutParams.rightMargin = constraintLayoutParams.getMarginEnd();
+            binding.imageNoBreath.setLayoutParams(constraintLayoutParams);
             whichDevice.setValue(bluetoothHelper.getMyDeviceName());
             binding.switchBreath.setVisibility(View.VISIBLE);
         }
         else{
-            binding.switchBreath.setVisibility(View.INVISIBLE);
+            binding.switchBreath.setVisibility(View.GONE);
+            ConstraintLayout.LayoutParams constraintLayoutParams = (ConstraintLayout.LayoutParams) binding.imageNoBreath.getLayoutParams();
+            constraintLayoutParams.rightMargin = constraintLayoutParams.getMarginEnd() / (-2);
+            binding.imageNoBreath.setLayoutParams(constraintLayoutParams);
             binding.switchBreath.setChecked(false);
             breathSwitch(false);
             whichDevice.setValue(null);
