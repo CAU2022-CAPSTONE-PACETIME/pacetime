@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         binding.switchBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                breathSwitch(isChecked);
+                isBreathSwitchOn(isChecked);
             }
         });
 
@@ -293,12 +293,12 @@ public class MainActivity extends AppCompatActivity {
             constraintLayoutParams.rightMargin = constraintLayoutParams.getMarginEnd() / (-2);
             binding.imageNoBreath.setLayoutParams(constraintLayoutParams);
             binding.switchBreath.setChecked(false);
-            breathSwitch(false);
+            isBreathSwitchOn(false);
             whichDevice.setValue(null);
         }
     }
 
-    public void breathSwitch(boolean isOn){
+    public void isBreathSwitchOn(boolean isOn){
         if(isOn){
             runOnUiThread(new Runnable() {
                 @Override

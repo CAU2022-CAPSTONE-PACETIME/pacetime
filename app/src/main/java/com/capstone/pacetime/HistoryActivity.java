@@ -1,5 +1,6 @@
 package com.capstone.pacetime;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -135,8 +136,10 @@ public class HistoryActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.v("ISCLICKED", "123123");
-                        Toast.makeText(HistoryActivity.this, "123123", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(HistoryActivity.this, ResultActivity.class);
+                        startActivity(intent);
+//                        Log.v("ISCLICKED", "123123");
+//                        Toast.makeText(HistoryActivity.this, "123123", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
