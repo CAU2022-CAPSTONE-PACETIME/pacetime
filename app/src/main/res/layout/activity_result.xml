@@ -7,34 +7,38 @@
             name="detailResultInfo"
             type="com.capstone.pacetime.viewmodel.RunDetailInfoViewModel"/>
     </data>
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_result"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ResultActivity">
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_result"
+        tools:context=".ResultActivity"
+        >
+        <include
+            android:id="@+id/include_basic_run_info_result"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="invisible"
-            >
-            <include
-                android:id="@+id/include_basic_run_info_result"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                layout="@layout/layout_basic_run_info"
-                basicRunInfo="@{detailResultInfo}"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/include_detail_run_info_result"
-                />
+            android:layout_height="0dp"
+            layout="@layout/layout_basic_run_info"
+            basicRunInfo="@{detailResultInfo}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/include_detail_run_info_result"
+            />
 
-            <include
-                android:id="@+id/include_detail_run_info_result"
-                detailRunInfo="@{detailResultInfo}"
-                layout="@layout/layout_detail_run_info"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                tools:layout_editor_absoluteY="314dp" />
+        <include
+            android:id="@+id/include_detail_run_info_result"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            detailRunInfo="@{detailResultInfo}"
+            layout="@layout/layout_detail_run_info"
+            app:layout_constraintTop_toBottomOf="@id/include_basic_run_info_result"
+            app:layout_constraintBottom_toBottomOf="@id/guide_result"
+            />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.85"
+            />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
