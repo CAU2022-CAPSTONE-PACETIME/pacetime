@@ -35,7 +35,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
     private UpdateTask updateTask;
     private final Timer updateTimer;
 
-    private final RunInfo runInfo;
+    private final RealTimeRunInfo runInfo;
     private RunningState state;
 
     private Handler handler;
@@ -82,7 +82,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
     }
 
-    public RunningManager(AppCompatActivity activity, RunInfo runInfo){
+    public RunningManager(AppCompatActivity activity, RealTimeRunInfo runInfo){
         this.runInfo = runInfo;
 
         updateTimer = new Timer();
