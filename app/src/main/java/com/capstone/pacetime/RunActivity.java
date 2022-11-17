@@ -64,7 +64,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 RunningManager.getPermissionSets()
                 );
 
-        RunInfo runInfo = new RunInfo();
+        RealTimeRunInfo runInfo = new RealTimeRunInfo();
         runInfo.setCommand(command);
 
         manager = new RunningManager(this, runInfo);

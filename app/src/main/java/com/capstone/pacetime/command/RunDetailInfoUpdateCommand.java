@@ -1,5 +1,6 @@
 package com.capstone.pacetime.command;
 
+import com.capstone.pacetime.RealTimeRunInfo;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 import com.capstone.pacetime.RunInfo;
 import com.capstone.pacetime.RunInfoUpdateFlag;
@@ -8,7 +9,7 @@ import java.util.EnumSet;
 
 public class RunDetailInfoUpdateCommand extends RunBasicInfoUpdateCommand{
     @Override
-    public void update(RunInfo info){
+    public void update(RealTimeRunInfo info){
         super.update(info);
         EnumSet<RunInfoUpdateFlag> flag = info.getUpdateFlags();
 
