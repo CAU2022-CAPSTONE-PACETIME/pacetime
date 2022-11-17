@@ -30,7 +30,7 @@ public class HistoryActivity extends AppCompatActivity {
     RunDataManager runDataManager;
 
     public interface OnItemClickListener {
-        void onItemClicked(View view, LayoutHistoryViewItem item, int position);
+        void onItemClicked(View view, RunInfo item, int position);
     }
 
     public class BindListViewAdapter extends RecyclerView.Adapter<BindListViewAdapter.RecyclerViewHolder> {
@@ -45,7 +45,7 @@ public class HistoryActivity extends AppCompatActivity {
          * (custom ViewHolder).
          */
 
-        public BindListViewAdapter(ArrayList<LayoutHistoryViewItem> items) {
+        public BindListViewAdapter(ArrayList<RunInfo> items) {
             itemList = items;
         }
 
@@ -130,16 +130,16 @@ public class HistoryActivity extends AppCompatActivity {
         runDataManager.runInfoToFirebase(runInfo1);
         runDataManager.runInfoToFirebase(runInfo2);
 
-        ArrayList<LayoutHistoryViewItem> itemList = new ArrayList<LayoutHistoryViewItem>();
+//        ArrayList<LayoutHistoryViewItem> itemList = new ArrayList<LayoutHistoryViewItem>();
         ArrayList<RunInfo> runInfos = runDataManager.getRunInfos();
         Log.d("HISTORY_ACTIVITY", "runInfos size: " + runInfos.size());
         Log.v("HISTORY_ACTIVITY", "runInfos size: " + runInfos.size());
-        for (int i = 0; i < runInfos.size(); i++) {
-            LayoutHistoryViewItem item = new LayoutHistoryViewItem();
-            Log.i("HISTORY_ACTIVITY", "i = " + i);
-            item.setItem(runInfos.get(i));
-            item.setIndex(i);
-            itemList.add(item);
+//        for (int i = 0; i < runInfos.size(); i++) {
+//            LayoutHistoryViewItem item = new LayoutHistoryViewItem();
+//            Log.i("HISTORY_ACTIVITY", "i = " + i);
+//            item.setItem(runInfos.get(i));
+//            item.setIndex(i);
+//            itemList.add(item);
 
 
 //            item.setRunDateTime("2022-11-10");
@@ -150,19 +150,19 @@ public class HistoryActivity extends AppCompatActivity {
 //            item.setIsBreathUsed("0");
 //            item.setIndex(i);
 //            itemList.add(item);
-        }
+//        }
 
 
         binding.recyclerViewHistory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        BindListViewAdapter adapter = new BindListViewAdapter(itemList);
+        BindListViewAdapter adapter = new BindListViewAdapter(runInfos);
         adapter.setOnItemClickListener(new OnItemClickListener(){
             @Override
-            public void onItemClicked(View view, LayoutHistoryViewItem item, int position) {
+            public void onItemClicked(View view, RunInfo item, int position) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Intent intent = new Intent(HistoryActivity.this, ResultActivity.class);
-                        intent.putExtra("index", item.getIndex());
+                        intent.putExtra("index", runInfos.indexOf(item));
                         startActivity(intent);
 //                        Log.v("ISCLICKED", "123123");
 //                        Toast.makeText(HistoryActivity.this, "123123", Toast.LENGTH_SHORT).show();
