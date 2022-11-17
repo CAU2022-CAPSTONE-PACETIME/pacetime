@@ -126,6 +126,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         ArrayList<LayoutHistoryViewItem> itemList = new ArrayList<LayoutHistoryViewItem>();
         ArrayList<RunInfo> runInfos = runDataManager.getRunInfos();
+        Log.v("HISTORY_ACTIVITY", "runInfos size: " + runInfos.size());
         for (int i = 0; i < runInfos.size(); i++) {
             LayoutHistoryViewItem item = new LayoutHistoryViewItem();
             item.setItem(runInfos.get(i));
