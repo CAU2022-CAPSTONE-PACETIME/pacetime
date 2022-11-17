@@ -2,6 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="model"
+            type="com.capstone.pacetime.viewmodel.RunDetailInfoViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="150dp"
@@ -51,7 +58,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:text="1.4 km"
+            android:text="@{model.distanceStr}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/textview_run_hour"
             app:layout_constraintStart_toEndOf="@id/textview_run_start_place"
@@ -69,7 +76,7 @@
             app:layout_constraintStart_toEndOf="@id/textview_run_distance"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="center"
-            android:text="4\'55&quot;"/>
+            android:text="@{model.paceStr}"/>
         <TextView
             android:id="@+id/textview_run_hour"
             android:layout_width="0dp"
@@ -81,7 +88,7 @@
             app:layout_constraintStart_toEndOf="@id/textview_run_distance"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="center"
-            android:text="7m 35s"/>
+            android:text="@{model.runningTimeStr}"/>
 
 <!--        <ImageView android:cropToPadding="true"-->
 <!--            android:layout_width="wrap_content"-->

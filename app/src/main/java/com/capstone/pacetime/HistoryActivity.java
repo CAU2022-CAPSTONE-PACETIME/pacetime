@@ -13,11 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.capstone.pacetime.data.Breath;
+import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.databinding.ActivityHistoryBinding;
 import com.capstone.pacetime.databinding.LayoutHistoryViewBinding;
+import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryActivity extends AppCompatActivity {
 
@@ -30,7 +35,7 @@ public class HistoryActivity extends AppCompatActivity {
 
     public class BindListViewAdapter extends RecyclerView.Adapter<BindListViewAdapter.RecyclerViewHolder> {
 
-        private final ArrayList<LayoutHistoryViewItem> itemList;
+        private final ArrayList<RunInfo> itemList;
 
         //나중에 item 클릭 구현할 때
 
@@ -72,13 +77,14 @@ public class HistoryActivity extends AppCompatActivity {
                 return itemBinding;
             }
 
-            void bindItem(LayoutHistoryViewItem item){
-                itemBinding.textviewRunDateTime.setText(item.getRunDateTime());
-                itemBinding.textviewRunStartPlace.setText(item.getRunStartPlace());
-                itemBinding.textviewRunDistance.setText(item.getRunDistance());
-                itemBinding.textviewRunPace.setText(item.getRunPace());
-                itemBinding.textviewRunHour.setText(item.getRunHour());
-                itemBinding.textviewIsBreathUsed.setText(item.getIsBreathUsed());
+            void bindItem(RunDetailInfoViewModel item){
+                itemBinding.setModel(item);
+//                itemBinding.textviewRunDateTime.setText(item.getRunDateTime());
+//                itemBinding.textviewRunStartPlace.setText(item.getRunStartPlace());
+//                itemBinding.textviewRunDistance.setText(item.getRunDistance() + "km");
+//                itemBinding.textviewRunPace.setText(item.getRunPace() + "m");
+//                itemBinding.textviewRunHour.setText(item.getRunHour() + "s");
+//                itemBinding.textviewIsBreathUsed.setText(item.getIsBreathUsed());
 
             }
         }
@@ -98,7 +104,7 @@ public class HistoryActivity extends AppCompatActivity {
 
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
-            viewHolder.bindItem(itemList.get(position));
+            viewHolder.bindItem(new RunDetailInfoViewModel(itemList.get(position)));
         }
 
         // Return the size of your dataset (invoked by the layout manager)
@@ -118,8 +124,8 @@ public class HistoryActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         //test용
-        RunInfo runInfo1 = new RunInfo(true);
-        RunInfo runInfo2 = new RunInfo(false);
+        RunInfo runInfo1 = new RunInfo(30, true, null, OffsetDateTime.now(), OffsetDateTime.now(), null, new ArrayList<Step>(), 1.2f, 153, 332);
+        RunInfo runInfo2 = new RunInfo(30, false, null, OffsetDateTime.now(), OffsetDateTime.now(), null, new ArrayList<Step>(), 2.4f, 163, 351);
 
         runDataManager.runInfoToFirebase(runInfo1);
         runDataManager.runInfoToFirebase(runInfo2);
@@ -130,6 +136,7 @@ public class HistoryActivity extends AppCompatActivity {
         Log.v("HISTORY_ACTIVITY", "runInfos size: " + runInfos.size());
         for (int i = 0; i < runInfos.size(); i++) {
             LayoutHistoryViewItem item = new LayoutHistoryViewItem();
+            Log.i("HISTORY_ACTIVITY", "i = " + i);
             item.setItem(runInfos.get(i));
             item.setIndex(i);
             itemList.add(item);

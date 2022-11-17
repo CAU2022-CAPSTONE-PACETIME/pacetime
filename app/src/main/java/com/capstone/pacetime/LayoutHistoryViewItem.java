@@ -75,7 +75,8 @@ public class LayoutHistoryViewItem{
 
     public void setItem(RunInfo runInfo){
         this.runDateTime = runInfo.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        this.runStartPlace = runInfo.getTrace().get(0).toString();//임시로 toString
+//        this.runStartPlace = runInfo.getTrace().get(0).toString();//임시로 toString
+        this.runStartPlace = "Dokdo";
         this.runDistance = Float.toString(runInfo.getDistance());
         this.runPace = Long.toString(runInfo.getPace());
         this.runHour = Long.toString(runInfo.getRunningTime());
