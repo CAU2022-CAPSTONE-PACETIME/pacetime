@@ -35,7 +35,7 @@ public class RunDataManager {
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 //    private Queue<RunInfo> queue = new LinkedList<>(); // new도 해줘야 할듯.
     private boolean isLoading = false;
-    private List<RunInfo> runInfos = new ArrayList<>();
+    private List<RunInfo> runInfos;
 
     private static RunDataManager instance;
 
@@ -51,6 +51,7 @@ public class RunDataManager {
     }
 
     private RunDataManager(){
+        runInfos = new ArrayList<>();
     }
 
     public void runInfoToFirebase(RunInfo runInfo) {
@@ -71,10 +72,11 @@ public class RunDataManager {
         //flag 넣어야되나?
         //command 넣어야되나?
 
-        runDataStoreTest.document(runInfo.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).set(runData).addOnSuccessListener(new OnSuccessListener<Void>() {
+        runDataStoreTest.add(runData).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
-            public void onSuccess(Void unused) {
+            public void onSuccess(DocumentReference documentReference) {
                 Log.v(TAG, "Success");
+                updateRunInfos(runInfo);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -82,6 +84,19 @@ public class RunDataManager {
                 Log.v(TAG, "Failed");
             }
         });
+
+
+//        runDataStoreTest.document(runInfo.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss.SSS"))).set(runData).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void unused) {
+//                Log.v(TAG, "Success");
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Log.v(TAG, "Failed");
+//            }
+//        });
     }
 
     //아마 HistoryActivity에서 item 선택했을 때, 선택한 item의 정보를 RunInfo 형태로 반환해줄 때(바인딩 위해) 쓰지 않을까. item선택했을 때 startDateTime으로 식별하면 좋을 듯.
@@ -126,7 +141,8 @@ public class RunDataManager {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                runInfos.add(documentDataToRunInfo(document));
+//                                runInfos.add(documentDataToRunInfo(document));
+                                runInfos.add(document.toObject(RunInfo.class));
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                             }
                         } else{
@@ -140,16 +156,21 @@ public class RunDataManager {
         Map<String, Object> runData = document.getData();
         RunInfo localRunInfo = new RunInfo((boolean) runData.get("isBreathUsed"));
 
-        localRunInfo.setStartDateTime((OffsetDateTime) runData.get("runStartDateTime"));
-        localRunInfo.setEndDateTime((OffsetDateTime) runData.get("runEndDateTime"));
-        localRunInfo.setTrace((List<Location>) runData.get("runCourse"));
-        localRunInfo.setDistance((float) runData.get("runDistance"));
-        localRunInfo.setPace((long) runData.get("runPace"));
-        localRunInfo.setRunningTime((long) runData.get("runHour"));
-        localRunInfo.setCadence((int) runData.get("cadence"));
-//나중에 주석 풀기
-        localRunInfo.setStepCount((List<Step>) runData.get("stepCount"));
-        localRunInfo.setBreathItems((List<Breath>) runData.get("runBreathData"));
+        RunInfo myRunInfo = document.toObject(RunInfo.class);
+//        OffsetDateTime runStartDateTime = OffsetDateTime.of()
+
+        //document.toObject()
+
+//        localRunInfo.setStartDateTime((OffsetDateTime) runData.get("runStartDateTime"));
+//        localRunInfo.setEndDateTime((OffsetDateTime) runData.get("runEndDateTime"));
+//        localRunInfo.setTrace((List<Location>) runData.get("runCourse"));
+//        localRunInfo.setDistance((float) runData.get("runDistance"));
+//        localRunInfo.setPace((long) runData.get("runPace"));
+//        localRunInfo.setRunningTime((long) runData.get("runHour"));
+//        localRunInfo.setCadence((int) runData.get("cadence"));
+////나중에 주석 풀기
+//        localRunInfo.setStepCount((List<Step>) runData.get("stepCount"));
+//        localRunInfo.setBreathItems((List<Breath>) runData.get("runBreathData"));
 
         return localRunInfo;
     }
