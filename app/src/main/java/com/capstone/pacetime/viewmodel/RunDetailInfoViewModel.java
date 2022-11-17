@@ -30,6 +30,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
     }
 
     public RunDetailInfoViewModel(RunInfo info){
+        super(info);
         cadenceStr = String.valueOf(info.getCadence());
 
         stepCountStr = "-1";
