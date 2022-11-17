@@ -117,6 +117,12 @@ public class HistoryActivity extends AppCompatActivity {
         binding = ActivityHistoryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //test용
+        RunInfo runInfo1 = new RunInfo(true);
+        RunInfo runInfo2 = new RunInfo(false);
+
+        runDataManager.runInfoToFirebase(runInfo1);
+        runDataManager.runInfoToFirebase(runInfo2);
 
         ArrayList<LayoutHistoryViewItem> itemList = new ArrayList<LayoutHistoryViewItem>();
         ArrayList<RunInfo> runInfos = runDataManager.getRunInfos();

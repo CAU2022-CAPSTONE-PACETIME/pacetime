@@ -20,6 +20,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -65,13 +66,12 @@ public class RunDataManager {
         runData.put("runHour", runInfo.getRunningTime());
         runData.put("cadence", runInfo.getCadence());
         runData.put("stepCount", runInfo.getStepCount());
-        runData.put("isBreathUsed", runInfo.getIsBreathUsed()); //runInfo에 아직 isBreathUSed가 없음. 혹은 runInfo.getBreathItems가 null인지 판단하는 방법도 있을 듯.
+        runData.put("isBreathUsed", runInfo.isBreathUsed()); //runInfo에 아직 isBreathUsed가 없음. 혹은 runInfo.getBreathItems가 null인지 판단하는 방법도 있을 듯.
         runData.put("runBreathData", runInfo.getBreathItems());
         //flag 넣어야되나?
         //command 넣어야되나?
 
-
-        runDataStoreTest.document(runInfo.getStartDateTime().toString()).set(runData).addOnSuccessListener(new OnSuccessListener<Void>() {
+        runDataStoreTest.document(runInfo.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).set(runData).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Log.v(TAG, "Success");
@@ -137,8 +137,8 @@ public class RunDataManager {
     }
 
     private RunInfo documentDataToRunInfo(QueryDocumentSnapshot document){
-        RunInfo localRunInfo = new RunInfo();
         Map<String, Object> runData = document.getData();
+        RunInfo localRunInfo = new RunInfo((boolean) runData.get("isBreathUsed"));
 
         localRunInfo.setStartDateTime((OffsetDateTime) runData.get("runStartDateTime"));
         localRunInfo.setEndDateTime((OffsetDateTime) runData.get("runEndDateTime"));
@@ -149,7 +149,6 @@ public class RunDataManager {
         localRunInfo.setCadence((int) runData.get("cadence"));
 //나중에 주석 풀기
         localRunInfo.setStepCount((List<Step>) runData.get("stepCount"));
-        localRunInfo.setIsBreathUsed((boolean) runData.get("isBreathUsed"));
         localRunInfo.setBreathItems((List<Breath>) runData.get("runBreathData"));
 
         return localRunInfo;
