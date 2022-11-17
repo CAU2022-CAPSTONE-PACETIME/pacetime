@@ -79,7 +79,7 @@ public class LayoutHistoryViewItem{
         this.runDistance = Float.toString(runInfo.getDistance());
         this.runPace = Long.toString(runInfo.getPace());
         this.runHour = Long.toString(runInfo.getRunningTime());
-        if(runInfo.isBreathUsed()){
+        if(runInfo.getIsBreathUsed()){
             this.isBreathUsed = "O";
         }else{
             this.isBreathUsed = "X";

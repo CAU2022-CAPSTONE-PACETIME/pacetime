@@ -67,7 +67,7 @@ public class RunDataManager {
         runData.put("runHour", runInfo.getRunningTime());
         runData.put("cadence", runInfo.getCadence());
         runData.put("stepCount", runInfo.getStepCount());
-        runData.put("isBreathUsed", runInfo.isBreathUsed()); //runInfo에 아직 isBreathUsed가 없음. 혹은 runInfo.getBreathItems가 null인지 판단하는 방법도 있을 듯.
+        runData.put("isBreathUsed", runInfo.getIsBreathUsed()); //runInfo에 아직 isBreathUsed가 없음. 혹은 runInfo.getBreathItems가 null인지 판단하는 방법도 있을 듯.
         runData.put("runBreathData", runInfo.getBreathItems());
         //flag 넣어야되나?
         //command 넣어야되나?
