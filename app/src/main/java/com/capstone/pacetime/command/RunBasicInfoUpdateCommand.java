@@ -32,14 +32,12 @@ public class RunBasicInfoUpdateCommand extends RunInfoUpdateCommand {
     }
 
     private void updateDistance(float distance){
-        ((RunBasicInfoViewModel)viewModel).setDistanceStr(String.valueOf(distance));
+        ((RunBasicInfoViewModel)viewModel).setDistanceStr(distance);
     }
     private void updatePace(long pace){
-        ((RunBasicInfoViewModel)viewModel).setPaceStr(
-                String.format(Locale.getDefault(), "%02d'%02d\"", pace / 60, pace % 60) );
+        ((RunBasicInfoViewModel)viewModel).setPaceStr(pace);
     }
     private void updateRunningTime(long time){
-        ((RunBasicInfoViewModel)viewModel).setRunningTimeStr(
-                String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60) );
+        ((RunBasicInfoViewModel)viewModel).setRunningTimeStr(time);
     }
 }
