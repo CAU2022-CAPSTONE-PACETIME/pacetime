@@ -35,6 +35,8 @@ public class RunInfo {
     private EnumSet<RunInfoUpdateFlag> flag;
     private RunInfoUpdateCommand command;
 
+    private boolean isBreathUsed;
+
     public RunInfo(){
         startDateTime = OffsetDateTime.now();
         endDateTime = OffsetDateTime.now();
@@ -47,6 +49,21 @@ public class RunInfo {
         stepCount = new ArrayList<>();
         flag = null;
         command = null;
+        isBreathUsed = true;
+    }
+
+    public RunInfo(boolean isBreathUsed){
+        super();
+        this.isBreathUsed = isBreathUsed;
+    }
+
+    public boolean isBreathUsed(){
+        return isBreathUsed;
+    }
+
+    public void setStepCount(List<Step> stepCount){
+        this.stepCount = stepCount;
+        addFlag(RunInfoUpdateFlag.TRACE);
     }
 
     public EnumSet<RunInfoUpdateFlag> getUpdateFlags(){
