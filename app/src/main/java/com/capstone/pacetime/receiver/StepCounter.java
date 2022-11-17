@@ -19,6 +19,8 @@ public class StepCounter implements ReceiverLifeCycleInterface {
     private final Sensor counter;
 
     private int startStep = -1;
+    private int lastStep = -1;
+    private int bias = 1;
 
     private boolean paused = false;
 
@@ -37,6 +39,7 @@ public class StepCounter implements ReceiverLifeCycleInterface {
         this.sensorEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
+                lastStep =  (int)sensorEvent.values[0];
                 if(paused)
                     return;
                 if(dataHandler == null){
@@ -47,10 +50,9 @@ public class StepCounter implements ReceiverLifeCycleInterface {
 
                 int step;
                 if(startStep == -1){
-                    step = startStep = (int)sensorEvent.values[0];
-                }else{
-                    step = (int)sensorEvent.values[0] - startStep;
+                    startStep = lastStep;
                 }
+                step = lastStep - startStep + bias;
 
                 msg.obj = new Step(step, System.currentTimeMillis());
                 dataHandler.sendMessage(msg);
@@ -75,11 +77,13 @@ public class StepCounter implements ReceiverLifeCycleInterface {
 
             @Override
             public void pause() {
+                bias += (lastStep - startStep);
                 paused = true;
             }
 
             @Override
             public void resume() {
+                startStep = -1;
                 paused = false;
             }
 

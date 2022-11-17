@@ -89,14 +89,13 @@ public class RealTimeRunInfo extends RunInfo {
     }
     public void update(){
         long beforeRT = endDateTime.toEpochSecond() - lastDateTime.toEpochSecond();
-
         setEndDateTime(OffsetDateTime.now());
-
         long nowRT = endDateTime.toEpochSecond() - lastDateTime.toEpochSecond();
 
         setRunningTime(
                 getRunningTime() + (nowRT - beforeRT)
         );
+
         command.update(this);
     }
 
