@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     private HandlerThread thread;
 
+    RunDataManager runDataManager;
     BluetoothHelper bluetoothHelper;
     MutableLiveData<String> whichDevice = new MutableLiveData<String>(null);
 
@@ -55,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
+
+        runDataManager = RunDataManager.getInstance();
+        runDataManager.allFirebaseToRunInfos();
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
@@ -325,5 +329,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        runDataManager.destory();
     }
 }

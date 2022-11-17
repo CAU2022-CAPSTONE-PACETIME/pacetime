@@ -1,24 +1,28 @@
 package com.capstone.pacetime;
 
+import java.time.format.DateTimeFormatter;
+
 public class LayoutHistoryViewItem{
-    private String runTime;
+    private String runDateTime;
     private String runStartPlace;
     private String runDistance;
     private String runPace;
     private String runHour;
     private String isBreathUsed;
+    private int index;
 
     public LayoutHistoryViewItem(){
-        runTime ="";
+        runDateTime ="";
         runStartPlace = "";
         runDistance = "";
         runPace = "";
         runHour = "";
         isBreathUsed = "";
+        index = 0;
     }
 
-    public String getRunTime() {
-        return runTime;
+    public String getRunDateTime() {
+        return runDateTime;
     }
 
     public String getRunStartPlace() {
@@ -41,8 +45,10 @@ public class LayoutHistoryViewItem{
         return isBreathUsed;
     }
 
-    public void setRunTime(String runTime) {
-        this.runTime = runTime;
+    public int getIndex() { return index; }
+
+    public void setRunDateTime(String runDateTime) {
+        this.runDateTime = runDateTime;
     }
 
     public void setRunStartPlace(String runStartPlace) {
@@ -63,5 +69,21 @@ public class LayoutHistoryViewItem{
 
     public void setIsBreathUsed(String isBreathUsed) {
         this.isBreathUsed = isBreathUsed;
+    }
+
+    public void setIndex(int index) { this.index = index; }
+
+    public void setItem(RunInfo runInfo){
+        this.runDateTime = runInfo.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.runStartPlace = runInfo.getTrace().get(0).toString();//임시로 toString
+        this.runDistance = Float.toString(runInfo.getDistance());
+        this.runPace = Long.toString(runInfo.getPace());
+        this.runHour = Long.toString(runInfo.getRunningTime());
+        if(runInfo.getIsBreathUsed()){
+            this.isBreathUsed = "O";
+        }else{
+            this.isBreathUsed = "X";
+        }
+
     }
 }

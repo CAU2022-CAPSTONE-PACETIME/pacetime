@@ -45,6 +45,7 @@ public class RunInfo {
         breathItems = new ArrayList<>();
         trace = new ArrayList<>();
         stepCount = new ArrayList<>();
+        stepCount.add(new Step(30, System.currentTimeMillis())); // 임시
         flag = null;
         command = null;
     }

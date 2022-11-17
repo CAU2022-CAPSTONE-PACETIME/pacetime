@@ -20,7 +20,7 @@
             android:gravity="center"
             android:text="0"/>
         <TextView
-            android:id="@+id/textview_run_time"
+            android:id="@+id/textview_run_date_time"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
@@ -37,7 +37,7 @@
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
-            app:layout_constraintTop_toBottomOf="@id/textview_run_time"
+            app:layout_constraintTop_toBottomOf="@id/textview_run_date_time"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/textview_run_distance"

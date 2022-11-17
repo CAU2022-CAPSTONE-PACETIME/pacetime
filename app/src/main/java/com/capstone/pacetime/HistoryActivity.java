@@ -16,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.capstone.pacetime.databinding.ActivityHistoryBinding;
 import com.capstone.pacetime.databinding.LayoutHistoryViewBinding;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class HistoryActivity extends AppCompatActivity {
 
     ActivityHistoryBinding binding;
+    RunDataManager runDataManager;
 
     public interface OnItemClickListener {
         void onItemClicked(View view, LayoutHistoryViewItem item, int position);
@@ -71,7 +73,7 @@ public class HistoryActivity extends AppCompatActivity {
             }
 
             void bindItem(LayoutHistoryViewItem item){
-                itemBinding.textviewRunTime.setText(item.getRunTime());
+                itemBinding.textviewRunDateTime.setText(item.getRunDateTime());
                 itemBinding.textviewRunStartPlace.setText(item.getRunStartPlace());
                 itemBinding.textviewRunDistance.setText(item.getRunDistance());
                 itemBinding.textviewRunPace.setText(item.getRunPace());
@@ -111,20 +113,28 @@ public class HistoryActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        runDataManager = RunDataManager.getInstance();
         binding = ActivityHistoryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
 
         ArrayList<LayoutHistoryViewItem> itemList = new ArrayList<LayoutHistoryViewItem>();
-        for (int i=0; i<100; i++) {
+        ArrayList<RunInfo> runInfos = runDataManager.getRunInfos();
+        for (int i = 0; i < runInfos.size(); i++) {
             LayoutHistoryViewItem item = new LayoutHistoryViewItem();
-            item.setRunTime("2022-11-10");
-            item.setRunStartPlace("Dongjakgu");
-            item.setRunDistance(Integer.toString(i));
-            item.setRunPace("4   " + i);
-            item.setRunHour("123:" + i);
-            item.setIsBreathUsed("0");
+            item.setItem(runInfos.get(i));
+            item.setIndex(i);
             itemList.add(item);
+
+
+//            item.setRunDateTime("2022-11-10");
+//            item.setRunStartPlace("Dongjakgu");
+//            item.setRunDistance(Integer.toString(i));
+//            item.setRunPace("4   " + i);
+//            item.setRunHour("123:" + i);
+//            item.setIsBreathUsed("0");
+//            item.setIndex(i);
+//            itemList.add(item);
         }
 
 
@@ -137,6 +147,7 @@ public class HistoryActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Intent intent = new Intent(HistoryActivity.this, ResultActivity.class);
+                        intent.putExtra("index", item.getIndex());
                         startActivity(intent);
 //                        Log.v("ISCLICKED", "123123");
 //                        Toast.makeText(HistoryActivity.this, "123123", Toast.LENGTH_SHORT).show();
