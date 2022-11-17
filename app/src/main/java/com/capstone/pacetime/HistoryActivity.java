@@ -152,25 +152,39 @@ public class HistoryActivity extends AppCompatActivity {
 //            itemList.add(item);
 //        }
 
-
         binding.recyclerViewHistory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        BindListViewAdapter adapter = new BindListViewAdapter(runInfos);
-        adapter.setOnItemClickListener(new OnItemClickListener(){
-            @Override
-            public void onItemClicked(View view, RunInfo item, int position) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(HistoryActivity.this, ResultActivity.class);
-                        intent.putExtra("index", runInfos.indexOf(item));
-                        startActivity(intent);
+        new Thread(() -> {
+            while (runDataManager.checkIsLoading()) {
+                try {
+                    wait(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            runOnUiThread(() -> {
+                BindListViewAdapter adapter = new BindListViewAdapter(runInfos);
+                adapter.setOnItemClickListener(
+                        new OnItemClickListener() {
+                            @Override
+                            public void onItemClicked(View view, RunInfo item, int position) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+
+                                        Intent intent = new Intent(HistoryActivity.this, ResultActivity.class);
+                                        intent.putExtra("index", position);
+                                        startActivity(intent);
 //                        Log.v("ISCLICKED", "123123");
 //                        Toast.makeText(HistoryActivity.this, "123123", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
+                                    }
+                                });
+                            }
+                        }
+                );
+                binding.recyclerViewHistory.setAdapter(adapter);
+            });
 
-        binding.recyclerViewHistory.setAdapter(adapter);
+        }).start();
     }
 }

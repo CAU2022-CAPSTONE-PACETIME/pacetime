@@ -135,6 +135,7 @@ public class RunDataManager {
 
 
     public void allFirebaseToRunInfos(){
+        isLoading = true;
         firestore.collection("runDataStoreTest")
 //                .orderBy("runStartDateTime", Query.Direction.DESCENDING)
                 .get()
@@ -150,6 +151,7 @@ public class RunDataManager {
                         } else{
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
+                        isLoading = false;
                     }
                 });
     }
