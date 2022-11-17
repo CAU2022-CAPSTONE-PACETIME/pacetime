@@ -112,11 +112,6 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
 
         info = runDataManager.firebaseToRunInfo(getIntent().getIntExtra("index", -1));
 
-        info.setUpdateFlags(EnumSet.allOf(RunInfoUpdateFlag.class));
-        RunInfoUpdateCommand command = new RunDetailInfoUpdateCommand();
-        command.setViewModel(viewModel);
-        command.update(info);
-
 
 
         mapView = binding.includeDetailRunInfoResult.mapView;

@@ -134,7 +134,7 @@ public class RunDataManager {
 
 
     public void allFirebaseToRunInfos(){
-        firestore.collection("test")
+        firestore.collection("runDataStoreTest")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -156,7 +156,7 @@ public class RunDataManager {
         Map<String, Object> runData = document.getData();
         RunInfo localRunInfo = new RunInfo((boolean) runData.get("isBreathUsed"));
 
-        RunInfo myRunInfo = document.toObject(RunInfo.class);
+//        RunInfo myRunInfo = document.toObject(RunInfo.class);
 //        OffsetDateTime runStartDateTime = OffsetDateTime.of()
 
         //document.toObject()
