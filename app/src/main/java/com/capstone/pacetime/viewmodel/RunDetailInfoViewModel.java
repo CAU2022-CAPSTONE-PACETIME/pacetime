@@ -74,4 +74,19 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
         this.stepCountStr = stepCountStr;
         notifyPropertyChanged(BR.stepCountStr);
     }
+
+    @Bindable
+    public String getStartDateStr() {
+        return startDateStr;
+    }
+
+    @Bindable
+    public String getIsBreathUsedStr() {
+        return isBreathUsedStr;
+    }
+
+    @Bindable
+    public String getStartLocationStr() {
+        return startLocationStr;
+    }
 }
