@@ -54,7 +54,7 @@ public class RunInfo {
     }
 
     public RunInfo(boolean isBreathUsed){
-        super();
+        this();
         this.isBreathUsed = isBreathUsed;
     }
 
