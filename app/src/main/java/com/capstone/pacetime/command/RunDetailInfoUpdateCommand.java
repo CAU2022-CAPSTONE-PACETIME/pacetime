@@ -18,7 +18,7 @@ public class RunDetailInfoUpdateCommand extends RunBasicInfoUpdateCommand{
         }
 
         if(flag.contains(RunInfoUpdateFlag.STEP_COUNT)){
-            updateStepCount(info.getStepCount().size());
+            updateStepCount(info.getStepCount().get(info.getStepCount().size()-1).getCount());
         }
         if(flag.contains(RunInfoUpdateFlag.CADENCE)){
             updateCadence(info.getCadence());

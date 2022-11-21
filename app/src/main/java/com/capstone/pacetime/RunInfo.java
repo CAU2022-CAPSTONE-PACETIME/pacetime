@@ -48,16 +48,16 @@ public class RunInfo {
         this.isBreathUsed = isBreathUsed;
     }
     public RunInfo(
-            int cadence,
-            boolean isBreathUsed,
-            List<Breath> breathItems,
             OffsetDateTime startDateTime,
             OffsetDateTime endDateTime,
             List<Location> trace,
+            List<Breath> breathItems,
             List<Step> stepCount,
             float distance,
             long runningTime,
-            long pace
+            long pace,
+            int cadence,
+            boolean isBreathUsed
     ){
         this();
         this.startDateTime   = startDateTime;
