@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
-import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
+//import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
 import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.databinding.ActivityResultBinding;
@@ -43,76 +43,12 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
 
         MapsInitializer.initialize(this, MapsInitializer.Renderer.LATEST, this);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_result);
-        viewModel = new RunDetailInfoViewModel();
-        binding.setDetailResultInfo(viewModel);
-
-//        RunInfo info = new RunInfo();
-//
-//        // TODO: get RunInfo data
-//        info.setDistance(1.3f);
-//        info.setPace(400);
-//        info.addStepCount(new Step(30, System.currentTimeMillis()));
-
-
-
-
-
-//        Thread waitData = new Thread(()->{
-//            while(runDataManager.nowLoading()){
-//                try {
-//                    wait(10);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//
-//                }
-//            }
-//            runDataManager.
-//        })
-
-//        HandlerThread handlerThread = new HandlerThread("HandlerThread");
-//        handlerThread.start();
-//
-//        Handler resultHandler = new Handler(handlerThread.getLooper());
-
-//        Thread waitRunData = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                resultHandler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                    }
-//                })
-//            }
-//        })
-
-
-//        Thread waitRunData = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                resultHandler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        while (runDataManager.checkIsLoading()) {
-//                            try {
-//                                wait(2);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                            info = runDataManager.getRunInfo();
-//                        }
-//                    }
-//                });
-//            }
-//        });
-//
-//        runDataManager.runInfoToFirebase(info);
-//        waitRunData.start();
 
         info = runDataManager.firebaseToRunInfo(getIntent().getIntExtra("index", -1));
 
-
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_result);
+        viewModel = new RunDetailInfoViewModel(info);
+        binding.setDetailResultInfo(viewModel);
 
         mapView = binding.includeDetailRunInfoResult.mapView;
         mapView.onCreate(savedInstanceState);

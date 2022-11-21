@@ -7,6 +7,7 @@
         <variable
             name="model"
             type="com.capstone.pacetime.viewmodel.RunDetailInfoViewModel" />
+        <import type="com.capstone.pacetime.viewmodel.RunBasicInfoViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -2,32 +2,40 @@ package com.capstone.pacetime;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.capstone.pacetime.data.Breath;
 import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.databinding.ActivityHistoryBinding;
 import com.capstone.pacetime.databinding.LayoutHistoryViewBinding;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 
 public class HistoryActivity extends AppCompatActivity {
 
+    private final String TAG = "HISTORY_ACTIVITY";
     ActivityHistoryBinding binding;
     RunDataManager runDataManager;
+    BindListViewAdapter adapter;
+    private Handler firebaseHandler;
+    private HandlerThread handlerThread;
+    private ArrayList<RunInfo> runInfos = new ArrayList<>();
+
+    private boolean isLoadFinished = true;
+
+    private final Object lock = new Object();
 
     public interface OnItemClickListener {
         void onItemClicked(View view, RunInfo item, int position);
@@ -79,13 +87,6 @@ public class HistoryActivity extends AppCompatActivity {
 
             void bindItem(RunDetailInfoViewModel item){
                 itemBinding.setModel(item);
-//                itemBinding.textviewRunDateTime.setText(item.getRunDateTime());
-//                itemBinding.textviewRunStartPlace.setText(item.getRunStartPlace());
-//                itemBinding.textviewRunDistance.setText(item.getRunDistance() + "km");
-//                itemBinding.textviewRunPace.setText(item.getRunPace() + "m");
-//                itemBinding.textviewRunHour.setText(item.getRunHour() + "s");
-//                itemBinding.textviewIsBreathUsed.setText(item.getIsBreathUsed());
-
             }
         }
 
@@ -124,45 +125,112 @@ public class HistoryActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         //test용
-        RunInfo runInfo1 = new RunInfo(30, true, null, OffsetDateTime.now(), OffsetDateTime.now(), null, new ArrayList<Step>(), 1.2f, 153, 332);
-        RunInfo runInfo2 = new RunInfo(30, false, null, OffsetDateTime.now(), OffsetDateTime.now(), null, new ArrayList<Step>(), 2.4f, 163, 351);
-
-        runDataManager.runInfoToFirebase(runInfo1);
-        runDataManager.runInfoToFirebase(runInfo2);
-
-//        ArrayList<LayoutHistoryViewItem> itemList = new ArrayList<LayoutHistoryViewItem>();
-        ArrayList<RunInfo> runInfos = runDataManager.getRunInfos();
-        Log.d("HISTORY_ACTIVITY", "runInfos size: " + runInfos.size());
-        Log.v("HISTORY_ACTIVITY", "runInfos size: " + runInfos.size());
-//        for (int i = 0; i < runInfos.size(); i++) {
-//            LayoutHistoryViewItem item = new LayoutHistoryViewItem();
-//            Log.i("HISTORY_ACTIVITY", "i = " + i);
-//            item.setItem(runInfos.get(i));
-//            item.setIndex(i);
-//            itemList.add(item);
+//        RunInfoParser runInfoParser1 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 1.2f, 153, 332, 43, false);
+//        RunInfoParser runInfoParser2 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 2.4f, 163, 351, 20, true);
+        RunInfoParser runInfoParser1 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(2001, 2, 3, 4, 35, 2, 41300000, "+10:00" , "2001-02-03-04:35:02.413"), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 1.2f, 153, 332, 43, false, new RunInfoParser.OffsetDateTimeParser(2001, 2, 3, 4, 35, 2, 41300000, "+10:00" , "2001-02-03-04:35:02.413").getDateFormat());
+        RunInfoParser runInfoParser2 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(2002, 3, 4, 11, 32, 1, 126000000, "+08:00", "2002-03-04-11:32:01.126"), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 2.4f, 163, 351, 20, true, new RunInfoParser.OffsetDateTimeParser(2002, 3, 4, 11, 32, 1, 126000000, "+08:00", "2002-03-04-11:32:01.126").getDateFormat());
 
 
-//            item.setRunDateTime("2022-11-10");
-//            item.setRunStartPlace("Dongjakgu");
-//            item.setRunDistance(Integer.toString(i));
-//            item.setRunPace("4   " + i);
-//            item.setRunHour("123:" + i);
-//            item.setIsBreathUsed("0");
-//            item.setIndex(i);
-//            itemList.add(item);
-//        }
+        handlerThread = new HandlerThread("data storing and loading thread");
+        handlerThread.start();
+        firebaseHandler = new Handler(handlerThread.getLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+            }
+        };
 
-        binding.recyclerViewHistory.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        Runnable runnableLoad = new Runnable() {
+            @Override
+            public void run() {
+                while (runDataManager.getIsLoading()){
+                    synchronized (lock){
+                        try {
+                            lock.wait();
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                runInfos = runDataManager.getRunInfos();
+                adapter = new BindListViewAdapter(runInfos);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        };
+        firebaseHandler.post(runnableLoad);
+
+        Runnable runnable1 = new Runnable() {
+            @Override
+            public void run() {
+                runDataManager.runInfoToFirebase(runInfoParser1);
+                while (runDataManager.getIsAddLoading()) {
+                    synchronized (lock) {
+                        try {
+                            lock.wait(100);
+                            Log.d("RUNDATAMANAGER", "success" + runDataManager.getRunInfos().size());
+                        } catch (InterruptedException e) {
+                            Log.d("RUNDATAMANAGER", "failed" + runDataManager.getRunInfos().size());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+//                isLoadFinished = true;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyItemInserted(0);
+                    }
+                });
+            }
+        };
+        firebaseHandler.post(runnable1);
+
+        Runnable runnable2 = new Runnable() {
+            @Override
+            public void run() {
+                runDataManager.runInfoToFirebase(runInfoParser2);
+                while (runDataManager.getIsAddLoading()) {
+                    synchronized (lock) {
+                        try {
+                            lock.wait(100);
+                            Log.d("RUNDATAMANAGER", "success" + runDataManager.getRunInfos().size());
+                        } catch (InterruptedException e) {
+                            Log.d("RUNDATAMANAGER", "failed" + runDataManager.getRunInfos().size());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyItemInserted(0);
+                    }
+                });
+            }
+        };
+
+        firebaseHandler.post(runnable2);
+
+
+        LinearLayoutManager layoutManager =  new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+//        layoutManager.scrollToPositionWithOffset(0, 0);
+        binding.recyclerViewHistory.setLayoutManager(layoutManager);
         new Thread(() -> {
-            while (runDataManager.checkIsLoading()) {
-                try {
-                    wait(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            while (runDataManager.getIsLoading()) {
+                synchronized (lock) {
+                    try {
+                        lock.wait(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             runOnUiThread(() -> {
-                BindListViewAdapter adapter = new BindListViewAdapter(runInfos);
                 adapter.setOnItemClickListener(
                         new OnItemClickListener() {
                             @Override
@@ -170,13 +238,9 @@ public class HistoryActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-
-
                                         Intent intent = new Intent(HistoryActivity.this, ResultActivity.class);
                                         intent.putExtra("index", position);
                                         startActivity(intent);
-//                        Log.v("ISCLICKED", "123123");
-//                        Toast.makeText(HistoryActivity.this, "123123", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }

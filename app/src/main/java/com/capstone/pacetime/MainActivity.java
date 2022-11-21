@@ -44,9 +44,14 @@ public class MainActivity extends AppCompatActivity {
     BreathPattern breathPattern;
     static RequestQueue requestQueue;
 
+    private int checkLoadingCount = 0;
+
     private GPSReceiver gps;
     private Handler handler;
     private HandlerThread thread;
+    Object lock = new Object();
+    private Handler loadHandler;
+    private HandlerThread loadHandlerThread;
 
     RunDataManager runDataManager;
     BluetoothHelper bluetoothHelper;
@@ -58,7 +63,36 @@ public class MainActivity extends AppCompatActivity {
 //        setContentView(R.layout.activity_main);
 
         runDataManager = RunDataManager.getInstance();
-        runDataManager.allFirebaseToRunInfos();
+
+        loadHandlerThread = new HandlerThread("DO loading task");
+        loadHandlerThread.start();
+        loadHandler = new Handler(loadHandlerThread.getLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+            }
+        };
+
+        Runnable loadRunnable = new Runnable() {
+            @Override
+            public void run() {
+                runDataManager.allFirebaseToRunInfos();
+                Log.d("MAIN_ACTIVITY", "runInfos size first: " + runDataManager.getRunInfos().size());
+                while(runDataManager.getIsLoading()){
+                    synchronized (lock){
+                        try{
+                            checkLoadingCount++;
+                            Log.d("MAIN_ACTIVITY", "loading..." + checkLoadingCount);
+                            lock.wait(50);
+                            Log.d("MAIN_ACTIVITY", "runInfos size: " + runDataManager.getRunInfos().size());
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        };
+        loadHandler.post(loadRunnable);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
@@ -197,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
 
                     Bundle data = new Bundle();
                     data.putString("city", city);
-
                     Message msg = new Message();
 
                     msg.setData(data);

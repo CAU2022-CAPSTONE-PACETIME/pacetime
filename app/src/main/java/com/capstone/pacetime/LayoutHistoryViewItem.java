@@ -1,5 +1,6 @@
 package com.capstone.pacetime;
 
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
 public class LayoutHistoryViewItem{
@@ -74,7 +75,7 @@ public class LayoutHistoryViewItem{
     public void setIndex(int index) { this.index = index; }
 
     public void setItem(RunInfo runInfo){
-        this.runDateTime = runInfo.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.runDateTime = new SimpleDateFormat("yyyy-MM-dd").format(runInfo.getStartDateTime()); //runInfo.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //        this.runStartPlace = runInfo.getTrace().get(0).toString();//임시로 toString
         this.runStartPlace = "Dokdo";
         this.runDistance = Float.toString(runInfo.getDistance());
