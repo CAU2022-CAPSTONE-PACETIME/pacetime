@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -14,6 +15,7 @@ import android.view.View;
 import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
 import com.capstone.pacetime.databinding.ActivityRunBinding;
+import com.capstone.pacetime.receiver.GPSReceiver;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,9 +25,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 
 public class RunActivity extends AppCompatActivity implements OnMapReadyCallback, OnMapsSdkInitializedCallback {
     private static final String TAG = "RunActivity";
@@ -89,25 +95,28 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
-                runOnUiThread(() -> {
-                    if (msg.what == READY_RUN) { // READY -> RUN
+                if (msg.what == READY_RUN) { // READY -> RUN
+                    runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
                         binding.buttonPause.setVisibility(View.INVISIBLE);
                         binding.constraintReady.setVisibility(View.GONE);
                         binding.constraintRun.setVisibility(View.VISIBLE);
-                    }
-                    else if (msg.what == RUN_PAUSE) { // RUN -> PAUSE
+                    });
+                } else if (msg.what == RUN_PAUSE) { // RUN -> PAUSE
+                    drawUserTrace(runInfo.getTrace());
+                    runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.VISIBLE);
                         binding.buttonPause.setVisibility(View.VISIBLE);
-                    }
-                    else if (msg.what == PAUSE_RUN) { // PAUSE -> RUN
+                    });
+                } else if (msg.what == PAUSE_RUN) { // PAUSE -> RUN
+                    runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
                         binding.buttonPause.setVisibility(View.INVISIBLE);
-                    }
-                    else { // PAUSE -> RUN
+                    });
+                } else { // PAUSE -> RUN
 
-                    }
-                });
+                }
+
             }
         };
 
@@ -132,15 +141,13 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
+//        LatLng seoul = new LatLng(37.56, 126.97);
+//
+//        MarkerOptions markerOptions = new MarkerOptions();
+//        markerOptions.position(seoul);
+//        markerOptions.title("서울");
+//        mMap.addMarker(markerOptions);
 
-        LatLng seoul = new LatLng(37.56, 126.97);
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(seoul);
-        markerOptions.title("서울");
-        mMap.addMarker(markerOptions);
-
-        mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(seoul, 10)));
     }
 
     @Override
@@ -153,6 +160,23 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 Log.d("MapsDemo", "The legacy version of the renderer is used.");
                 break;
         }
+    }
+
+    private void drawUserTrace(List<Location> trace){
+        ArrayList<LatLng> ll = new ArrayList<>();
+        trace.forEach(new Consumer<Location>() {
+            @Override
+            public void accept(Location location) {
+                ll.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
+        });
+
+        PolylineOptions polyOptions = new PolylineOptions()
+                .clickable(false)
+                .addAll(ll);
+
+        mMap.addPolyline(polyOptions);
+        mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(ll.get(ll.size()-1), 15)));
     }
 
     class ReadyTimerTask extends TimerTask{
