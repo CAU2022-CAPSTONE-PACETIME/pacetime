@@ -60,7 +60,7 @@ public class RunDataManager {
         runData.put("stepCount", runInfoParser.getStepCount());
         runData.put("isBreathUsed", runInfoParser.getIsBreathUsed()); //runInfo에 아직 isBreathUsed가 없음. 혹은 runInfo.getBreathItems가 null인지 판단하는 방법도 있을 듯.
         runData.put("breathItems", runInfoParser.getBreathItems());
-        runData.put("dateFormat", runInfoParser.getDateFormat());
+        runData.put("dateEpochSecond", runInfoParser.getDateEpochSecond());
 
 
         Log.d(TAG, "runinfos size = " + runInfos.size());
@@ -91,7 +91,7 @@ public class RunDataManager {
     public void allFirebaseToRunInfos(){
         isLoading = true;
         firestore.collection("runDataStoreTest")
-                .orderBy("dateFormat", Query.Direction.DESCENDING)
+                .orderBy("dateEpochSecond", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
