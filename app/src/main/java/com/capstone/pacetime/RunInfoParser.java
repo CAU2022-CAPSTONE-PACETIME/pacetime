@@ -28,7 +28,7 @@ public class RunInfoParser {
     protected long pace;
     protected int cadence;
     protected boolean isBreathUsed;
-    protected String dateFormat;
+    protected long dateEpochSecond;
 
     public RunInfoParser(){
         OffsetDateTimeParser startDateTime = new OffsetDateTimeParser();
@@ -42,7 +42,7 @@ public class RunInfoParser {
         this.trace = new ArrayList<>();
         this.stepCount = new ArrayList<>();
         this.isBreathUsed = true;
-        this.dateFormat = startDateTime.getDateFormat();
+        this.dateEpochSecond = startDateTime.getDateEpochSecond();
     }
 
     public RunInfoParser(boolean isBreathUsed){
@@ -60,36 +60,36 @@ public class RunInfoParser {
             long pace,
             int cadence,
             boolean isBreathUsed,
-            String dateFormat
+            long dateEpochSecond
     ){
         this();
-        this.startDateTime   = startDateTime;
-        this.endDateTime     = endDateTime;
-        this.trace           = trace       ;
-        this.breathItems     = breathItems ;
-        this.stepCount       = stepCount   ;
-        this.distance        = distance    ;
-        this.runningTime     = runningTime ;
-        this.pace            = pace        ;
-        this.cadence         = cadence     ;
-        this.isBreathUsed    = isBreathUsed;
-        this.dateFormat      = dateFormat;
+        this.startDateTime      = startDateTime;
+        this.endDateTime        = endDateTime;
+        this.trace              = trace       ;
+        this.breathItems        = breathItems ;
+        this.stepCount          = stepCount   ;
+        this.distance           = distance    ;
+        this.runningTime        = runningTime ;
+        this.pace               = pace        ;
+        this.cadence            = cadence     ;
+        this.isBreathUsed       = isBreathUsed;
+        this.dateEpochSecond    = dateEpochSecond; //
     }
 
     public RunInfoParser(RunInfo runInfo){
         this();
         OffsetDateTimeParser startDateTime = new OffsetDateTimeParser(runInfo.getStartDateTime());
-        this.startDateTime  = startDateTime;
-        this.endDateTime    = new OffsetDateTimeParser(runInfo.getEndDateTime());
-        this.trace          = runInfo.getTrace();
-        this.breathItems    = runInfo.getBreathItems();
-        this.stepCount      = runInfo.getStepCount();
-        this.distance       = runInfo.getDistance();
-        this.runningTime    = runInfo.getRunningTime();
-        this.pace           = runInfo.getPace();
-        this.cadence        = runInfo.getCadence();
-        this.isBreathUsed   = runInfo.getIsBreathUsed();
-        this.dateFormat     = startDateTime.getDateFormat();
+        this.startDateTime      = startDateTime;
+        this.endDateTime        = new OffsetDateTimeParser(runInfo.getEndDateTime());
+        this.trace              = runInfo.getTrace();
+        this.breathItems        = runInfo.getBreathItems();
+        this.stepCount          = runInfo.getStepCount();
+        this.distance           = runInfo.getDistance();
+        this.runningTime        = runInfo.getRunningTime();
+        this.pace               = runInfo.getPace();
+        this.cadence            = runInfo.getCadence();
+        this.isBreathUsed       = runInfo.getIsBreathUsed();
+        this.dateEpochSecond    = startDateTime.getDateEpochSecond();
     }
 
 
@@ -104,7 +104,7 @@ public class RunInfoParser {
         private int second;
         private int nanoSecond;
         private String offset;
-        private String dateFormat;
+        private long dateEpochSecond;
 
 
 
@@ -117,10 +117,10 @@ public class RunInfoParser {
             second = 3;
             nanoSecond = 123000000;
             offset = "+09:00";
-            dateFormat = "2000-09-09-04:10:03.123";
+            dateEpochSecond = 123L;
         }
 
-        public OffsetDateTimeParser(int year, int month, int dayOfMonth, int hour, int minute, int second, int nanoSecond, String offset, String dateFormat){
+        public OffsetDateTimeParser(int year, int month, int dayOfMonth, int hour, int minute, int second, int nanoSecond, String offset, long dateEpochSecond){
             this();
             this.year = year;
             this.month = month;
@@ -130,7 +130,7 @@ public class RunInfoParser {
             this.second = second;
             this.nanoSecond = nanoSecond;
             this.offset = offset;
-            this.dateFormat = dateFormat;
+            this.dateEpochSecond = dateEpochSecond;
         }
 
         public OffsetDateTimeParser(OffsetDateTime offsetDateTime){
@@ -143,7 +143,7 @@ public class RunInfoParser {
             this.second = offsetDateTime.getSecond();
             this.nanoSecond = offsetDateTime.getNano();
             this.offset = offsetDateTime.getOffset().getId();
-            this.dateFormat = offsetDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh:mm:ss.SSS"));
+            this.dateEpochSecond = offsetDateTime.toEpochSecond();
         }
 
         public int getYear(){
@@ -178,8 +178,8 @@ public class RunInfoParser {
             return offset;
         }
 
-        public String getDateFormat() {
-            return dateFormat;
+        public long getDateEpochSecond() {
+            return dateEpochSecond;
         }
 
         public OffsetDateTime parserToOrigin(){
@@ -217,8 +217,8 @@ public class RunInfoParser {
     public List<Step> getStepCount() {
         return stepCount;
     }
-    public String getDateFormat() {
-        return dateFormat;
+    public long getDateEpochSecond() {
+        return dateEpochSecond;
     }
 
     public RunInfo parserToOrigin(){
