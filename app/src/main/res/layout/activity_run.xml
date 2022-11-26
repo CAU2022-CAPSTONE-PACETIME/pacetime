@@ -74,7 +74,7 @@
                 />
 
             <Button
-                android:id="@+id/button_pause"
+                android:id="@+id/button_stop"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 app:layout_constraintTop_toTopOf="@id/guide_run"

@@ -98,7 +98,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (msg.what == READY_RUN) { // READY -> RUN
                     runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
-                        binding.buttonPause.setVisibility(View.INVISIBLE);
+                        binding.buttonStop.setVisibility(View.INVISIBLE);
                         binding.constraintReady.setVisibility(View.GONE);
                         binding.constraintRun.setVisibility(View.VISIBLE);
                     });
@@ -106,12 +106,12 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                     drawUserTrace(runInfo.getTrace());
                     runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.VISIBLE);
-                        binding.buttonPause.setVisibility(View.VISIBLE);
+                        binding.buttonStop.setVisibility(View.VISIBLE);
                     });
                 } else if (msg.what == PAUSE_RUN) { // PAUSE -> RUN
                     runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
-                        binding.buttonPause.setVisibility(View.INVISIBLE);
+                        binding.buttonStop.setVisibility(View.INVISIBLE);
                     });
                 } else { // PAUSE -> RUN
 
@@ -129,6 +129,14 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 manager.resume();
                 uiHandler.sendEmptyMessage(PAUSE_RUN);
                 Log.d(TAG, "State PAUSE -> RUN");
+            }
+        });
+
+        binding.buttonStop.setOnClickListener((view)->{
+            if(manager.getState() == RunningState.STOP){
+                manager.stop();
+                uiHandler.sendEmptyMessage(PAUSE_STOP);
+                Log.d(TAG, "State PAUSE -> STOP");
             }
         });
 
@@ -164,12 +172,10 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void drawUserTrace(List<Location> trace){
         ArrayList<LatLng> ll = new ArrayList<>();
-        trace.forEach(new Consumer<Location>() {
-            @Override
-            public void accept(Location location) {
+        trace.forEach((Location location) -> {
                 ll.add(new LatLng(location.getLatitude(), location.getLongitude()));
             }
-        });
+        );
 
         PolylineOptions polyOptions = new PolylineOptions()
                 .clickable(false)
