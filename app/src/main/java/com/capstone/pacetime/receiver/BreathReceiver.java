@@ -2,6 +2,7 @@ package com.capstone.pacetime.receiver;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -14,6 +15,19 @@ import com.capstone.pacetime.data.Breath;
 import com.capstone.pacetime.data.BreathState;
 import com.capstone.pacetime.RunningDataType;
 
+import org.pytorch.Device;
+import org.pytorch.IValue;
+import org.pytorch.Module;
+import org.pytorch.Tensor;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -158,6 +172,33 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
         }
     }
 
+    private PytorchModule module;
+
+    class PytorchModule{
+        private Module module;
+
+        PytorchModule(String path){
+            if(module == null){
+                if(path == null || path.isEmpty()){
+                    return;
+                }
+                module = Module.load(path);
+            }
+
+        }
+        BreathState convert(IntBuffer buf){
+            Tensor inputTensor = Tensor.fromBlob(buf, new long[]{1, 22050});
+            Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
+
+            float val = outputTensor.getDataAsFloatArray()[0];
+            if(val <= 0.5){
+                return BreathState.EXHALE;
+            }
+            else
+                return BreathState.INHALE;
+        }
+    }
+
     class SoundToBreathRunnable implements Runnable{
         private final Short[] sound;
         private final long timestamp;
@@ -174,10 +215,15 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 
         @Override
         public void run() {
-            // TODO: Tensorflow Implementation Required
+            // TODO: Pytorch Implementation Required
+
+            IntBuffer buf = IntBuffer.allocate(22050);
+            for(Short s : sound){
+                buf.put(s);
+            }
 
             Message msg = new Message();
-            msg.obj = new Breath(BreathState.INHALE, timestamp);
+            msg.obj = new Breath(module.convert(buf), timestamp);
             msg.arg1 = RunningDataType.BREATH.ordinal();
             dataHandler.sendMessage(msg);
         }
@@ -190,7 +236,32 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     };
 
     @SuppressLint("MissingPermission")
-    public BreathReceiver(AudioManager audioManager){
+    public BreathReceiver(AudioManager audioManager, Context context){
+        try {
+            String asset = "NofilterModel.pt";
+            File file = new File(context.getFilesDir(), asset);
+            InputStream inStream = context.getAssets().open(asset);
+
+            FileOutputStream outStream = new FileOutputStream(file, false);
+            byte[] byteBuffer = new byte[4 * 1024];
+
+            int read;
+
+            while (true) {
+
+                read = inStream.read(byteBuffer);
+                if (read == -1) {
+                    break;
+                }
+                outStream.write(byteBuffer, 0, read);
+            }
+            outStream.flush();
+            module = new PytorchModule(file.getAbsolutePath());
+        }catch (IOException e) {
+            e.printStackTrace();
+            module = null;
+        }
+
         this.audioManager = audioManager;
 
         bufferRecordSize = AudioRecord.getMinBufferSize(
