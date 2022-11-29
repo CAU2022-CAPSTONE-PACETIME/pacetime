@@ -63,13 +63,15 @@ public class RunDataManager {
         runData.put("breathItems", runInfoParser.getBreathItems());
         runData.put("dateEpochSecond", runInfoParser.getDateEpochSecond());
 
+        synchronized (runInfos){
+            runInfos.add(0, runInfoParser.parserToOrigin());
+        }
 
         Log.d(TAG, "runinfos size = " + runInfos.size());
         runDataStoreTest.document("" + runInfos.size()).set(runData).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Log.v(TAG, "Success");
-                runInfos.add(0, runInfoParser.parserToOrigin());
                 Log.d(TAG, "runinfos size why = " + runInfos.size());
                 RunDataManager.this.isAddLoading = false;
             }
@@ -77,6 +79,9 @@ public class RunDataManager {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.v(TAG, "Failed");
+                synchronized (runInfos){
+                    runInfos.remove(0);
+                }
                 RunDataManager.this.isAddLoading = false;
             }
         });
@@ -84,7 +89,11 @@ public class RunDataManager {
 
     //아마 HistoryActivity에서 item 선택했을 때, 선택한 item의 정보를 RunInfo 형태로 반환해줄 때(바인딩 위해) 쓰지 않을까. item선택했을 때 startDateTime으로 식별하면 좋을 듯.
     public RunInfo firebaseToRunInfo(int itemIndex){
-        return runInfos.get(itemIndex);
+        RunInfo runInfo;
+        synchronized (runInfos){
+            runInfo = runInfos.get(itemIndex);
+        }
+        return runInfo;
     }
 
     public void allFirebaseToRunInfos(){
@@ -95,10 +104,8 @@ public class RunDataManager {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        synchronized (runInfos){
                             if(task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-//                                runInfos.add(documentDataToRunInfo(document));
                                     RunInfoParser runInfoParserTemp = document.toObject(RunInfoParser.class);
                                     RunInfo runInfo = runInfoParserTemp.parserToOrigin();
                                     runInfos.add(runInfo);
@@ -109,7 +116,6 @@ public class RunDataManager {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
                             isLoading = false;
-//                        }
                     }
                 });
     }
