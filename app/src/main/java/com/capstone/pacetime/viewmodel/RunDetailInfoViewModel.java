@@ -78,7 +78,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
     }
 
     @Bindable
-    public boolean getIsBreathUsedStr() {
+    public boolean getIsBreathUsed() {
         return isBreathUsed;
     }
 
