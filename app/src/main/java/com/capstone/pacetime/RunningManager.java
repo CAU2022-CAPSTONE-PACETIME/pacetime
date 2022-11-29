@@ -56,6 +56,8 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                     super.handleMessage(msg);
                     if(msg.arg1 == RunningDataType.BREATH.ordinal()){
                         runInfo.addBreathItem((Breath)msg.obj);
+
+                        Log.d(TAG, "Breath: " + ((Breath) msg.obj).getBreathState().name());
                     }
                     else if(msg.arg1 == RunningDataType.LOCATION.ordinal()){
                         Bundle data = msg.getData();
