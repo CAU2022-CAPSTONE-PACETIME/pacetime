@@ -1,5 +1,7 @@
 package com.capstone.pacetime.data;
 
+import com.capstone.pacetime.data.enums.BreathState;
+
 public class Breath {
     private final BreathState breathState;
     private final long timestamp;

@@ -1,4 +1,4 @@
-package com.capstone.pacetime.data;
+package com.capstone.pacetime.data.enums;
 
 public enum BreathState {
     INHALE,

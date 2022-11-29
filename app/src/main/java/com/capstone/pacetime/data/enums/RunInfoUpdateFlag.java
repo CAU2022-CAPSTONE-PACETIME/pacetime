@@ -1,4 +1,4 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.data.enums;
 
 public enum RunInfoUpdateFlag {
     TRACE,

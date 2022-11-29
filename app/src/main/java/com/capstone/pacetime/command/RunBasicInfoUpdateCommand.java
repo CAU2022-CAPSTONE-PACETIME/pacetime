@@ -1,15 +1,10 @@
 package com.capstone.pacetime.command;
 
-import com.capstone.pacetime.RealTimeRunInfo;
+import com.capstone.pacetime.data.RealTimeRunInfo;
 import com.capstone.pacetime.viewmodel.RunBasicInfoViewModel;
-import com.capstone.pacetime.RunInfo;
-import com.capstone.pacetime.RunInfoUpdateFlag;
+import com.capstone.pacetime.data.enums.RunInfoUpdateFlag;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
-import java.util.Locale;
 
 public class RunBasicInfoUpdateCommand extends RunInfoUpdateCommand {
     @Override

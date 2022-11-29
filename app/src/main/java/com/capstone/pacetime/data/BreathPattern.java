@@ -1,4 +1,4 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.data;
 
 import android.util.Log;
 import androidx.databinding.ObservableInt;
@@ -23,7 +23,7 @@ public class BreathPattern {
     }
 
     public void setInhale(int val){
-        Log.d(TAG, "Set Inhale: " + String.valueOf(val));
+        Log.d(TAG, "Set Inhale: " + val);
         inhale.set(val);
     }
 
@@ -32,7 +32,7 @@ public class BreathPattern {
     }
 
     public void setExhale(int val){
-        Log.d(TAG, "Set Exhale: " + String.valueOf(val));
+        Log.d(TAG, "Set Exhale: " + val);
         exhale.set(val);
     }
 }

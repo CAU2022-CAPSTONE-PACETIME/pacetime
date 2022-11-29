@@ -3,20 +3,19 @@ package com.capstone.pacetime.viewmodel;
 import androidx.databinding.Bindable;
 import androidx.databinding.library.baseAdapters.BR;
 
-import com.capstone.pacetime.RunInfo;
+import com.capstone.pacetime.data.RunInfo;
 import com.capstone.pacetime.data.Step;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.Optional;
 
 public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
     private String cadenceStr;
     private String stepCountStr;
-    private String startDateStr;
-    private String isBreathUsedStr;
-    private String startLocationStr;
+    private final String startDateStr;
+    private final String isBreathUsedStr;
+    private final String startLocationStr;
 
     public RunDetailInfoViewModel() {
         super();
@@ -34,9 +33,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
         cadenceStr = String.valueOf(info.getCadence());
 
         stepCountStr = "-1";
-        info.getStepCount().stream().max(new Comparator<Step>() {
-            @Override
-            public int compare(Step o1, Step o2) {
+        info.getStepCount().stream().max((Step o1, Step o2) -> {
                 if(o1.getCount() < o2.getCount()){
                     return 1;
                 }else if(o1.getCount() > o2.getCount()){
@@ -44,7 +41,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
                 }
                 return 0;
             }
-        }).ifPresent(step -> stepCountStr = "" + step.getCount());
+        ).ifPresent(step -> stepCountStr = "" + step.getCount());
 
         // 시작 장소
         startLocationStr = "Dokdo";

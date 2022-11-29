@@ -10,7 +10,7 @@
             type="com.capstone.pacetime.activity.MainActivity" />
         <variable
             name="pattern"
-            type="com.capstone.pacetime.BreathPattern" />
+            type="com.capstone.pacetime.data.BreathPattern" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

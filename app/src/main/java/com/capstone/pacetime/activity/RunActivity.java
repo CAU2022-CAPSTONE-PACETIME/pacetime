@@ -14,9 +14,9 @@ import android.view.View;
 
 import com.capstone.pacetime.util.PermissionChecker;
 import com.capstone.pacetime.R;
-import com.capstone.pacetime.RealTimeRunInfo;
+import com.capstone.pacetime.data.RealTimeRunInfo;
 import com.capstone.pacetime.RunningManager;
-import com.capstone.pacetime.RunningState;
+import com.capstone.pacetime.data.enums.RunningState;
 import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
 import com.capstone.pacetime.databinding.ActivityRunBinding;

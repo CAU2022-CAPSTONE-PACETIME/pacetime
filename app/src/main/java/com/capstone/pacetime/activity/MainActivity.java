@@ -27,7 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capstone.pacetime.util.BluetoothHelper;
-import com.capstone.pacetime.BreathPattern;
+import com.capstone.pacetime.data.BreathPattern;
 import com.capstone.pacetime.R;
 import com.capstone.pacetime.util.RunDataManager;
 import com.capstone.pacetime.databinding.ActivityMainBinding;
@@ -51,13 +51,13 @@ public class MainActivity extends AppCompatActivity {
     private GPSReceiver gps;
     private Handler handler;
     private HandlerThread thread;
-    Object lock = new Object();
+    private final Object lock = new Object();
     private Handler loadHandler;
     private HandlerThread loadHandlerThread;
 
     RunDataManager runDataManager;
     BluetoothHelper bluetoothHelper;
-    MutableLiveData<String> whichDevice = new MutableLiveData<String>(null);
+    MutableLiveData<String> whichDevice = new MutableLiveData<>(null);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,8 +213,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private String currentCityCall(double lat, double lon) {
-        StringBuilder cityBuilder = new StringBuilder();
+    private void currentCityCall(double lat, double lon) {
         String url = "http://api.openweathermap.org/geo/1.0/reverse?"
                 +"lat=" + lat
                 +"&lon="+ lon
@@ -249,20 +248,10 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.v("WEATHERCALLFAIL2", "weather call failed!");
             }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-
-                return params;
-            }
-        };
+        });
 
         request.setShouldCache(false);
         requestQueue.add(request);
-
-        Log.d("CITYBUILDERWHERE", "city: "+cityBuilder.toString());
-        return cityBuilder.toString();
     }
 
     private void currentWeatherCall(String city){
@@ -305,14 +294,7 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.v("WEATHERCALLFAIL2", "weather call failed!");
             }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-
-                return params;
-            }
-        };
+        });
 
         requestCity.setShouldCache(false);
         requestQueue.add(requestCity);

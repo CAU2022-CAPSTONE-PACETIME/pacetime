@@ -1,4 +1,4 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.data;
 
 import android.location.Location;
 import android.util.Log;

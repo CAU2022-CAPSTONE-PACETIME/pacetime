@@ -7,36 +7,27 @@ import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
 import com.capstone.pacetime.data.Breath;
-import com.capstone.pacetime.data.BreathState;
-import com.capstone.pacetime.RunningDataType;
+import com.capstone.pacetime.data.enums.BreathState;
+import com.capstone.pacetime.data.enums.RunningDataType;
 
-import org.pytorch.Device;
 import org.pytorch.IValue;
 import org.pytorch.Module;
 import org.pytorch.Tensor;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.Buffer;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.Arrays;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BreathReceiver implements ReceiverLifeCycleInterface {
@@ -44,7 +35,6 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 
     private Handler dataHandler;
 
-    private final AudioManager audioManager;
     private final AudioRecord audioRecord;
 
     private final int AUDIO_SAMP_RATE = 44100;
@@ -198,7 +188,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 
     private PytorchModule module;
 
-    class PytorchModule{
+    static class PytorchModule{
         private Module module;
 
         PytorchModule(String path){
@@ -213,8 +203,6 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
         BreathState convert(FloatBuffer buf){
             Tensor inputTensor = Tensor.fromBlob(buf, new long[]{1, 22050});
             Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
-
-
 
             float val = outputTensor.getDataAsFloatArray()[0];
             if(val <= 0.5){
@@ -302,8 +290,6 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
             e.printStackTrace();
             module = null;
         }
-
-        this.audioManager = audioManager;
 
         bufferRecordSize = AudioRecord.getMinBufferSize(
                 AUDIO_SAMP_RATE,

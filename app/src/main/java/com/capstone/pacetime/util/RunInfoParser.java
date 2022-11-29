@@ -4,14 +4,13 @@ import android.location.Location;
 
 import androidx.annotation.Keep;
 
-import com.capstone.pacetime.RunInfo;
+import com.capstone.pacetime.data.RunInfo;
 import com.capstone.pacetime.data.Breath;
 import com.capstone.pacetime.data.Step;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -15,6 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.capstone.pacetime.data.Breath;
+import com.capstone.pacetime.data.RealTimeRunInfo;
+import com.capstone.pacetime.data.enums.RunningDataType;
+import com.capstone.pacetime.data.enums.RunningState;
 import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.receiver.BreathReceiver;
 import com.capstone.pacetime.receiver.GPSReceiver;

@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import android.Manifest;
-import com.capstone.pacetime.RunningDataType;
+import com.capstone.pacetime.data.enums.RunningDataType;
 import com.capstone.pacetime.data.Step;
 
 public class StepCounter implements ReceiverLifeCycleInterface {

@@ -1,10 +1,9 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.data;
 
 import android.location.Location;
 
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
-import com.capstone.pacetime.data.Breath;
-import com.capstone.pacetime.data.Step;
+import com.capstone.pacetime.data.enums.RunInfoUpdateFlag;
 
 import java.time.OffsetDateTime;
 import java.util.EnumSet;

@@ -1,10 +1,9 @@
 package com.capstone.pacetime.viewmodel;
 
 import androidx.databinding.Bindable;
-import androidx.databinding.ObservableField;
 import androidx.databinding.library.baseAdapters.BR;
 
-import com.capstone.pacetime.RunInfo;
+import com.capstone.pacetime.data.RunInfo;
 
 import java.util.Locale;
 

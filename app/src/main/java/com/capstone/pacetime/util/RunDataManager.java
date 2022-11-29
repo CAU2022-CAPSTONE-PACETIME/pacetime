@@ -4,7 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.capstone.pacetime.RunInfo;
+import com.capstone.pacetime.data.RunInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -84,10 +84,8 @@ public class RunDataManager {
 
     //아마 HistoryActivity에서 item 선택했을 때, 선택한 item의 정보를 RunInfo 형태로 반환해줄 때(바인딩 위해) 쓰지 않을까. item선택했을 때 startDateTime으로 식별하면 좋을 듯.
     public RunInfo firebaseToRunInfo(int itemIndex){
-        RunInfo runInfo = runInfos.get(itemIndex);
-        return runInfo;
+        return runInfos.get(itemIndex);
     }
-
 
     public void allFirebaseToRunInfos(){
         isLoading = true;

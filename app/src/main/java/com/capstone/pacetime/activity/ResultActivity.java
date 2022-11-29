@@ -10,7 +10,7 @@ import android.util.Log;
 //import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.R;
 import com.capstone.pacetime.util.RunDataManager;
-import com.capstone.pacetime.RunInfo;
+import com.capstone.pacetime.data.RunInfo;
 import com.capstone.pacetime.databinding.ActivityResultBinding;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;

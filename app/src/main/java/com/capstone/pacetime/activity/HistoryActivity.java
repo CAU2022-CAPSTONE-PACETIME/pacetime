@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.capstone.pacetime.util.RunDataManager;
-import com.capstone.pacetime.RunInfo;
+import com.capstone.pacetime.data.RunInfo;
 import com.capstone.pacetime.util.RunInfoParser;
 import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.databinding.ActivityHistoryBinding;
@@ -45,7 +45,7 @@ public class HistoryActivity extends AppCompatActivity {
         void onItemClicked(View view, RunInfo item, int position);
     }
 
-    public class BindListViewAdapter extends RecyclerView.Adapter<BindListViewAdapter.RecyclerViewHolder> {
+    static class BindListViewAdapter extends RecyclerView.Adapter<BindListViewAdapter.RecyclerViewHolder> {
 
         private final ArrayList<RunInfo> itemList;
 
@@ -131,8 +131,8 @@ public class HistoryActivity extends AppCompatActivity {
         //test용
 //        RunInfoParser runInfoParser1 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 1.2f, 153, 332, 43, false);
 //        RunInfoParser runInfoParser2 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 2.4f, 163, 351, 20, true);
-        RunInfoParser runInfoParser1 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2001, 2, 3, 4, 35, 2, 41300000, ZoneOffset.of("+10:00"))), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 1.2f, 153, 332, 43, false, new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2001, 2, 3, 4, 35, 2, 41300000, ZoneOffset.of("+10:00"))).getDateEpochSecond());
-        RunInfoParser runInfoParser2 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2002, 3, 4, 11, 32, 1, 126000000, ZoneOffset.of("+08:00"))), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 2.4f, 163, 351, 20, true, new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2002, 3, 4, 11, 32, 1, 126000000, ZoneOffset.of("+08:00"))).getDateEpochSecond());
+        RunInfoParser runInfoParser1 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2001, 2, 3, 4, 35, 2, 41300000, ZoneOffset.of("+10:00"))), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<>(), 1.2f, 153, 332, 43, false, new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2001, 2, 3, 4, 35, 2, 41300000, ZoneOffset.of("+10:00"))).getDateEpochSecond());
+        RunInfoParser runInfoParser2 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2002, 3, 4, 11, 32, 1, 126000000, ZoneOffset.of("+08:00"))), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<>(), 2.4f, 163, 351, 20, true, new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2002, 3, 4, 11, 32, 1, 126000000, ZoneOffset.of("+08:00"))).getDateEpochSecond());
 
 
         handlerThread = new HandlerThread("data storing and loading thread");
