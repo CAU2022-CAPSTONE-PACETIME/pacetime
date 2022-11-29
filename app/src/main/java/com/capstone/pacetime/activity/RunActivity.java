@@ -161,7 +161,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
         binding.buttonStop.setOnClickListener((view)->{
-            if(manager.getState() == RunningState.STOP){
+            if(manager.getState() == RunningState.PAUSE){
                 manager.stop();
                 uiHandler.sendEmptyMessage(PAUSE_STOP);
                 Log.d(TAG, "State PAUSE -> STOP");
