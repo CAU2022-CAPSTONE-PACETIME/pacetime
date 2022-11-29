@@ -56,6 +56,8 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                     super.handleMessage(msg);
                     if(msg.arg1 == RunningDataType.BREATH.ordinal()){
                         runInfo.addBreathItem((Breath)msg.obj);
+
+                        Log.d(TAG, "Breath: " + ((Breath) msg.obj).getBreathState().name());
                     }
                     else if(msg.arg1 == RunningDataType.LOCATION.ordinal()){
                         Bundle data = msg.getData();
@@ -92,7 +94,10 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
         gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity));
-        breathReceiver = new BreathReceiver((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
+        breathReceiver = new BreathReceiver((
+                AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
+                activity.getApplicationContext()
+        );
         stepCounter = new StepCounter(sensorManager);
     }
 
