@@ -8,7 +8,11 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:gravity="center_vertical"
+        android:background="@drawable/view_background"
+        android:backgroundTint="#00F57E"
         tools:context=".HistoryActivity">
+
+
 
         <TextView
             android:id="@+id/textview_is_breath_used"
