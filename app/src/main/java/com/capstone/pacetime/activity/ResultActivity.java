@@ -1,4 +1,4 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +10,9 @@ import android.os.HandlerThread;
 import android.util.Log;
 
 //import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
+import com.capstone.pacetime.R;
+import com.capstone.pacetime.RunDataManager;
+import com.capstone.pacetime.RunInfo;
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
 import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.databinding.ActivityResultBinding;

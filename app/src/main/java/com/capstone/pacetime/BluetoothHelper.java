@@ -27,6 +27,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.capstone.pacetime.activity.MainActivity;
+
 public class BluetoothHelper {
     private static final String TAG = "BLUETOOTH_HELPER";
 

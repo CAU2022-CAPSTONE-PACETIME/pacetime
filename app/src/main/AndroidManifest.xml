@@ -32,7 +32,7 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,16 +41,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true" />
         <activity
-            android:name=".RunActivity"
+            android:name=".activity.RunActivity"
             android:exported="true" />
         <activity
-            android:name=".HistoryActivity"
+            android:name=".activity.HistoryActivity"
             android:exported="true" />
         <activity
-            android:name=".ResultActivity"
+            android:name=".activity.ResultActivity"
             android:exported="true"/>
     </application>
 

@@ -1,14 +1,12 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -28,6 +26,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.capstone.pacetime.BluetoothHelper;
+import com.capstone.pacetime.BreathPattern;
+import com.capstone.pacetime.R;
+import com.capstone.pacetime.RunDataManager;
 import com.capstone.pacetime.databinding.ActivityMainBinding;
 import com.capstone.pacetime.receiver.GPSReceiver;
 import com.google.android.gms.location.LocationServices;
