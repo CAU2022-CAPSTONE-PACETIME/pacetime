@@ -1,4 +1,4 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.util;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -27,6 +27,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.capstone.pacetime.BuildConfig;
 import com.capstone.pacetime.activity.MainActivity;
 
 public class BluetoothHelper {

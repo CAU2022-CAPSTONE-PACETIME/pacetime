@@ -1,4 +1,4 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.util;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
+
+import com.capstone.pacetime.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;

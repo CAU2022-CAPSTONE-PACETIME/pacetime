@@ -1,9 +1,10 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.util;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.capstone.pacetime.RunInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

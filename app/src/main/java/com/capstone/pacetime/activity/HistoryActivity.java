@@ -15,11 +15,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.capstone.pacetime.RunDataManager;
+import com.capstone.pacetime.util.RunDataManager;
 import com.capstone.pacetime.RunInfo;
-import com.capstone.pacetime.RunInfoParser;
+import com.capstone.pacetime.util.RunInfoParser;
 import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.databinding.ActivityHistoryBinding;
+import com.capstone.pacetime.databinding.LayoutHistoryViewBinding;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 
 import java.time.OffsetDateTime;

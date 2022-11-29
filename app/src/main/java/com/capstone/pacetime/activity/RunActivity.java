@@ -12,7 +12,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
-import com.capstone.pacetime.PermissionChecker;
+import com.capstone.pacetime.util.PermissionChecker;
 import com.capstone.pacetime.R;
 import com.capstone.pacetime.RealTimeRunInfo;
 import com.capstone.pacetime.RunningManager;
@@ -20,7 +20,6 @@ import com.capstone.pacetime.RunningState;
 import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
 import com.capstone.pacetime.databinding.ActivityRunBinding;
-import com.capstone.pacetime.receiver.GPSReceiver;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,14 +28,12 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Consumer;
 
 public class RunActivity extends AppCompatActivity implements OnMapReadyCallback, OnMapsSdkInitializedCallback {
     private static final String TAG = "RunActivity";

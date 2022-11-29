@@ -1,9 +1,10 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.util;
 
 import android.location.Location;
 
 import androidx.annotation.Keep;
 
+import com.capstone.pacetime.RunInfo;
 import com.capstone.pacetime.data.Breath;
 import com.capstone.pacetime.data.Step;
 import com.google.firebase.firestore.IgnoreExtraProperties;

@@ -5,16 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.util.Log;
 
 //import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.R;
-import com.capstone.pacetime.RunDataManager;
+import com.capstone.pacetime.util.RunDataManager;
 import com.capstone.pacetime.RunInfo;
-import com.capstone.pacetime.command.RunInfoUpdateCommand;
-import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.databinding.ActivityResultBinding;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,8 +21,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.EnumSet;
 
 public class ResultActivity extends AppCompatActivity implements OnMapReadyCallback, OnMapsSdkInitializedCallback {
 
