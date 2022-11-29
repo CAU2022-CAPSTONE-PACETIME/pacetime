@@ -57,9 +57,8 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                 @Override
                 public void handleMessage(@NonNull Message msg) {
                     super.handleMessage(msg);
-                    if(msg.arg1 == RunningDataType.BREATH.ordinal()){
+                    if(msg.arg1 == RunningDataType.BREATH.ordinal() && runInfo.getIsBreathUsed()){
                         runInfo.addBreathItem((Breath)msg.obj);
-
                         Log.d(TAG, "Breath: " + ((Breath) msg.obj).getBreathState().name());
                     }
                     else if(msg.arg1 == RunningDataType.LOCATION.ordinal()){
@@ -75,14 +74,19 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                     }else if(msg.arg1 == RunningDataType.STEP.ordinal()){
                         runInfo.addStepCount((Step)msg.obj);
                         Log.d(TAG, "Step: " + ((Step) msg.obj).getCount());
-
-                        breathReceiver.doConvert(System.currentTimeMillis());
+                        if(runInfo.getIsBreathUsed()) {
+                            assert breathReceiver != null;
+                            breathReceiver.doConvert(System.currentTimeMillis());
+                        }
                     }
                 }
             };
 
             gpsReceiver.setDataHandler(handler);
-            breathReceiver.setDataHandler(handler);
+            if(runInfo.getIsBreathUsed()){
+                assert breathReceiver != null;
+                breathReceiver.setDataHandler(handler);
+            }
             stepCounter.setDataHandler(handler);
         }
     }
@@ -97,10 +101,14 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
         gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity));
-        breathReceiver = new BreathReceiver((
-                AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
-                activity.getApplicationContext()
-        );
+        if(runInfo.getIsBreathUsed()) {
+            breathReceiver = new BreathReceiver((
+                    AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
+                    activity.getApplicationContext()
+            );
+        } else{
+            breathReceiver = null;
+        }
         stepCounter = new StepCounter(sensorManager);
     }
 
@@ -138,8 +146,9 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         updateTimer.schedule(updateTask, 1000, 500);
 
         gpsReceiver.start();
-        breathReceiver.start();
         stepCounter.start();
+        if(runInfo.getIsBreathUsed())
+            breathReceiver.start();
 
         runInfo.setStartDateTime(OffsetDateTime.now());
         runInfo.setEndDateTime(OffsetDateTime.now());
@@ -154,7 +163,8 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             updateTask = null;
         }
         gpsReceiver.stop();
-        breathReceiver.stop();
+        if(runInfo.getIsBreathUsed())
+            breathReceiver.stop();
         stepCounter.stop();
         thread.interrupt();
     }
@@ -162,7 +172,8 @@ public class RunningManager implements ReceiverLifeCycleInterface {
     @Override
     public void pause() {
         gpsReceiver.pause();
-        breathReceiver.pause();
+        if(runInfo.getIsBreathUsed())
+            breathReceiver.pause();
         stepCounter.pause();
         updateTask.pause();
         setState(RunningState.PAUSE);
@@ -170,7 +181,6 @@ public class RunningManager implements ReceiverLifeCycleInterface {
 //            updateTask.cancel();
 //            updateTask = null;
 //        }
-
     }
 
     @Override
@@ -180,7 +190,9 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         runInfo.updateLastDateTime();
         updateTask.resume();
         gpsReceiver.resume();
-        breathReceiver.resume();
+        if(runInfo.getIsBreathUsed())
+            breathReceiver.resume();
+
         stepCounter.resume();
     }
 

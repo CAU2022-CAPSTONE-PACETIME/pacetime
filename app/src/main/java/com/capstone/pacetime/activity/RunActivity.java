@@ -64,6 +64,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         command = new RunDetailInfoUpdateCommand();
         command.setViewModel(viewModel);
         binding.setDetailRunInfo(viewModel);
+
         binding.constraintReady.setVisibility(View.VISIBLE);
         binding.constraintRun.setVisibility(View.INVISIBLE);
 
@@ -72,8 +73,18 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 RunningManager.getPermissionSets()
                 );
 
-        RealTimeRunInfo runInfo = new RealTimeRunInfo();
+        int inhaleCnt = getIntent().getIntExtra("Inhale", 0);
+        int exhaleCnt = getIntent().getIntExtra("Exhale", 0);
+
+        RealTimeRunInfo runInfo;
+        if(inhaleCnt == 0){
+            runInfo = new RealTimeRunInfo(false);
+        }
+        else{
+            runInfo = new RealTimeRunInfo(true);
+        }
         runInfo.setCommand(command);
+
 
         manager = new RunningManager(this, runInfo);
         manager.setState(RunningState.COUNT);
@@ -118,7 +129,6 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 } else { // PAUSE -> RUN
 
                 }
-
             }
         };
 
@@ -146,7 +156,6 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
-
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
