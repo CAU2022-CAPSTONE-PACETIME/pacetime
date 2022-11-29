@@ -8,13 +8,12 @@ import com.capstone.pacetime.data.Step;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 
 public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
     private String cadenceStr;
     private String stepCountStr;
     private final String startDateStr;
-    private final String isBreathUsedStr;
+    private final boolean isBreathUsed;
     private final String startLocationStr;
 
     public RunDetailInfoViewModel() {
@@ -25,7 +24,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
         // 시작 날짜 YYYY-MM-DD
         startDateStr = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         // isBreathUsed
-        isBreathUsedStr = "O";
+        isBreathUsed = true;
     }
 
     public RunDetailInfoViewModel(RunInfo info){
@@ -48,7 +47,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
         // 시작 날짜 YYYY-MM-DD
         startDateStr = info.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         // isBreathUsed
-        isBreathUsedStr = info.getIsBreathUsed() ? "O" : "X";
+        isBreathUsed = info.getIsBreathUsed();
         //
     }
 
@@ -79,8 +78,8 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
     }
 
     @Bindable
-    public String getIsBreathUsedStr() {
-        return isBreathUsedStr;
+    public boolean getIsBreathUsedStr() {
+        return isBreathUsed;
     }
 
     @Bindable
