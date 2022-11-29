@@ -205,6 +205,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void onStartClick(View v){
         Intent intent = new Intent(this, RunActivity.class);
+        if(binding.switchBreath.isChecked()){
+            intent.putExtra("Inhale", breathPattern.getInhale());
+            intent.putExtra("Exhale", breathPattern.getExhale());
+        }
+        else{
+            intent.putExtra("Inhale", 0);
+            intent.putExtra("Exhale", 0);
+        }
         startActivity(intent);
     }
 
