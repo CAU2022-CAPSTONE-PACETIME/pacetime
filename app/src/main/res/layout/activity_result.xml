@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="detailResultInfo"
+            type="com.capstone.pacetime.viewmodel.RunDetailInfoViewModel"/>
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activity.ResultActivity"
+        >
+        <include
+            android:id="@+id/include_basic_run_info_result"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            layout="@layout/layout_basic_run_info"
+            basicRunInfo="@{detailResultInfo}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/include_detail_run_info_result"
+            />
+
+        <include
+            android:id="@+id/include_detail_run_info_result"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            detailRunInfo="@{detailResultInfo}"
+            layout="@layout/layout_detail_run_info"
+            app:layout_constraintTop_toBottomOf="@id/include_basic_run_info_result"
+            app:layout_constraintBottom_toBottomOf="@id/guide_result"
+            />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.85"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

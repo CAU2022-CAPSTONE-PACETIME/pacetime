@@ -1,14 +1,12 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -28,6 +26,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.capstone.pacetime.util.BluetoothHelper;
+import com.capstone.pacetime.data.BreathPattern;
+import com.capstone.pacetime.R;
+import com.capstone.pacetime.util.RunDataManager;
 import com.capstone.pacetime.databinding.ActivityMainBinding;
 import com.capstone.pacetime.receiver.GPSReceiver;
 import com.google.android.gms.location.LocationServices;
@@ -44,17 +46,55 @@ public class MainActivity extends AppCompatActivity {
     BreathPattern breathPattern;
     static RequestQueue requestQueue;
 
+    private int checkLoadingCount = 0;
+
     private GPSReceiver gps;
     private Handler handler;
     private HandlerThread thread;
+    private final Object lock = new Object();
+    private Handler loadHandler;
+    private HandlerThread loadHandlerThread;
 
+    RunDataManager runDataManager;
     BluetoothHelper bluetoothHelper;
-    MutableLiveData<String> whichDevice = new MutableLiveData<String>(null);
+    MutableLiveData<String> whichDevice = new MutableLiveData<>(null);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
+
+        runDataManager = RunDataManager.getInstance();
+
+        loadHandlerThread = new HandlerThread("DO loading task");
+        loadHandlerThread.start();
+        loadHandler = new Handler(loadHandlerThread.getLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+            }
+        };
+
+        Runnable loadRunnable = new Runnable() {
+            @Override
+            public void run() {
+                runDataManager.allFirebaseToRunInfos();
+                Log.d("MAIN_ACTIVITY", "runInfos size first: " + runDataManager.getRunInfos().size());
+                while(runDataManager.getIsLoading()){
+                    synchronized (lock){
+                        try{
+                            checkLoadingCount++;
+                            Log.d("MAIN_ACTIVITY", "loading..." + checkLoadingCount);
+                            lock.wait(50);
+                            Log.d("MAIN_ACTIVITY", "runInfos size: " + runDataManager.getRunInfos().size());
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        };
+        loadHandler.post(loadRunnable);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setActivity(this);
@@ -102,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         binding.switchBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                breathSwitch(isChecked);
+                isBreathSwitchOn(isChecked);
             }
         });
 
@@ -165,6 +205,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void onStartClick(View v){
         Intent intent = new Intent(this, RunActivity.class);
+        if(binding.switchBreath.isChecked()){
+            intent.putExtra("Inhale", breathPattern.getInhale());
+            intent.putExtra("Exhale", breathPattern.getExhale());
+        }
+        else{
+            intent.putExtra("Inhale", 0);
+            intent.putExtra("Exhale", 0);
+        }
         startActivity(intent);
     }
 
@@ -173,8 +221,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private String currentCityCall(double lat, double lon) {
-        StringBuilder cityBuilder = new StringBuilder();
+    private void currentCityCall(double lat, double lon) {
         String url = "http://api.openweathermap.org/geo/1.0/reverse?"
                 +"lat=" + lat
                 +"&lon="+ lon
@@ -193,7 +240,6 @@ public class MainActivity extends AppCompatActivity {
 
                     Bundle data = new Bundle();
                     data.putString("city", city);
-
                     Message msg = new Message();
 
                     msg.setData(data);
@@ -210,20 +256,10 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.v("WEATHERCALLFAIL2", "weather call failed!");
             }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-
-                return params;
-            }
-        };
+        });
 
         request.setShouldCache(false);
         requestQueue.add(request);
-
-        Log.d("CITYBUILDERWHERE", "city: "+cityBuilder.toString());
-        return cityBuilder.toString();
     }
 
     private void currentWeatherCall(String city){
@@ -266,14 +302,7 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.v("WEATHERCALLFAIL2", "weather call failed!");
             }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-
-                return params;
-            }
-        };
+        });
 
         requestCity.setShouldCache(false);
         requestQueue.add(requestCity);
@@ -293,12 +322,12 @@ public class MainActivity extends AppCompatActivity {
             constraintLayoutParams.rightMargin = constraintLayoutParams.getMarginEnd() / (-2);
             binding.imageNoBreath.setLayoutParams(constraintLayoutParams);
             binding.switchBreath.setChecked(false);
-            breathSwitch(false);
+            isBreathSwitchOn(false);
             whichDevice.setValue(null);
         }
     }
 
-    public void breathSwitch(boolean isOn){
+    public void isBreathSwitchOn(boolean isOn){
         if(isOn){
             runOnUiThread(new Runnable() {
                 @Override
@@ -325,5 +354,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        runDataManager.destory();
     }
 }

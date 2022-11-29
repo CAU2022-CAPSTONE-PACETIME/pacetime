@@ -15,6 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.capstone.pacetime.data.Breath;
+import com.capstone.pacetime.data.RealTimeRunInfo;
+import com.capstone.pacetime.data.enums.RunningDataType;
+import com.capstone.pacetime.data.enums.RunningState;
 import com.capstone.pacetime.data.Step;
 import com.capstone.pacetime.receiver.BreathReceiver;
 import com.capstone.pacetime.receiver.GPSReceiver;
@@ -35,7 +38,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
     private UpdateTask updateTask;
     private final Timer updateTimer;
 
-    private final RunInfo runInfo;
+    private final RealTimeRunInfo runInfo;
     private RunningState state;
 
     private Handler handler;
@@ -56,6 +59,8 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                     super.handleMessage(msg);
                     if(msg.arg1 == RunningDataType.BREATH.ordinal()){
                         runInfo.addBreathItem((Breath)msg.obj);
+
+                        Log.d(TAG, "Breath: " + ((Breath) msg.obj).getBreathState().name());
                     }
                     else if(msg.arg1 == RunningDataType.LOCATION.ordinal()){
                         Bundle data = msg.getData();
@@ -82,7 +87,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
     }
 
-    public RunningManager(AppCompatActivity activity, RunInfo runInfo){
+    public RunningManager(AppCompatActivity activity, RealTimeRunInfo runInfo){
         this.runInfo = runInfo;
 
         updateTimer = new Timer();
@@ -92,7 +97,10 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
         gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity));
-        breathReceiver = new BreathReceiver((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
+        breathReceiver = new BreathReceiver((
+                AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
+                activity.getApplicationContext()
+        );
         stepCounter = new StepCounter(sensorManager);
     }
 

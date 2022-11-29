@@ -1,4 +1,4 @@
-package com.capstone.pacetime;
+package com.capstone.pacetime.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.capstone.pacetime.MainActivity;
+import com.capstone.pacetime.R;
 
 public class SplashActivity extends AppCompatActivity {
 

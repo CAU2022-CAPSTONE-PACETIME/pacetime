@@ -7,15 +7,15 @@
     <data>
         <variable
             name="activity"
-            type="com.capstone.pacetime.MainActivity" />
+            type="com.capstone.pacetime.activity.MainActivity" />
         <variable
             name="pattern"
-            type="com.capstone.pacetime.BreathPattern" />
+            type="com.capstone.pacetime.data.BreathPattern" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".activity.MainActivity">
 
         <ImageButton
             android:id="@+id/button_refresh"

@@ -1,18 +1,14 @@
 package com.capstone.pacetime.command;
 
+import com.capstone.pacetime.data.RealTimeRunInfo;
 import com.capstone.pacetime.viewmodel.RunBasicInfoViewModel;
-import com.capstone.pacetime.RunInfo;
-import com.capstone.pacetime.RunInfoUpdateFlag;
+import com.capstone.pacetime.data.enums.RunInfoUpdateFlag;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
-import java.util.Locale;
 
 public class RunBasicInfoUpdateCommand extends RunInfoUpdateCommand {
     @Override
-    public void update(RunInfo info){
+    public void update(RealTimeRunInfo info){
         EnumSet<RunInfoUpdateFlag> flag = info.getUpdateFlags();
 
         if(flag == null){
@@ -31,14 +27,12 @@ public class RunBasicInfoUpdateCommand extends RunInfoUpdateCommand {
     }
 
     private void updateDistance(float distance){
-        ((RunBasicInfoViewModel)viewModel).setDistanceStr(String.valueOf(distance));
+        ((RunBasicInfoViewModel)viewModel).setDistanceStr(distance);
     }
     private void updatePace(long pace){
-        ((RunBasicInfoViewModel)viewModel).setPaceStr(
-                String.format(Locale.getDefault(), "%02d'%02d\"", pace / 60, pace % 60) );
+        ((RunBasicInfoViewModel)viewModel).setPaceStr(pace);
     }
     private void updateRunningTime(long time){
-        ((RunBasicInfoViewModel)viewModel).setRunningTimeStr(
-                String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60) );
+        ((RunBasicInfoViewModel)viewModel).setRunningTimeStr(time);
     }
 }

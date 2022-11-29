@@ -7,12 +7,12 @@
     <data>
         <variable
             name="historyactivity"
-            type="com.capstone.pacetime.HistoryActivity" />
+            type="com.capstone.pacetime.activity.HistoryActivity" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".HistoryActivity">
+        tools:context=".activity.HistoryActivity">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_history"
