@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
+import com.capstone.pacetime.data.RunInfo;
 import com.capstone.pacetime.util.PermissionChecker;
 import com.capstone.pacetime.R;
 import com.capstone.pacetime.data.RealTimeRunInfo;
@@ -20,6 +22,8 @@ import com.capstone.pacetime.data.enums.RunningState;
 import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.capstone.pacetime.command.RunInfoUpdateCommand;
 import com.capstone.pacetime.databinding.ActivityRunBinding;
+import com.capstone.pacetime.util.RunDataManager;
+import com.capstone.pacetime.util.RunInfoParser;
 import com.capstone.pacetime.viewmodel.RunDetailInfoViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -64,6 +68,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         command = new RunDetailInfoUpdateCommand();
         command.setViewModel(viewModel);
         binding.setDetailRunInfo(viewModel);
+
         binding.constraintReady.setVisibility(View.VISIBLE);
         binding.constraintRun.setVisibility(View.INVISIBLE);
 
@@ -72,8 +77,18 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 RunningManager.getPermissionSets()
                 );
 
-        RealTimeRunInfo runInfo = new RealTimeRunInfo();
+        int inhaleCnt = getIntent().getIntExtra("Inhale", 0);
+        int exhaleCnt = getIntent().getIntExtra("Exhale", 0);
+
+        RealTimeRunInfo runInfo;
+        if(inhaleCnt == 0){
+            runInfo = new RealTimeRunInfo(false);
+        }
+        else{
+            runInfo = new RealTimeRunInfo(true);
+        }
         runInfo.setCommand(command);
+
 
         manager = new RunningManager(this, runInfo);
         manager.setState(RunningState.COUNT);
@@ -115,10 +130,21 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
                         binding.buttonStop.setVisibility(View.INVISIBLE);
                     });
-                } else { // PAUSE -> RUN
+                } else { // PAUSE -> STOP
+                    manager.stop();
 
+                    // TODO: RunDataManager에 넘겨야한다.
+                    RunDataManager rdm = RunDataManager.getInstance();
+                    rdm.runInfoToFirebase(new RunInfoParser(runInfo));
+
+                    // TODO: RunInfo를 받아서 ResultActivity로 넘기자.
+
+                    Intent resultIntent = new Intent(getApplicationContext(), ResultActivity.class);
+                    resultIntent.putExtra("index", 0);
+
+                    startActivity(resultIntent);
+                    finish();
                 }
-
             }
         };
 
@@ -146,7 +172,6 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
-
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {

@@ -14,8 +14,8 @@ public class RealTimeRunInfo extends RunInfo {
     private EnumSet<RunInfoUpdateFlag> flag;
     private RunInfoUpdateCommand command;
 
-    public RealTimeRunInfo() {
-        super();
+    public RealTimeRunInfo(boolean isBreathUsed) {
+        super(isBreathUsed);
         lastDateTime = getStartDateTime();
         flag = null;
         command = null;
