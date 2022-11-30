@@ -131,8 +131,8 @@ public class HistoryActivity extends AppCompatActivity {
         //test용
 //        RunInfoParser runInfoParser1 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 1.2f, 153, 332, 43, false);
 //        RunInfoParser runInfoParser2 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<Step>(), 2.4f, 163, 351, 20, true);
-        RunInfoParser runInfoParser1 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2001, 2, 3, 4, 35, 2, 41300000, ZoneOffset.of("+10:00"))), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<>(), 1.2f, 153, 332, 43, false, new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2001, 2, 3, 4, 35, 2, 41300000, ZoneOffset.of("+10:00"))).getDateEpochSecond());
-        RunInfoParser runInfoParser2 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2002, 3, 4, 11, 32, 1, 126000000, ZoneOffset.of("+08:00"))), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<>(), 2.4f, 163, 351, 20, true, new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2002, 3, 4, 11, 32, 1, 126000000, ZoneOffset.of("+08:00"))).getDateEpochSecond());
+//        RunInfoParser runInfoParser1 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2001, 2, 3, 4, 35, 2, 41300000, ZoneOffset.of("+10:00"))), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<>(), 1.2f, 153, 332, 43, false, new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2001, 2, 3, 4, 35, 2, 41300000, ZoneOffset.of("+10:00"))).getDateEpochSecond());
+//        RunInfoParser runInfoParser2 = new RunInfoParser(new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2002, 3, 4, 11, 32, 1, 126000000, ZoneOffset.of("+08:00"))), new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.now()), null, null, new ArrayList<>(), 2.4f, 163, 351, 20, true, new RunInfoParser.OffsetDateTimeParser(OffsetDateTime.of(2002, 3, 4, 11, 32, 1, 126000000, ZoneOffset.of("+08:00"))).getDateEpochSecond());
 
 
         handlerThread = new HandlerThread("data storing and loading thread");
@@ -168,57 +168,57 @@ public class HistoryActivity extends AppCompatActivity {
         };
         firebaseHandler.post(runnableLoad);
 
-        Runnable runnable1 = new Runnable() {
-            @Override
-            public void run() {
-                runDataManager.runInfoToFirebase(runInfoParser1);
-                while (runDataManager.getIsAddLoading()) {
-                    synchronized (lock) {
-                        try {
-                            lock.wait(100);
-                            Log.d("RUNDATAMANAGER", "success" + runDataManager.getRunInfos().size());
-                        } catch (InterruptedException e) {
-                            Log.d("RUNDATAMANAGER", "failed" + runDataManager.getRunInfos().size());
-                            e.printStackTrace();
-                        }
-                    }
-                }
-//                isLoadFinished = true;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.notifyItemInserted(0);
-                    }
-                });
-            }
-        };
-        firebaseHandler.post(runnable1);
+//        Runnable runnable1 = new Runnable() {
+//            @Override
+//            public void run() {
+//                runDataManager.runInfoToFirebase(runInfoParser1);
+//                while (runDataManager.getIsAddLoading()) {
+//                    synchronized (lock) {
+//                        try {
+//                            lock.wait(100);
+//                            Log.d("RUNDATAMANAGER", "success" + runDataManager.getRunInfos().size());
+//                        } catch (InterruptedException e) {
+//                            Log.d("RUNDATAMANAGER", "failed" + runDataManager.getRunInfos().size());
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+////                isLoadFinished = true;
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        adapter.notifyItemInserted(0);
+//                    }
+//                });
+//            }
+//        };
+//        firebaseHandler.post(runnable1);
+//
+//        Runnable runnable2 = new Runnable() {
+//            @Override
+//            public void run() {
+//                runDataManager.runInfoToFirebase(runInfoParser2);
+//                while (runDataManager.getIsAddLoading()) {
+//                    synchronized (lock) {
+//                        try {
+//                            lock.wait(100);
+//                            Log.d("RUNDATAMANAGER", "success" + runDataManager.getRunInfos().size());
+//                        } catch (InterruptedException e) {
+//                            Log.d("RUNDATAMANAGER", "failed" + runDataManager.getRunInfos().size());
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        adapter.notifyItemInserted(0);
+//                    }
+//                });
+//            }
+//        };
 
-        Runnable runnable2 = new Runnable() {
-            @Override
-            public void run() {
-                runDataManager.runInfoToFirebase(runInfoParser2);
-                while (runDataManager.getIsAddLoading()) {
-                    synchronized (lock) {
-                        try {
-                            lock.wait(100);
-                            Log.d("RUNDATAMANAGER", "success" + runDataManager.getRunInfos().size());
-                        } catch (InterruptedException e) {
-                            Log.d("RUNDATAMANAGER", "failed" + runDataManager.getRunInfos().size());
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.notifyItemInserted(0);
-                    }
-                });
-            }
-        };
-
-        firebaseHandler.post(runnable2);
+//        firebaseHandler.post(runnable2);
 
 
         LinearLayoutManager layoutManager =  new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
