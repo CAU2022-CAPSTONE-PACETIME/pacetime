@@ -66,7 +66,9 @@ public class RunDataManager {
         runInfos.add(0, runInfoParser.parserToOrigin());
 
         Log.d(TAG, "runinfos size = " + runInfos.size());
-        runDataStoreTest.document("" + runInfos.size()).set(runData).addOnSuccessListener(new OnSuccessListener<Void>() {
+        runDataStoreTest.document("" + runInfos.size())
+                .set(runData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Log.v(TAG, "Success");
