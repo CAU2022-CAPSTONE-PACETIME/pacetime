@@ -77,7 +77,7 @@ public class GPSReceiver implements ReceiverLifeCycleInterface {
         @Override
         public void run() {
             CancellationTokenSource receiverCts = new CancellationTokenSource();
-            client.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, receiverCts.getToken())
+            client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, receiverCts.getToken())
                     .addOnSuccessListener(
                             (location) -> {
                                 if(paused){
