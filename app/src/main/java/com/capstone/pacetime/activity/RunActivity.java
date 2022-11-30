@@ -242,8 +242,6 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onPause() {
         super.onPause();
-
-        manager.pause();
     }
 
     @Override
