@@ -63,9 +63,7 @@ public class RunDataManager {
         runData.put("breathItems", runInfoParser.getBreathItems());
         runData.put("dateEpochSecond", runInfoParser.getDateEpochSecond());
 
-        synchronized (runInfos){
-            runInfos.add(0, runInfoParser.parserToOrigin());
-        }
+        runInfos.add(0, runInfoParser.parserToOrigin());
 
         Log.d(TAG, "runinfos size = " + runInfos.size());
         runDataStoreTest.document("" + runInfos.size()).set(runData).addOnSuccessListener(new OnSuccessListener<Void>() {
