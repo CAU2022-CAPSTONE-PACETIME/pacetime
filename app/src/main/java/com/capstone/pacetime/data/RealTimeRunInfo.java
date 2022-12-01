@@ -104,14 +104,14 @@ public class RealTimeRunInfo extends RunInfo {
     private int lastDistanceIdx = 0;
 
     private float calculateDistance(){
-        float nowDist = distance;
+        float newDist = 0;
         for(; lastDistanceIdx < trace.size()-1; lastDistanceIdx++){
-            nowDist += trace.get(lastDistanceIdx).distanceTo(trace.get(lastDistanceIdx+1));
+            newDist += trace.get(lastDistanceIdx).distanceTo(trace.get(lastDistanceIdx+1));
         }
 
-        nowDist /= 1000;
+        newDist /= 1000;
 
-        return nowDist;
+        return distance + newDist;
     }
 
     private long calculatePace(){
