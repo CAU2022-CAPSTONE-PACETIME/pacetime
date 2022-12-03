@@ -24,6 +24,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
+import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -43,7 +46,9 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     private final int bufferRecordSize;
     private final int MAX_QUEUE_SIZE = 11025 * 3;
 
-    private final ConcurrentLinkedQueue<Short> soundQueue;
+    private boolean bufferOverflowFlag = false;
+
+    private IntBuffer soundQueue;
 
     private Handler
             receiveHandler,
@@ -69,6 +74,8 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
             soundToBreathThread.start();
 
             audioRecord.startRecording();
+
+            soundQueue.mark();
 
             Log.d(TAG, "Breath Thread Start");
 
@@ -145,30 +152,37 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
         public void run(){
             for(short val : buffer){
                 synchronized (soundQueue){
-                    soundQueue.add(val);
-                    if(soundQueue.size() > AUDIO_SAMP_RATE * recordSeconds){
-                        soundQueue.poll();
+//                    if(soundQueue.size() > AUDIO_SAMP_RATE * recordSeconds){
+//                        soundQueue.poll();
+//                    }
+                    try{
+                        soundQueue.put(val);
+                        if(bufferOverflowFlag && soundQueue.position() > AUDIO_SAMP_RATE * recordSeconds){
+                            bufferOverflowFlag = false;
+                        }
+                    }catch(BufferOverflowException boe){
+                        soundQueue = (IntBuffer) ((IntBuffer)soundQueue.position(soundQueue.position() - 22050)).compact().rewind();
+                        soundQueue.put(val);
+                        bufferOverflowFlag = true;
                     }
-//                    soundQueue.put(val);
-
-
                 }
             }
         }
     }
 
     public void doConvert(long timestamp){
-        if(soundQueue.size() >= 22050){
-            soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.toArray(), timestamp));
+        synchronized (soundQueue){
+            if(soundQueue.position() >= 22050 || bufferOverflowFlag){
+                soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.position() - 22050, timestamp));
+            }
+            else {
+                Log.d(TAG, "SoundQueue is Empty");
+            }
+        }
 
-        }
-        else {
-            Log.d(TAG, "SoundQueue is Empty");
-        }
     }
 
     class SoundToBreathThread extends HandlerThread{
-
         public SoundToBreathThread(String name) {
             super(name);
         }
@@ -205,55 +219,61 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
             Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
 
             float val = outputTensor.getDataAsFloatArray()[0];
-            if(val <= 0.5){
+            if(val <= 0.4){
 //                Log.d(TAG, "Breath: EXHALE");
                 return BreathState.EXHALE;
             }
-            else{
+            else if (val >= 0.6){
 //                Log.d(TAG, "Breath: INHALE");
                 return BreathState.INHALE;
+            } else{
+                return BreathState.NONE;
             }
         }
     }
 
     class SoundToBreathRunnable implements Runnable{
-        private final Short[] sound;
+//        private final Short[] sound;
         private final long timestamp;
-//        private final IntBuffer sound;
+        private FloatBuffer sound;
 
-        public SoundToBreathRunnable(Object[] sound, long timestamp){
-            this.sound = new Short[22050]; // 22050
+//        public SoundToBreathRunnable(Object[] sound, long timestamp){
+//            this.sound = new Short[22050]; // 22050
+//
+//            Log.i(TAG, "S2B soundSize : " + sound.length);
+//
+//            int lim = Math.min(sound.length, 22050);
+//
+//            for(int i = 0; i < lim; i++){
+//                this.sound[i] = (Short)sound[i];
+//            }
+//
+//            this.timestamp = timestamp;
+//        }
+        public SoundToBreathRunnable(int offset, long timestamp){
+            sound = ByteBuffer.allocateDirect(22050*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
-            Log.i(TAG, "S2B soundSize : " + sound.length);
-
-            int lim = Math.min(sound.length, 22050);
-
-            for(int i = 0; i < lim; i++){
-                this.sound[i] = (Short)sound[i];
+            synchronized (soundQueue){
+                for(int i = 0; i < 22050; offset++, i++){
+                    sound.put(soundQueue.get((offset + soundQueue.capacity()) % soundQueue.capacity()));
+                }
             }
 
             this.timestamp = timestamp;
         }
-//        public SoundToBreathRunnable(int offset, long timestamp){
-//            int[] soundBuffer = new int[22050];
-//
-//            soundQueue.get(soundBuffer, offset, 22050);
-//            sound = IntBuffer.wrap(soundBuffer);
-//
-//            this.timestamp = timestamp;
-//        }
         @Override
         public void run() {
             // TODO: Pytorch Implementation Required
-            FloatBuffer buf = ByteBuffer.allocateDirect(22050*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-
-            for(Short s : sound){
-                buf.put(s);
-            }
+//            FloatBuffer buf = ByteBuffer.allocateDirect(22050*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+//
+//            for(Short s : sound){
+//                buf.put(s);
+//            }
+            assert sound != null;
 
             Message msg = new Message();
 //            msg.obj = new Breath(module.convert(buf), timestamp);
-            msg.obj = new Breath(module.convert(buf), timestamp);
+            msg.obj = new Breath(module.convert(sound), timestamp);
             msg.arg1 = RunningDataType.BREATH.ordinal();
             dataHandler.sendMessage(msg);
         }
@@ -299,9 +319,8 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 
         bufferRecord = new short[bufferRecordSize+1];
 
-        soundQueue = new ConcurrentLinkedQueue<>();
-//        soundQueue = ByteBuffer.allocateDirect(22050*10).asIntBuffer();
-//        soundQueue.limit(22050);
+//        soundQueue = new ConcurrentLinkedQueue<>();
+        soundQueue = ByteBuffer.allocateDirect(22050*20).asIntBuffer();
 
         audioRecord = new AudioRecord(
 //                MediaRecorder.AudioSource.MIC,
