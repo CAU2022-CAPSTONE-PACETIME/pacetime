@@ -55,8 +55,7 @@ public class PermissionChecker {
             permissionLauncher.launch(deniedPermissions.toArray(new String[]{}));
         }
 
-
-        return true;
+        return false;
     }
 
     public static boolean checkPermission(AppCompatActivity activity, String permission, String content){
