@@ -243,6 +243,14 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     protected void onDestroy() {
+        if(manager != null) {
+            if(manager.getState() != RunningState.STOP){
+                manager.stop();
+                manager = null;
+            }
+        }
+
+        Log.d(TAG, "Destroy");
         super.onDestroy();
     }
 }
