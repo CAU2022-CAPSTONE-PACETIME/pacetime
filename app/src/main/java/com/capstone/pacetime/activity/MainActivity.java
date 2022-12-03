@@ -277,7 +277,11 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray weatherJson = jsonObject.getJSONArray("weather");
                     JSONObject weatherObj = weatherJson.getJSONObject(0);
 
-                    String weather = weatherObj.getString("description");
+//                    String weather = weatherObj.getString("description");
+                    String weatherIconSource = "i" + weatherObj.getString("icon");
+                    Log.d("MAIN_ACTIVITY", "weather resource = " + weatherIconSource);
+                    int weatherId = getResources().getIdentifier("com.capstone.pacetime:drawable/" + weatherIconSource, null, null);
+                    Log.d("MAIN_ACTIVITY", "weather id = " + weatherId);
 
                     JSONObject tempK = new JSONObject(jsonObject.getString("main"));
 
@@ -288,7 +292,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             binding.textPlace.setText(city);
-                            binding.textWeather.setText(weather);
+//                            binding.textWeather.setText(weather);
+                            binding.textWeather.setText("");
+                            binding.imageWeather.setImageResource(weatherId);
+//                            binding.imageWeather.setImageResource(R.drawable.i01d);
                             binding.textTemperature.setText(tempInC);
                         }
                     });
