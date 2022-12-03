@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            binding.textBluetooth.setBackgroundColor(Color.parseColor("#000080"));
+                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#000080")));
                             binding.textBluetooth.setText(nameDevice);
                         }
                     });
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            binding.textBluetooth.setBackgroundColor(Color.parseColor("#F00000"));
+                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F00000")));
                             binding.textBluetooth.setText("Device\nUnconnected");
                         }
                     });
