@@ -94,7 +94,8 @@ public class RealTimeRunInfo extends RunInfo {
         setRunningTime(
                 getRunningTime() + (nowRT - beforeRT)
         );
-        setCadence((int) (stepCount.get(stepCount.size()-1).getCount() / runningTime));
+
+        setCadence(calculateCadence());
         setDistance(calculateDistance());
         setPace(calculatePace());
 
@@ -102,6 +103,13 @@ public class RealTimeRunInfo extends RunInfo {
     }
 
     private int lastDistanceIdx = 0;
+
+    private int calculateCadence(){
+        if(runningTime == 0){
+            return 0;
+        }
+        return (int) (stepCount.get(stepCount.size()-1).getCount() / runningTime);
+    }
 
     private float calculateDistance(){
         float newDist = 0;
