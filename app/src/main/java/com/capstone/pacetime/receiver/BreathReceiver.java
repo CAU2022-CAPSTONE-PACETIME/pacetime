@@ -30,6 +30,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -48,7 +49,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 
     private boolean bufferOverflowFlag = false;
 
-    private IntBuffer soundQueue;
+    private final IntBuffer soundQueue;
 
     private Handler
             receiveHandler,
@@ -161,7 +162,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
                             bufferOverflowFlag = false;
                         }
                     }catch(BufferOverflowException boe){
-                        soundQueue = (IntBuffer) ((IntBuffer)soundQueue.position(soundQueue.position() - 22050)).compact().rewind();
+                        ((IntBuffer)soundQueue.position(soundQueue.position() - 22050)).compact().rewind();
                         soundQueue.put(val);
                         bufferOverflowFlag = true;
                     }
@@ -173,6 +174,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     public void doConvert(long timestamp){
         synchronized (soundQueue){
             if(soundQueue.position() >= 22050 || bufferOverflowFlag){
+                Log.d(TAG, "buf pos: " + soundQueue.position());
                 soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.position() - 22050, timestamp));
             }
             else {
@@ -235,7 +237,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     class SoundToBreathRunnable implements Runnable{
 //        private final Short[] sound;
         private final long timestamp;
-        private FloatBuffer sound;
+        private final FloatBuffer sound;
 
 //        public SoundToBreathRunnable(Object[] sound, long timestamp){
 //            this.sound = new Short[22050]; // 22050
