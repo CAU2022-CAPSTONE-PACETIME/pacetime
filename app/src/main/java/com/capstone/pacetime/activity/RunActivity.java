@@ -72,10 +72,12 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         binding.constraintReady.setVisibility(View.VISIBLE);
         binding.constraintRun.setVisibility(View.INVISIBLE);
 
-        PermissionChecker.checkPermissions(
+        if(!PermissionChecker.checkPermissions(
                 this,
                 RunningManager.getPermissionSets()
-                );
+        )){
+            finish();
+        }
 
         int inhaleCnt = getIntent().getIntExtra("Inhale", 0);
         int exhaleCnt = getIntent().getIntExtra("Exhale", 0);
@@ -89,8 +91,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         runInfo.setCommand(command);
 
-
-        manager = new RunningManager(this, runInfo);
+        manager = new RunningManager(RunActivity.this, runInfo);
         manager.setState(RunningState.COUNT);
 
         runTriggerThread = new HandlerThread("RunTriggerThread");
@@ -101,7 +102,8 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
                 if(msg.what == 0){
-                    manager.start();
+                    if(manager != null)
+                        manager.start();
                     runTriggerThread.interrupt();
                     runTriggerHandler = null;
                 }
@@ -199,10 +201,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void drawUserTrace(List<Location> trace){
         ArrayList<LatLng> ll = new ArrayList<>();
-        trace.forEach((Location location) -> {
-                ll.add(new LatLng(location.getLatitude(), location.getLongitude()));
-            }
-        );
+        trace.forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
 
         PolylineOptions polyOptions = new PolylineOptions()
                 .clickable(false)
@@ -234,7 +233,6 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onStart() {
         super.onStart();
-
         Timer timer = new Timer();
         timer.schedule(new ReadyTimerTask(3), 0, 1000);
     }
@@ -246,8 +244,16 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        if(manager != null) {
+            if(manager.getState() != RunningState.STOP){
+                manager.stop();
+                manager = null;
+            }
+        }
+        if(runTriggerThread != null && runTriggerThread.isAlive()){
+            runTriggerThread.interrupt();
+        }
         Log.d(TAG, "Destroy");
+        super.onDestroy();
     }
-
 }
