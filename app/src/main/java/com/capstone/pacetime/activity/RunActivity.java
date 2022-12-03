@@ -200,10 +200,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void drawUserTrace(List<Location> trace){
         ArrayList<LatLng> ll = new ArrayList<>();
-        trace.forEach((Location location) -> {
-                ll.add(new LatLng(location.getLatitude(), location.getLongitude()));
-            }
-        );
+        trace.forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
 
         PolylineOptions polyOptions = new PolylineOptions()
                 .clickable(false)
