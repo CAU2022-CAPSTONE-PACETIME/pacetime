@@ -102,7 +102,8 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
                 if(msg.what == 0){
-                    manager.start();
+                    if(manager != null)
+                        manager.start();
                     runTriggerThread.interrupt();
                     runTriggerHandler = null;
                 }
@@ -249,7 +250,9 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 manager = null;
             }
         }
-
+        if(runTriggerThread != null && runTriggerThread.isAlive()){
+            runTriggerThread.interrupt();
+        }
         Log.d(TAG, "Destroy");
         super.onDestroy();
     }
