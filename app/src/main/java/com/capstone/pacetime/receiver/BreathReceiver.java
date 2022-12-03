@@ -227,13 +227,15 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
             Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
 
             float val = outputTensor.getDataAsFloatArray()[0];
-            if(val <= 0.5){
+            if(val <= 0.4){
 //                Log.d(TAG, "Breath: EXHALE");
                 return BreathState.EXHALE;
             }
-            else{
+            else if (val >= 0.6){
 //                Log.d(TAG, "Breath: INHALE");
                 return BreathState.INHALE;
+            } else{
+                return BreathState.NONE;
             }
         }
     }
