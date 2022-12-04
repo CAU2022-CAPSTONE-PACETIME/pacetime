@@ -84,10 +84,10 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
 
         RealTimeRunInfo runInfo;
         if(inhaleCnt == 0){
-            runInfo = new RealTimeRunInfo(false);
+            runInfo = new RealTimeRunInfo(false, 0, 0);
         }
         else{
-            runInfo = new RealTimeRunInfo(true);
+            runInfo = new RealTimeRunInfo(true, inhaleCnt, exhaleCnt);
         }
         runInfo.setCommand(command);
 
