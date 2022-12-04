@@ -172,10 +172,11 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     }
 
     public void doConvert(long timestamp){
+        final int offset = (int) (AUDIO_SAMP_RATE * 0.3);
         synchronized (soundQueue){
             if(soundQueue.position() >= 22050 || bufferOverflowFlag){
                 Log.d(TAG, "buf pos: " + soundQueue.position());
-                soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.position() - 22050, timestamp));
+                soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.position() - 22050 - offset, timestamp));
             }
             else {
                 Log.d(TAG, "SoundQueue is Empty");
@@ -235,7 +236,6 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     }
 
     class SoundToBreathRunnable implements Runnable{
-//        private final Short[] sound;
         private final long timestamp;
         private final FloatBuffer sound;
 
