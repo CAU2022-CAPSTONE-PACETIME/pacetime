@@ -173,6 +173,9 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         mapView = binding.includeDetailRunInfo.mapView;
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        Timer timer = new Timer();
+        timer.schedule(new ReadyTimerTask(3), 0, 1000);
     }
 
     @Override
@@ -233,8 +236,6 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onStart() {
         super.onStart();
-        Timer timer = new Timer();
-        timer.schedule(new ReadyTimerTask(3), 0, 1000);
     }
 
     @Override
