@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.capstone.pacetime.BuildConfig;
 import com.capstone.pacetime.util.BluetoothHelper;
 import com.capstone.pacetime.data.BreathPattern;
 import com.capstone.pacetime.R;
@@ -185,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            binding.textBluetooth.setBackgroundColor(Color.parseColor("#000080"));
+                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#000080")));
                             binding.textBluetooth.setText(nameDevice);
                         }
                     });
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            binding.textBluetooth.setBackgroundColor(Color.parseColor("#F00000"));
+                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F00000")));
                             binding.textBluetooth.setText("Device\nUnconnected");
                         }
                     });
@@ -263,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void currentWeatherCall(String city){
-        String urlCity = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=00969f33984829a2faf341274fe44028";
+        String urlCity = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + BuildConfig.WEATHER_API_KEY;
 
         Log.d("CITYWHERE", "city1: " + city);
 
@@ -277,7 +279,11 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray weatherJson = jsonObject.getJSONArray("weather");
                     JSONObject weatherObj = weatherJson.getJSONObject(0);
 
-                    String weather = weatherObj.getString("description");
+//                    String weather = weatherObj.getString("description");
+                    String weatherIconSource = "i" + weatherObj.getString("icon");
+                    Log.d("MAIN_ACTIVITY", "weather resource = " + weatherIconSource);
+                    int weatherId = getResources().getIdentifier("com.capstone.pacetime:drawable/" + weatherIconSource, null, null);
+                    Log.d("MAIN_ACTIVITY", "weather id = " + weatherId);
 
                     JSONObject tempK = new JSONObject(jsonObject.getString("main"));
 
@@ -288,7 +294,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             binding.textPlace.setText(city);
-                            binding.textWeather.setText(weather);
+//                            binding.textWeather.setText(weather);
+                            binding.textWeather.setText("");
+                            binding.imageWeather.setImageResource(weatherId);
+//                            binding.imageWeather.setImageResource(R.drawable.i01d);
                             binding.textTemperature.setText(tempInC);
                         }
                     });

@@ -30,6 +30,8 @@ public class RunInfoParser {
     protected int cadence;
     protected boolean isBreathUsed;
     protected long dateEpochSecond;
+    protected int inhale;
+    protected int exhale;
 
     public RunInfoParser(){
         OffsetDateTimeParser startDateTime = new OffsetDateTimeParser();
@@ -44,11 +46,15 @@ public class RunInfoParser {
         this.stepCount = new ArrayList<>();
         this.isBreathUsed = true;
         this.dateEpochSecond = startDateTime.getDateEpochSecond();
+        this.inhale = 0;
+        this.exhale = 0;
     }
 
-    public RunInfoParser(boolean isBreathUsed){
+    public RunInfoParser(boolean isBreathUsed, int inhale, int exhale){
         this();
         this.isBreathUsed = isBreathUsed;
+        this.inhale = inhale;
+        this.exhale = exhale;
     }
     public RunInfoParser(
             OffsetDateTimeParser startDateTime,
@@ -61,7 +67,9 @@ public class RunInfoParser {
             long pace,
             int cadence,
             boolean isBreathUsed,
-            long dateEpochSecond
+            long dateEpochSecond,
+            int inhale,
+            int exhale
     ){
         this();
         this.startDateTime      = startDateTime;
@@ -74,7 +82,9 @@ public class RunInfoParser {
         this.pace               = pace        ;
         this.cadence            = cadence     ;
         this.isBreathUsed       = isBreathUsed;
-        this.dateEpochSecond    = dateEpochSecond; //
+        this.dateEpochSecond    = dateEpochSecond;
+        this.inhale             = inhale;
+        this.exhale             = exhale;
     }
 
     public RunInfoParser(RunInfo runInfo){
@@ -91,6 +101,8 @@ public class RunInfoParser {
         this.cadence            = runInfo.getCadence();
         this.isBreathUsed       = runInfo.getIsBreathUsed();
         this.dateEpochSecond    = startDateTime.getDateEpochSecond();
+        this.inhale             = runInfo.getInhale();
+        this.exhale             = runInfo.getExhale();
     }
 
 
@@ -423,8 +435,10 @@ public class RunInfoParser {
     public long getDateEpochSecond() {
         return dateEpochSecond;
     }
+    public int getInhale() { return inhale; }
+    public int getExhale() { return exhale; }
 
     public RunInfo parserToOrigin(){
-        return new RunInfo(startDateTime.parserToOrigin(), endDateTime.parserToOrigin(), listLocParserTolistLoc(trace), breathItems, stepCount, distance, runningTime, pace, cadence, isBreathUsed);
+        return new RunInfo(startDateTime.parserToOrigin(), endDateTime.parserToOrigin(), listLocParserTolistLoc(trace), breathItems, stepCount, distance, runningTime, pace, cadence, isBreathUsed, inhale, exhale);
     }
 }

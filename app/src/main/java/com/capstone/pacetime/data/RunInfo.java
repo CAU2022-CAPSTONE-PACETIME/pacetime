@@ -30,6 +30,10 @@ public class RunInfo {
     protected long pace;
     protected int cadence;
     protected boolean isBreathUsed;
+    protected int inhale;
+    protected int exhale;
+
+
 
     public RunInfo(){
         startDateTime = OffsetDateTime.now();
@@ -42,10 +46,14 @@ public class RunInfo {
         trace = new ArrayList<>();
         stepCount = new ArrayList<>();
         isBreathUsed = true;
+        inhale = 0;
+        exhale = 0;
     }
-    public RunInfo(boolean isBreathUsed){
+    public RunInfo(boolean isBreathUsed, int inhale, int exhale){
         this();
         this.isBreathUsed = isBreathUsed;
+        this.inhale = inhale;
+        this.exhale = exhale;
     }
     public RunInfo(
             OffsetDateTime startDateTime,
@@ -57,7 +65,9 @@ public class RunInfo {
             long runningTime,
             long pace,
             int cadence,
-            boolean isBreathUsed
+            boolean isBreathUsed,
+            int inhale,
+            int exhale
     ){
         this();
         this.startDateTime   = startDateTime;
@@ -70,6 +80,8 @@ public class RunInfo {
         this.trace           = trace       ;
         this.stepCount       = stepCount   ;
         this.isBreathUsed    = isBreathUsed;
+        this.inhale = inhale;
+        this.exhale = exhale;
     }
 
     public boolean getIsBreathUsed(){
@@ -101,5 +113,11 @@ public class RunInfo {
     }
     public List<Step> getStepCount() {
         return stepCount;
+    }
+    public int getInhale() {
+        return inhale;
+    }
+    public int getExhale() {
+        return exhale;
     }
 }
