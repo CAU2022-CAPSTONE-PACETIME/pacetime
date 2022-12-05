@@ -5,8 +5,12 @@ public enum BreathState {
     NONE,
     EXHALE;
 
+    BreathState(){ value = 0; }
     float value;
     public float getValue(){
         return value;
+    }
+    public void setValue(float value){
+        this.value = value;
     }
 }
