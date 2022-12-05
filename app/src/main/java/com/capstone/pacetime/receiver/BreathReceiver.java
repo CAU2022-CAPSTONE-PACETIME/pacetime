@@ -224,18 +224,18 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
             float val = outputTensor.getDataAsFloatArray()[0];
             Log.d(TAG, "value: " + val);
 
-            final float inhaleTh = 0.75f;
-            final float exhaleTh = 0.7f;
+            final float inhaleTh = 0.5f;
+            final float exhaleTh = 0.5f;
 
             if(val <= exhaleTh){
 //                Log.d(TAG, "Breath: EXHALE");
-                return BreathState.EXHALE;
+                return BreathState.EXHALE.setValue(val);
             }
             else if (val >= inhaleTh){
 //                Log.d(TAG, "Breath: INHALE");
-                return BreathState.INHALE;
+                return BreathState.INHALE.setValue(val);
             } else{
-                return BreathState.NONE;
+                return BreathState.NONE.setValue(val);
             }
         }
     }
@@ -244,19 +244,6 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
         private final long timestamp;
         private final FloatBuffer sound;
 
-//        public SoundToBreathRunnable(Object[] sound, long timestamp){
-//            this.sound = new Short[22050]; // 22050
-//
-//            Log.i(TAG, "S2B soundSize : " + sound.length);
-//
-//            int lim = Math.min(sound.length, 22050);
-//
-//            for(int i = 0; i < lim; i++){
-//                this.sound[i] = (Short)sound[i];
-//            }
-//
-//            this.timestamp = timestamp;
-//        }
         public SoundToBreathRunnable(int offset, long timestamp){
             sound = ByteBuffer.allocateDirect(22050*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
@@ -270,16 +257,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
         }
         @Override
         public void run() {
-            // TODO: Pytorch Implementation Required
-//            FloatBuffer buf = ByteBuffer.allocateDirect(22050*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-//
-//            for(Short s : sound){
-//                buf.put(s);
-//            }
-            assert sound != null;
-
             Message msg = new Message();
-//            msg.obj = new Breath(module.convert(buf), timestamp);
             msg.obj = new Breath(module.convert(sound), timestamp);
             msg.arg1 = RunningDataType.BREATH.ordinal();
             dataHandler.sendMessage(msg);

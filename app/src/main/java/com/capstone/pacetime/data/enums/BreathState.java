@@ -10,7 +10,8 @@ public enum BreathState {
     public float getValue(){
         return value;
     }
-    public void setValue(float value){
+    public BreathState setValue(float value){
         this.value = value;
+        return this;
     }
 }
