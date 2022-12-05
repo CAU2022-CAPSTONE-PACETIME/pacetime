@@ -14,7 +14,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
     private String stepCountStr;
     private final String startDateStr;
     private final boolean isBreathUsed;
-    private final String startLocationStr;
+    private String startLocationStr;
 
     public RunDetailInfoViewModel() {
         super();
@@ -34,9 +34,9 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
         stepCountStr = "-1";
         info.getStepCount().stream().max((Step o1, Step o2) -> {
                 if(o1.getCount() < o2.getCount()){
-                    return 1;
-                }else if(o1.getCount() > o2.getCount()){
                     return -1;
+                }else if(o1.getCount() > o2.getCount()){
+                    return 1;
                 }
                 return 0;
             }
@@ -80,6 +80,11 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
     @Bindable
     public boolean getIsBreathUsed() {
         return isBreathUsed;
+    }
+
+
+    public void setStartLocationStr(String startLocationStr) {
+        this.startLocationStr = startLocationStr;
     }
 
     @Bindable
