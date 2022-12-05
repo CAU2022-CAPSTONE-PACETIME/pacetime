@@ -172,10 +172,11 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     }
 
     public void doConvert(long timestamp){
+        final int offset = (int) (AUDIO_SAMP_RATE * 0.3);
         synchronized (soundQueue){
             if(soundQueue.position() >= 22050 || bufferOverflowFlag){
                 Log.d(TAG, "buf pos: " + soundQueue.position());
-                soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.position() - 22050, timestamp));
+                soundToBreathHandler.post(new SoundToBreathRunnable(soundQueue.position() - 22050 - offset, timestamp));
             }
             else {
                 Log.d(TAG, "SoundQueue is Empty");
@@ -221,11 +222,16 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
             Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
 
             float val = outputTensor.getDataAsFloatArray()[0];
-            if(val <= 0.4){
+            Log.d(TAG, "value: " + val);
+
+            final float inhaleTh = 0.75f;
+            final float exhaleTh = 0.7f;
+
+            if(val <= exhaleTh){
 //                Log.d(TAG, "Breath: EXHALE");
                 return BreathState.EXHALE;
             }
-            else if (val >= 0.6){
+            else if (val >= inhaleTh){
 //                Log.d(TAG, "Breath: INHALE");
                 return BreathState.INHALE;
             } else{
@@ -235,7 +241,6 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     }
 
     class SoundToBreathRunnable implements Runnable{
-//        private final Short[] sound;
         private final long timestamp;
         private final FloatBuffer sound;
 
