@@ -45,6 +45,21 @@
             app:layout_constraintEnd_toStartOf="@id/textview_run_distance"
             android:gravity="center"
             android:text="@{model.startDateStr}"/>
+
+        <TextView
+            android:id="@+id/textview_run_start_place_hold"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintTop_toBottomOf="@id/textview_run_date_time"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/textview_run_distance"
+            android:gravity="center"
+            android:textColor="#999999"
+            android:text="start place\n\n"/>
+
         <TextView
             android:id="@+id/textview_run_start_place"
             android:layout_width="0dp"
@@ -56,7 +71,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/textview_run_distance"
             android:gravity="center"
-            android:text="@{`start place\n\n` + model.startLocationStr}"/>
+            android:text="@{`\n\n` + model.startLocationStr}"/>
 
         <TextView
             android:id="@+id/textview_run_distance"
@@ -65,12 +80,27 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:text="@{`distance\n\n` + model.distanceStr}"
+            android:textSize="20sp"
+            android:text="@{model.distanceStr}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/textview_run_hour"
+            app:layout_constraintEnd_toStartOf="@id/textview_run_time"
             app:layout_constraintStart_toEndOf="@id/textview_run_start_place"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/textview_run_pace_hold"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/textview_run_time"
+            app:layout_constraintStart_toEndOf="@id/textview_run_distance"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:textColor="#999999"
+            android:text="pace\n\n"/>
 
         <TextView
             android:id="@+id/textview_run_pace"
@@ -79,13 +109,14 @@
             android:layout_marginEnd="10dp"
             android:layout_marginTop="10dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/textview_run_hour"
+            app:layout_constraintBottom_toTopOf="@id/textview_run_time"
             app:layout_constraintStart_toEndOf="@id/textview_run_distance"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="center"
-            android:text="@{`pace\n\n` + model.paceStr}"/>
+            android:text="@{`\n\n` + model.paceStr}"/>
+
         <TextView
-            android:id="@+id/textview_run_hour"
+            android:id="@+id/textview_run_time_hold"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="10dp"
@@ -95,15 +126,29 @@
             app:layout_constraintStart_toEndOf="@id/textview_run_distance"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="center"
-            android:text="@{`run time\n\n`+ model.runningTimeStr}"/>
+            android:textColor="#999999"
+            android:text="run time\n\n"/>
 
-<!--        <ImageView android:cropToPadding="true"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"/>-->
+        <TextView
+            android:id="@+id/textview_run_time"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintTop_toBottomOf="@id/textview_run_pace"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textview_run_distance"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:text="@{`\n\n`+ model.runningTimeStr}"/>
 
-<!--        <Button-->
-<!--            android:id="@+id/button"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content" />-->
+        <!--        <ImageView android:cropToPadding="true"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"/>-->
+
+        <!--        <Button-->
+        <!--            android:id="@+id/button"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
