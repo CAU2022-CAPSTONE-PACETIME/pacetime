@@ -85,6 +85,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
 
     public void setStartLocationStr(String startLocationStr) {
         this.startLocationStr = startLocationStr;
+        notifyPropertyChanged(BR.startLocationStr);
     }
 
     @Bindable
