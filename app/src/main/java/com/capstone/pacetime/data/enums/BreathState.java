@@ -6,7 +6,7 @@ public enum BreathState {
     EXHALE;
 
     BreathState(){ value = 0; }
-    float value;
+    private float value;
     public float getValue(){
         return value;
     }
