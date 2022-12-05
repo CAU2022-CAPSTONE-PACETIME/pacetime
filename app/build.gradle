@@ -4,6 +4,8 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.google.gms.google-services'
 }
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 android {
     namespace 'com.capstone.pacetime'
     compileSdk 33
@@ -15,6 +17,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "WEATHER_API_KEY", properties.getProperty("WEATHER_API_KEY"))
     }
 
     buildTypes {

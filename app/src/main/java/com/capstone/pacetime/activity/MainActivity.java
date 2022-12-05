@@ -27,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.capstone.pacetime.BuildConfig;
 import com.capstone.pacetime.util.BluetoothHelper;
 import com.capstone.pacetime.data.BreathPattern;
 import com.capstone.pacetime.R;
@@ -264,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void currentWeatherCall(String city){
-        String urlCity = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=00969f33984829a2faf341274fe44028";
+        String urlCity = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + BuildConfig.WEATHER_API_KEY;
 
         Log.d("CITYWHERE", "city1: " + city);
 
