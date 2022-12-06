@@ -206,9 +206,9 @@
             android:layout_marginBottom="110dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:onClick="@{(v) -> activity.onStartClick(v)}"
             android:text="RUN"
             />
+<!--        android:onClick="@{(v) -> activity.onStartClick(v)}"-->
 
         <Button
             android:id="@+id/button_view_history"
