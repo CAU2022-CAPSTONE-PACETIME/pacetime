@@ -17,14 +17,14 @@
         android:layout_height="match_parent"
         tools:context=".activity.MainActivity">
 
-        <ImageButton
+        <Button
             android:id="@+id/button_refresh"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:gravity="center"
-            android:src="@drawable/refresh_green"
+            android:background="@drawable/refresh_green"
             app:layout_constraintEnd_toEndOf="@id/text_temperature"
             app:layout_constraintTop_toTopOf="@id/text_temperature"
             android:elevation="1dp" />
