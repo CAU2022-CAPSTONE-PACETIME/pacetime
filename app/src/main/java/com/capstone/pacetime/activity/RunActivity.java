@@ -126,11 +126,13 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                     runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.VISIBLE);
                         binding.buttonStop.setVisibility(View.VISIBLE);
+                        binding.buttonRun.setSelected(true);
                     });
                 } else if (msg.what == PAUSE_RUN) { // PAUSE -> RUN
                     runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
                         binding.buttonStop.setVisibility(View.INVISIBLE);
+                        binding.buttonRun.setSelected(false);
                     });
                 } else { // PAUSE -> STOP
                     manager.stop();
