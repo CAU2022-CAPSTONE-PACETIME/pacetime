@@ -134,15 +134,15 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                     });
                 } else { // PAUSE -> STOP
                     manager.stop();
-
-                    // TODO: RunDataManager에 넘겨야한다.
                     RunDataManager rdm = RunDataManager.getInstance();
                     rdm.runInfoToFirebase(new RunInfoParser(runInfo));
 
-                    // TODO: RunInfo를 받아서 ResultActivity로 넘기자.
-
                     Intent resultIntent = new Intent(getApplicationContext(), ResultActivity.class);
                     resultIntent.putExtra("index", 0);
+
+                    Bundle b = new Bundle();
+                    b.putParcelableArrayList("bs", manager.getStabilities());
+                    resultIntent.putExtra("bundle", b);
 
                     startActivity(resultIntent);
                     finish();
