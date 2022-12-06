@@ -1,5 +1,9 @@
 package com.capstone.pacetime;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.pow;
+import static java.lang.Math.sin;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.SensorManager;
@@ -16,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.capstone.pacetime.data.Breath;
 import com.capstone.pacetime.data.RealTimeRunInfo;
+import com.capstone.pacetime.data.BreathStability;
+import com.capstone.pacetime.data.enums.BreathState;
 import com.capstone.pacetime.data.enums.RunningDataType;
 import com.capstone.pacetime.data.enums.RunningState;
 import com.capstone.pacetime.data.Step;
@@ -26,6 +32,12 @@ import com.capstone.pacetime.receiver.StepCounter;
 import com.google.android.gms.location.LocationServices;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
+import java.util.OptionalDouble;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,6 +46,8 @@ public class RunningManager implements ReceiverLifeCycleInterface {
     private final GPSReceiver gpsReceiver;
     private final BreathReceiver breathReceiver;
     private final StepCounter stepCounter;
+
+    private BreathAnalyzer breathAnalyzer;
 
     private UpdateTask updateTask;
     private final Timer updateTimer;
@@ -59,6 +73,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                     super.handleMessage(msg);
                     if(msg.arg1 == RunningDataType.BREATH.ordinal() && runInfo.getIsBreathUsed()){
                         runInfo.addBreathItem((Breath)msg.obj);
+                        breathAnalyzer.putBreathState(((Breath)msg.obj).getBreathState());
                         Log.d(TAG, "Breath: " + ((Breath) msg.obj).getBreathState().name());
                     }
                     else if(msg.arg1 == RunningDataType.LOCATION.ordinal()){
@@ -91,6 +106,121 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
     }
 
+    public class BreathAnalyzer{
+        private final int inhaleCnt;
+        private final int exhaleCnt;
+        private final int patternLen;
+
+        private final double[] preComputedArray;
+        private final int biasWindowSize, stableWindowSize;
+        private int bias, count;
+        private Deque<Double> breathDeque, dSDeque;
+        private ArrayList<BreathStability> stabilities;
+
+        public BreathAnalyzer(int inhaleCnt, int exhaleCnt){
+            this.inhaleCnt = inhaleCnt;
+            this.exhaleCnt = exhaleCnt;
+            this.patternLen = inhaleCnt + exhaleCnt;
+            this.biasWindowSize = 20;
+            this.stableWindowSize = 100;
+            this.preComputedArray = new double[inhaleCnt + exhaleCnt];
+            initPreArray();
+            this.breathDeque = new ArrayDeque<>();
+            this.dSDeque = new ArrayDeque<>();
+            this.stabilities = new ArrayList<>();
+            this.bias = 0;
+        }
+
+        private void initPreArray(){
+            for(int i = 0; i < inhaleCnt; i++){
+                preComputedArray[i] = (sin(PI * (i + 1) / (inhaleCnt + 2)) /2 + 0.5f);
+            }
+            for(int i = 0; i < exhaleCnt; i++){
+                preComputedArray[i + inhaleCnt] = (sin(PI * (i + 1) / (exhaleCnt + 2) + PI) /2 + 0.5f);
+            }
+        }
+
+        public void putBreathState(BreathState breath){
+            breathDeque.add((double) breath.getValue());
+            dSDeque.add(pow((double) breath.getValue() - preComputedArray[(bias+count)%patternLen], 2));
+            if(breathDeque.size() >= stableWindowSize + 1) {
+                breathDeque.pollFirst();
+                dSDeque.pollFirst();
+            }if(breathDeque.size() == stableWindowSize && count % 10 == 0){
+                if(isBiased()){
+                    computeBias();
+                }
+                if(count >= 100){
+                    stabilities.add(getStability());
+                }
+            }
+            count++;
+        }
+        private boolean isBiased(){
+            final float threshold = 0.25f;
+
+            double var = 0;
+            Iterator<Double> iter = dSDeque.descendingIterator();
+            for(int i = 0; i < 20; i++){
+                var += iter.next();
+            }
+
+            var /= 20;
+
+            return var >= threshold;
+        }
+
+        private BreathStability getStability(){
+            final float threshold = 0.2f;
+
+            OptionalDouble optVAR = dSDeque.stream().mapToDouble(d -> d).average();
+
+            assert optVAR.isPresent();
+
+            double var = optVAR.getAsDouble();
+
+            if(var > threshold){
+                return new BreathStability(BreathStability.NOT_STABLE, count);
+            }else if(var >threshold * 0.8){
+                return new BreathStability(BreathStability.LITTLE_STABLE, count);
+            }else if(var > threshold * 0.6){
+                return new BreathStability(BreathStability.STABLE, count);
+            }else if(var > threshold * 0.4){
+                return new BreathStability(BreathStability.QUIET_STABLE, count);
+            }else{
+                return new BreathStability(BreathStability.VERY_STABLE, count);
+            }
+        }
+
+        private void computeBias(){
+            int minBias = 0;
+            double minVar = 1;
+            for(int b = 0; b < patternLen; b++){
+                if(b == bias){
+                    continue;
+                }
+                double var = 0;
+                Iterator<Double> iter = breathDeque.descendingIterator();
+                for(int i = 0; i < biasWindowSize; i++){
+                    var += pow(preComputedArray[(b + count - i) % patternLen] - iter.next(), 2);
+                }
+                var /= biasWindowSize;
+                if(var < minVar){
+                    minVar = var;
+                    minBias = b;
+                }
+            }
+            bias = minBias;
+        }
+
+        public ArrayList<BreathStability> getStabilities(){
+            return stabilities;
+        }
+    }
+//    class StepAnalyzer{
+//
+//    }
+
     public RunningManager(AppCompatActivity activity, RealTimeRunInfo runInfo){
         this.runInfo = runInfo;
 
@@ -106,8 +236,10 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                     AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
                     activity.getApplicationContext()
             );
+            breathAnalyzer = new BreathAnalyzer(runInfo.getInhale(), runInfo.getExhale());
         } else{
             breathReceiver = null;
+            breathAnalyzer = null;
         }
         stepCounter = new StepCounter(sensorManager);
     }
@@ -214,4 +346,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         return ret;
     }
 
+    public ArrayList<BreathStability> getStabilities(){
+        return breathAnalyzer.getStabilities();
+    }
 }
