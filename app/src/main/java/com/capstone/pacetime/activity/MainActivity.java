@@ -107,13 +107,22 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.i("Main_Activity", "STARTGPS: " + loc);
 
-                        if (binding.switchBreath.isChecked()) {
+//                        if (binding.switchBreath.isChecked()) {
+//                            startIntent.putExtra("Inhale", breathPattern.getInhale());
+//                            startIntent.putExtra("Exhale", breathPattern.getExhale());
+//                        } else {
+//                            startIntent.putExtra("Inhale", 0);
+//                            startIntent.putExtra("Exhale", 0);
+//                        }
+
+                        if (binding.switchToggleBreath.isChecked()) {
                             startIntent.putExtra("Inhale", breathPattern.getInhale());
                             startIntent.putExtra("Exhale", breathPattern.getExhale());
                         } else {
                             startIntent.putExtra("Inhale", 0);
                             startIntent.putExtra("Exhale", 0);
                         }
+
                         startActivity(startIntent);
                     }
                 }
@@ -129,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         gps = new GPSReceiver(LocationServices.getFusedLocationProviderClient(this));
         gps.setDataHandler(handler);
         gps.getLocation();
-        binding.buttonRefresh.setOnClickListener((view) -> {
+        binding.viewWeatherFrame.setOnClickListener((view) -> {
             gps.getLocation();
         });
         binding.buttonStartRunning.setOnClickListener((view) -> {
@@ -198,7 +207,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        binding.switchBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//        binding.switchBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                isBreathSwitchOn(isChecked);
+//            }
+//        });
+
+        binding.switchToggleBreath.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 isBreathSwitchOn(isChecked);
@@ -214,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#000080")));
                             binding.textBluetooth.setText(nameDevice);
+                            binding.getPattern().setInhale(1);
+                            binding.getPattern().setExhale(1);
                         }
                     });
                 } else {
@@ -222,6 +240,10 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F00000")));
                             binding.textBluetooth.setText("Device\nUnconnected");
+                            binding.textInhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#AAAAAA")));
+                            binding.textExhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#AAAAAA")));
+                            binding.pickerInhale.setValue(1);
+                            binding.pickerExhale.setValue(1);
                         }
                     });
                 }
@@ -298,16 +320,18 @@ public class MainActivity extends AppCompatActivity {
 
                     JSONObject tempK = new JSONObject(jsonObject.getString("main"));
 
-                    double tempDo = (Math.round((tempK.getDouble("temp")-273.15)*100)/100.0);
+                    double tempDo = (Math.round((tempK.getDouble("temp")-273.15)*10)/10.0);
                     String tempInC = tempDo +  "°C";
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            binding.textPlaceHolder.setVisibility(View.INVISIBLE);
                             binding.textPlace.setText(city);
 //                            binding.textWeather.setText(weather);
-                            binding.textWeather.setText("");
+                            binding.textWeatherHolder.setText("");
                             binding.imageWeather.setImageResource(weatherId);
+                            binding.textTemperatureHolder.setVisibility(View.INVISIBLE);
 //                            binding.imageWeather.setImageResource(R.drawable.i01d);
                             binding.textTemperature.setText(tempInC);
                         }
@@ -330,18 +354,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void onDeviceChanged(boolean isHeadset){
         if(isHeadset){
-            ConstraintLayout.LayoutParams constraintLayoutParams = (ConstraintLayout.LayoutParams) binding.imageNoBreath.getLayoutParams();
-            constraintLayoutParams.rightMargin = constraintLayoutParams.getMarginEnd();
-            binding.imageNoBreath.setLayoutParams(constraintLayoutParams);
+//            ConstraintLayout.LayoutParams constraintLayoutParams = (ConstraintLayout.LayoutParams) binding.imageNoBreath.getLayoutParams();
+//            constraintLayoutParams.rightMargin = constraintLayoutParams.getMarginEnd();
+//            binding.imageNoBreath.setLayoutParams(constraintLayoutParams);
             whichDevice.setValue(bluetoothHelper.getMyDeviceName());
-            binding.switchBreath.setVisibility(View.VISIBLE);
+//            binding.switchBreath.setVisibility(View.VISIBLE);
+            binding.switchToggleBreath.setEnabled(true);
         }
         else{
-            binding.switchBreath.setVisibility(View.GONE);
-            ConstraintLayout.LayoutParams constraintLayoutParams = (ConstraintLayout.LayoutParams) binding.imageNoBreath.getLayoutParams();
-            constraintLayoutParams.rightMargin = constraintLayoutParams.getMarginEnd() / (-2);
-            binding.imageNoBreath.setLayoutParams(constraintLayoutParams);
-            binding.switchBreath.setChecked(false);
+//            binding.switchBreath.setVisibility(View.GONE);
+//            ConstraintLayout.LayoutParams constraintLayoutParams = (ConstraintLayout.LayoutParams) binding.imageNoBreath.getLayoutParams();
+//            constraintLayoutParams.rightMargin = constraintLayoutParams.getMarginEnd() / (-2);
+//            binding.imageNoBreath.setLayoutParams(constraintLayoutParams);
+//            binding.switchBreath.setChecked(false);
+            binding.switchToggleBreath.setEnabled(false);
+            binding.switchToggleBreath.setChecked(false);
             isBreathSwitchOn(false);
             whichDevice.setValue(null);
         }
@@ -352,12 +379,16 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    binding.pickerInhale.setVisibility(View.VISIBLE);
-                    binding.pickerExhale.setVisibility(View.VISIBLE);
-                    binding.textInhale.setVisibility(View.VISIBLE);
-                    binding.textExhale.setVisibility(View.VISIBLE);
-                    binding.imageBreath.setVisibility(View.VISIBLE);
-                    binding.imageNoBreath.setVisibility(View.INVISIBLE);
+//                    binding.pickerInhale.setVisibility(View.VISIBLE);
+//                    binding.pickerExhale.setVisibility(View.VISIBLE);
+                    binding.pickerInhale.setEnabled(true);
+                    binding.pickerExhale.setEnabled(true);
+                    binding.textInhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#000000")));
+                    binding.textExhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#000000")));
+//                    binding.textInhale.setVisibility(View.VISIBLE);
+//                    binding.textExhale.setVisibility(View.VISIBLE);
+//                    binding.imageBreath.setVisibility(View.VISIBLE);
+//                    binding.imageNoBreath.setVisibility(View.INVISIBLE);
                 }
             });
         }
@@ -365,12 +396,16 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    binding.pickerInhale.setVisibility(View.INVISIBLE);
-                    binding.pickerExhale.setVisibility(View.INVISIBLE);
-                    binding.textInhale.setVisibility(View.INVISIBLE);
-                    binding.textExhale.setVisibility(View.INVISIBLE);
-                    binding.imageBreath.setVisibility(View.INVISIBLE);
-                    binding.imageNoBreath.setVisibility(View.VISIBLE);
+//                    binding.pickerInhale.setVisibility(View.INVISIBLE);
+//                    binding.pickerExhale.setVisibility(View.INVISIBLE);
+                    binding.pickerInhale.setEnabled(false);
+                    binding.pickerExhale.setEnabled(false);
+                    binding.textInhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#AAAAAA")));
+                    binding.textExhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#AAAAAA")));
+//                    binding.textInhale.setVisibility(View.INVISIBLE);
+//                    binding.textExhale.setVisibility(View.INVISIBLE);
+//                    binding.imageBreath.setVisibility(View.INVISIBLE);
+//                    binding.imageNoBreath.setVisibility(View.VISIBLE);
                 }
             });
         }
