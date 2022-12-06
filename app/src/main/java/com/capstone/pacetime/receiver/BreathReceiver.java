@@ -218,12 +218,13 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 
         }
         BreathState convert(FloatBuffer buf){
+            long start = System.currentTimeMillis();
             Tensor inputTensor = Tensor.fromBlob(buf, new long[]{1, 22050});
             Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
 
             float val = outputTensor.getDataAsFloatArray()[0];
             Log.d(TAG, "value: " + val);
-
+            Log.d(TAG, "Convert Latency: " +( System.currentTimeMillis() - start));
             final float inhaleTh = 0.5f;
             final float exhaleTh = 0.5f;
 
