@@ -113,7 +113,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
 
         private final double[] preComputedArray;
         private final int biasWindowSize, stableWindowSize;
-        private int bias, count;
+        private int bias, count, trigger;
         private Deque<Double> breathDeque, dSDeque;
         private ArrayList<BreathStability> stabilities;
 
@@ -129,6 +129,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             this.dSDeque = new ArrayDeque<>();
             this.stabilities = new ArrayList<>();
             this.bias = 0;
+            this.trigger = 0;
         }
 
         private void initPreArray(){
@@ -146,11 +147,11 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             if(breathDeque.size() >= stableWindowSize + 1) {
                 breathDeque.pollFirst();
                 dSDeque.pollFirst();
-            }if(breathDeque.size() == stableWindowSize && count % 10 == 0){
+            }if(breathDeque.size() > 1 && count % 10 == 0){
                 if(isBiased()){
                     computeBias();
                 }
-                if(count >= 100){
+                if(count >= stableWindowSize + trigger){
                     stabilities.add(getStability());
                 }
             }
@@ -159,6 +160,10 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         private boolean isBiased(){
             final float threshold = 0.25f;
 
+            if(dSDeque.size() <20 ){
+                return false;
+            }
+
             double var = 0;
             Iterator<Double> iter = dSDeque.descendingIterator();
             for(int i = 0; i < 20; i++){
@@ -166,6 +171,8 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             }
 
             var /= 20;
+
+            Log.d(TAG, "BIAS VAR: " + var);
 
             return var >= threshold;
         }
@@ -179,6 +186,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
 
             double var = optVAR.getAsDouble();
 
+            Log.d(TAG, "STAB VAR: " + var);
             if(var > threshold){
                 return new BreathStability(BreathStability.NOT_STABLE, count);
             }else if(var >threshold * 0.8){
@@ -211,10 +219,19 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                 }
             }
             bias = minBias;
+
+            Log.d(TAG, "BIAS MINVAR: " + minVar);
+            Log.d(TAG, "BIAS NEW: " + bias);
         }
 
         public ArrayList<BreathStability> getStabilities(){
             return stabilities;
+        }
+
+        public void clear(){
+            breathDeque.clear();
+            dSDeque.clear();
+            trigger = count;
         }
     }
 //    class StepAnalyzer{
@@ -304,8 +321,10 @@ public class RunningManager implements ReceiverLifeCycleInterface {
     @Override
     public void pause() {
         gpsReceiver.pause();
-        if(runInfo.getIsBreathUsed())
+        if(runInfo.getIsBreathUsed()){
+            breathAnalyzer.clear();
             breathReceiver.pause();
+        }
         stepCounter.pause();
         updateTask.pause();
         setState(RunningState.PAUSE);
@@ -313,6 +332,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
 //            updateTask.cancel();
 //            updateTask = null;
 //        }
+
     }
 
     @Override
