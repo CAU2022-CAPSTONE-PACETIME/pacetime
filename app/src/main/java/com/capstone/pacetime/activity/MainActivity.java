@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     static RequestQueue requestQueue;
 
     private int checkLoadingCount = 0;
+    private boolean isStartClicked = false;
+    private Intent startIntent;
 
     private GPSReceiver gps;
     private Handler handler;
@@ -65,31 +67,89 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
+        startIntent = new Intent(this, RunActivity.class);
 
         runDataManager = RunDataManager.getInstance();
 
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding.setActivity(this);
+
         loadHandlerThread = new HandlerThread("DO loading task");
         loadHandlerThread.start();
-        loadHandler = new Handler(loadHandlerThread.getLooper()){
+        loadHandler = new Handler(loadHandlerThread.getLooper()) {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
             }
         };
 
+
+        thread = new HandlerThread("UpdateLocationThread");
+        thread.start();
+        handler = new Handler(thread.getLooper()) {
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                Bundle data = msg.getData();
+                if (data == null) {
+                    Log.v("ISSUCCESS", "no");
+                    return;
+                }
+                if (data.keySet().contains("location")) {
+                    Location loc = data.getParcelable("location");
+
+                    if (!isStartClicked) {
+                        currentCityCall(loc.getLatitude(), loc.getLongitude());
+                        Log.i("Main_Activity", "GPS: " + loc);
+                    } else {
+                        isStartClicked = false;
+                        startIntent.putExtra("location", loc);
+
+                        Log.i("Main_Activity", "STARTGPS: " + loc);
+
+                        if (binding.switchBreath.isChecked()) {
+                            startIntent.putExtra("Inhale", breathPattern.getInhale());
+                            startIntent.putExtra("Exhale", breathPattern.getExhale());
+                        } else {
+                            startIntent.putExtra("Inhale", 0);
+                            startIntent.putExtra("Exhale", 0);
+                        }
+                        startActivity(startIntent);
+                    }
+                }
+                if (data.keySet().contains("city")) {
+                    String city = data.getString("city");
+                    currentWeatherCall(city);
+                }
+
+            }
+        };
+
+
+        gps = new GPSReceiver(LocationServices.getFusedLocationProviderClient(this));
+        gps.setDataHandler(handler);
+        gps.getLocation();
+        binding.buttonRefresh.setOnClickListener((view) -> {
+            gps.getLocation();
+        });
+        binding.buttonStartRunning.setOnClickListener((view) -> {
+            isStartClicked = true;
+            gps.getLocation();
+        });
+
         Runnable loadRunnable = new Runnable() {
             @Override
             public void run() {
                 runDataManager.allFirebaseToRunInfos();
                 Log.d("MAIN_ACTIVITY", "runInfos size first: " + runDataManager.getRunInfos().size());
-                while(runDataManager.getIsLoading()){
-                    synchronized (lock){
-                        try{
+                while (runDataManager.getIsLoading()) {
+                    synchronized (lock) {
+                        try {
                             checkLoadingCount++;
                             Log.d("MAIN_ACTIVITY", "loading..." + checkLoadingCount);
                             lock.wait(50);
                             Log.d("MAIN_ACTIVITY", "runInfos size: " + runDataManager.getRunInfos().size());
-                        }catch (InterruptedException e){
+                        } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
@@ -98,12 +158,9 @@ public class MainActivity extends AppCompatActivity {
         };
         loadHandler.post(loadRunnable);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        binding.setActivity(this);
-
         bluetoothHelper = new BluetoothHelper(this);
 
-        if(requestQueue == null){
+        if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
 
@@ -148,42 +205,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        thread = new HandlerThread("UpdateLocationThread");
-        thread.start();
-        handler = new Handler(thread.getLooper()){
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                super.handleMessage(msg);
-                Bundle data = msg.getData();
-                if(data == null){
-                    Log.v("ISSUCCESS","no");
-                    return;
-                }
-                if(data.keySet().contains("location")){
-                    Location loc = data.getParcelable("location");
-
-                    currentCityCall(loc.getLatitude(), loc.getLongitude());
-                    Log.i("MainActivity", "GPS: " + loc);
-
-                }
-                if(data.keySet().contains("city")){
-                    String city = data.getString("city");
-                    currentWeatherCall(city);
-                }
-
-            }
-        };
-
-        gps = new GPSReceiver(LocationServices.getFusedLocationProviderClient(this));
-        gps.setDataHandler(handler);
-        binding.buttonRefresh.setOnClickListener((view)->{
-            gps.getLocation();
-        });
-
         whichDevice.observe(this, new Observer<String>() {
             @Override
             public void onChanged(String nameDevice) {
-                if(nameDevice != null){
+                if (nameDevice != null) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -191,8 +216,7 @@ public class MainActivity extends AppCompatActivity {
                             binding.textBluetooth.setText(nameDevice);
                         }
                     });
-                }
-                else{
+                } else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -203,19 +227,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    public void onStartClick(View v){
-        Intent intent = new Intent(this, RunActivity.class);
-        if(binding.switchBreath.isChecked()){
-            intent.putExtra("Inhale", breathPattern.getInhale());
-            intent.putExtra("Exhale", breathPattern.getExhale());
-        }
-        else{
-            intent.putExtra("Inhale", 0);
-            intent.putExtra("Exhale", 0);
-        }
-        startActivity(intent);
     }
 
     public void onHistoryClick(View v){
