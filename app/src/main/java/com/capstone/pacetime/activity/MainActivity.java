@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -31,6 +32,7 @@ import com.capstone.pacetime.BuildConfig;
 import com.capstone.pacetime.util.BluetoothHelper;
 import com.capstone.pacetime.data.BreathPattern;
 import com.capstone.pacetime.R;
+import com.capstone.pacetime.util.PermissionChecker;
 import com.capstone.pacetime.util.RunDataManager;
 import com.capstone.pacetime.databinding.ActivityMainBinding;
 import com.capstone.pacetime.receiver.GPSReceiver;
@@ -40,8 +42,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
@@ -67,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
+
+        PermissionChecker.checkPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION, "위치");
+
         startIntent = new Intent(this, RunActivity.class);
 
         runDataManager = RunDataManager.getInstance();
@@ -128,7 +135,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (data.keySet().contains("city")) {
                     String city = data.getString("city");
-                    currentWeatherCall(city);
+                    StringTokenizer st1 = new StringTokenizer(city, ", ");
+                    ArrayList<String> pstr = new ArrayList<String>();
+                    while(st1.hasMoreTokens()){
+                        pstr.add(st1.nextToken());
+                    }
+                    currentWeatherCall(pstr.get(2));
+                    StringBuilder cityBuilder = new StringBuilder();
+                    cityBuilder.append(pstr.get(2)).append(", ").append(pstr.get(3));
+                    binding.textPlace.setText(cityBuilder.toString());
                 }
 
             }
@@ -228,7 +243,8 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#000080")));
+//                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#000080")));
+                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#8FB339")));
                             binding.textBluetooth.setText(nameDevice);
                             binding.getPattern().setInhale(1);
                             binding.getPattern().setExhale(1);
@@ -238,7 +254,8 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F00000")));
+//                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F00000")));
+                            binding.textBluetooth.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#999999")));
                             binding.textBluetooth.setText("Device\nUnconnected");
                             binding.textInhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#AAAAAA")));
                             binding.textExhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#AAAAAA")));
@@ -257,44 +274,85 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void currentCityCall(double lat, double lon) {
-        String url = "http://api.openweathermap.org/geo/1.0/reverse?"
-                +"lat=" + lat
-                +"&lon="+ lon
-                +"&limit=1&appid=00969f33984829a2faf341274fe44028";
-
-//        Log.v("WETHERCALL","CityAddress: " + cityAddress);
-        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+        String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+                lat + "," +
+                lon +
+                "&key=" + BuildConfig.GEOCODE_API_KEY;
+        StringRequest req = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try{
-                    JSONArray jsonArray = new JSONArray(response);
-                    JSONObject cityObj = jsonArray.getJSONObject(0);
-
-                    String city = cityObj.getString("name");
-//                    cityBuilder.append(city);
+                try {
+                    Log.d("LOCATIONSTRING", response);
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONArray resultArray = jsonObject.getJSONArray("results");
+                    JSONObject addrObj = resultArray.getJSONObject(0);
+                    String cityAddr = addrObj.getString("formatted_address");
 
                     Bundle data = new Bundle();
-                    data.putString("city", city);
+                    data.putString("city", cityAddr);
                     Message msg = new Message();
 
                     msg.setData(data);
 
                     handler.sendMessage(msg);
-                    Log.d("CITYWHERE", "city: "+city);
+                    Log.d("CITYWHERE", "city: "+ cityAddr);
 
-                }catch (JSONException e){
-                    e.printStackTrace();
+                    Log.d("StartLocation: ", cityAddr);
+//                    viewModel.setStartLocationStr(cityAddr);
+                } catch (JSONException e) {
+                    Log.d("LOCATIONFAIL1", "location fail 1");
+                    Log.d("LOCATIONFAIL1", e.toString());
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.v("WEATHERCALLFAIL2", "weather call failed!");
+                Log.v("LOCATIONFAIL2", "location call failed!");
+                Log.v("LOCATIONFAIL", error.toString());
             }
         });
+        req.setShouldCache(false);
+        requestQueue.add(req);
 
-        request.setShouldCache(false);
-        requestQueue.add(request);
+//
+//        String url = "http://api.openweathermap.org/geo/1.0/reverse?"
+//                +"lat=" + lat
+//                +"&lon="+ lon
+//                +"&limit=1&appid=00969f33984829a2faf341274fe44028";
+
+//        Log.v("WEATHERCALL","CityAddress: " + cityAddress);
+//        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                try{
+//                    JSONArray jsonArray = new JSONArray(response);
+//                    JSONObject cityObj = jsonArray.getJSONObject(0);
+//
+//                    String city = cityObj.getString("name");
+////                    cityBuilder.append(city);
+//
+//                    Bundle data = new Bundle();
+//                    data.putString("city", city);
+//                    Message msg = new Message();
+//
+//                    msg.setData(data);
+//
+//                    handler.sendMessage(msg);
+//                    Log.d("CITYWHERE", "city: "+city);
+//
+//                }catch (JSONException e){
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.v("WEATHERCALLFAIL2", "weather call failed!");
+//            }
+//        });
+//
+//        request.setShouldCache(false);
+//        requestQueue.add(request);
     }
 
     private void currentWeatherCall(String city){
@@ -327,11 +385,13 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             binding.textPlaceHolder.setVisibility(View.INVISIBLE);
-                            binding.textPlace.setText(city);
+                            binding.textPlaceHolder.setText("");
+//                            binding.textPlace.setText(city);
 //                            binding.textWeather.setText(weather);
                             binding.textWeatherHolder.setText("");
                             binding.imageWeather.setImageResource(weatherId);
-                            binding.textTemperatureHolder.setVisibility(View.INVISIBLE);
+//                            binding.textTemperatureHolder.setVisibility(View.INVISIBLE);
+                            binding.textTemperatureHolder.setText("");
 //                            binding.imageWeather.setImageResource(R.drawable.i01d);
                             binding.textTemperature.setText(tempInC);
                         }

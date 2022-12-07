@@ -49,11 +49,14 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="3dp"
             android:gravity="center"
             android:text="weather"
             android:textAlignment="center"
             android:textColor="#000000"
-            app:layout_constraintEnd_toEndOf="@id/guideline_vertical_half"
+            android:background="@drawable/main_weather_background"
+            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_half"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_place"
             app:layout_constraintBottom_toBottomOf="@id/view_weather_frame"
@@ -61,8 +64,8 @@
 
         <ImageView
             android:id="@+id/image_weather"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:gravity="center"
@@ -78,10 +81,13 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="3dp"
             android:textAlignment="center"
             android:gravity="center"
+            android:background="@drawable/main_temperature_background"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guideline_vertical_half"
+            app:layout_constraintStart_toEndOf="@id/guideline_vertical_half"
             app:layout_constraintTop_toBottomOf="@id/text_place"
             app:layout_constraintBottom_toBottomOf="@id/view_weather_frame"
             android:text="temperature"
@@ -98,7 +104,7 @@
             app:layout_constraintStart_toStartOf="@id/text_temperature_holder"
             app:layout_constraintTop_toTopOf="@id/text_temperature_holder"
             app:layout_constraintBottom_toBottomOf="@id/text_temperature_holder"
-            android:textSize="30dp"
+            android:textSize="25dp"
             android:textColor="#000000"
             />
 
@@ -116,41 +122,44 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="20dp"
-            android:background="@drawable/main_weather_background"
             android:translationZ="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+<!--        android:background="@drawable/main_weather_frame_background"-->
+
 
         <TextView
             android:id="@+id/text_place_holder"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="80dp"
             android:textAlignment="center"
             android:gravity="center"
+            android:translationZ="1dp"
             android:background="@drawable/main_place_background"
-            android:layout_marginTop="5dp"
-            android:translationZ="5dp"
-            app:layout_constraintStart_toStartOf="@id/view_weather_frame"
-            app:layout_constraintEnd_toEndOf="@id/view_weather_frame"
-            app:layout_constraintTop_toTopOf="@id/view_weather_frame"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="@id/text_weather_holder"
+            app:layout_constraintEnd_toEndOf="@id/text_temperature_holder"
+            app:layout_constraintTop_toTopOf="parent"
             android:text="current place"
             />
+
 
         <TextView
             android:id="@+id/text_place"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="0dp"
             android:background="@drawable/main_place_background"
             android:gravity="center"
             android:textAlignment="center"
-            android:textSize="20dp"
+            android:textSize="25dp"
             app:layout_constraintBottom_toBottomOf="@id/text_place_holder"
             app:layout_constraintEnd_toEndOf="@id/text_place_holder"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@id/text_place_holder"
-            app:layout_constraintTop_toTopOf="@id/text_place_holder" />
-
+            app:layout_constraintTop_toTopOf="@id/text_place_holder"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/text_bluetooth"
@@ -159,7 +168,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginStart="40dp"
             android:background="@drawable/main_bluetooth_background"
-            android:backgroundTint="#F00000"
+            android:backgroundTint="#999999"
             android:textAlignment="center"
             android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"

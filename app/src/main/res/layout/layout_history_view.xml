@@ -18,7 +18,7 @@
         android:layout_marginRight="20dp"
         android:gravity="center_vertical"
         android:background="@drawable/history_view_background"
-        android:backgroundTint="#506352"
+        android:backgroundTint="#DFF2D8"
         android:layout_marginBottom="15dp"
         tools:context=".activity.HistoryActivity">
 
@@ -34,7 +34,6 @@
             android:src="@drawable/breath"/>
         <TextView
             android:id="@+id/textview_run_date_time"
-
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
