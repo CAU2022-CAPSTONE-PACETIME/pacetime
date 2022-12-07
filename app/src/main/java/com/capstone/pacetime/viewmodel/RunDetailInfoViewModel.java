@@ -22,7 +22,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
         stepCountStr = "0";
         startLocationStr = "Dokdo";
         // 시작 날짜 YYYY-MM-DD
-        startDateStr = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        startDateStr = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd\nhh:mm"));
         // isBreathUsed
         isBreathUsed = true;
     }
@@ -45,7 +45,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
         // 시작 장소
         startLocationStr = "Dokdo";
         // 시작 날짜 YYYY-MM-DD
-        startDateStr = info.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        startDateStr = info.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd\nhh:mm"));
         // isBreathUsed
         isBreathUsed = info.getIsBreathUsed();
         //
