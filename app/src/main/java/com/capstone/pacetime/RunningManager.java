@@ -106,7 +106,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
     }
 
-    public class BreathAnalyzer{
+    public static class BreathAnalyzer{
         private final int inhaleCnt;
         private final int exhaleCnt;
         private final int patternLen;
@@ -114,8 +114,9 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         private final double[] preComputedArray;
         private final int biasWindowSize, stableWindowSize;
         private int bias, count, trigger;
-        private Deque<Double> breathDeque, dSDeque;
-        private ArrayList<BreathStability> stabilities;
+        private final Deque<Double> breathDeque;
+        private final Deque<Double> dSDeque;
+        private final ArrayList<BreathStability> stabilities;
 
         public BreathAnalyzer(int inhaleCnt, int exhaleCnt){
             this.inhaleCnt = inhaleCnt;
