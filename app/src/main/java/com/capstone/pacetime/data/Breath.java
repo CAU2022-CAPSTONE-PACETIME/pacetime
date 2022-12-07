@@ -6,6 +6,13 @@ public class Breath {
     private final BreathState breathState;
     private final long timestamp;
 
+    private float value;
+    public float getValue(){
+        return value;
+    }
+    public void setValue(float value){
+        this.value = value;
+    }
     public Breath(){
         breathState = BreathState.INHALE;
         timestamp = 0;
