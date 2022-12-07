@@ -73,7 +73,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                     super.handleMessage(msg);
                     if(msg.arg1 == RunningDataType.BREATH.ordinal() && runInfo.getIsBreathUsed()){
                         runInfo.addBreathItem((Breath)msg.obj);
-                        breathAnalyzer.putBreathState(((Breath)msg.obj).getBreathState());
+                        breathAnalyzer.putBreathState((Breath)msg.obj);
                         Log.d(TAG, "Breath: " + ((Breath) msg.obj).getBreathState().name());
                     }
                     else if(msg.arg1 == RunningDataType.LOCATION.ordinal()){
@@ -141,7 +141,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             }
         }
 
-        public void putBreathState(BreathState breath){
+        public void putBreathState(Breath breath){
             breathDeque.add((double) breath.getValue());
             dSDeque.add(pow((double) breath.getValue() - preComputedArray[(bias+count)%patternLen], 2));
             if(breathDeque.size() >= stableWindowSize + 1) {
