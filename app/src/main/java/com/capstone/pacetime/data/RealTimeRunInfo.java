@@ -108,7 +108,7 @@ public class RealTimeRunInfo extends RunInfo {
         if(runningTime == 0){
             return 0;
         }
-        return (int) (stepCount.get(stepCount.size()-1).getCount() / runningTime);
+        return (int) (stepCount.get(stepCount.size()-1).getCount() / runningTime * 60);
     }
 
     private float calculateDistance(){
