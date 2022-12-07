@@ -230,13 +230,13 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 
             if(val <= exhaleTh){
 //                Log.d(TAG, "Breath: EXHALE");
-                return BreathState.EXHALE.setValue(val);
+                return BreathState.EXHALE;
             }
             else if (val >= inhaleTh){
 //                Log.d(TAG, "Breath: INHALE");
-                return BreathState.INHALE.setValue(val);
+                return BreathState.INHALE;
             } else{
-                return BreathState.NONE.setValue(val);
+                return BreathState.NONE;
             }
         }
     }
