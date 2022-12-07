@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -58,6 +59,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     private RunDetailInfoViewModel viewModel;
     private RunInfoUpdateCommand command;
     private RunningManager manager;
+    static RequestQueue requestQueue;
 
     private HandlerThread runTriggerThread;
     private Handler runTriggerHandler, uiHandler;
@@ -105,48 +107,10 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         runInfo.setCommand(command);
 
-        {
-            Location loc = getIntent().getParcelableExtra("location", Location.class);;
-
-            String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-                    loc.getLatitude() + "," +
-                    loc.getLongitude() +
-                    "&key=" + BuildConfig.GEOCODE_API_KEY;
-            StringRequest req = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    try {
-                        Log.d("LOCATIONSTRING", response);
-                        JSONObject jsonObject = new JSONObject(response);
-                        JSONArray resultArray = jsonObject.getJSONArray("results");
-                        JSONObject addrObj = resultArray.getJSONObject(0);
-                        String cityAddr = addrObj.getString("formatted_address");
-
-                        Log.d("StartLocation: ", cityAddr);
-                        StringTokenizer st1 = new StringTokenizer(cityAddr, ", ");
-                        ArrayList<String> pstr = new ArrayList<String>();
-                        while (st1.hasMoreTokens()) {
-                            pstr.add(st1.nextToken());
-                            StringBuilder cityBuilder = new StringBuilder();
-                            cityBuilder.append(pstr.get(2)).append("\n").append(pstr.get(3));
-                        }
-                        runInfo.setStartLocation(cityAddr);
-                    } catch (JSONException e) {
-                        Log.d("LOCATIONFAIL1", "location fail 1");
-                        Log.d("LOCATIONFAIL1", e.toString());
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.v("LOCATIONFAIL2", "location call failed!");
-                    Log.v("LOCATIONFAIL", error.toString());
-                }
-            });
-            req.setShouldCache(false);
-            Volley.newRequestQueue(getApplicationContext()).add(req);
-        }
-
+        String cityAddr = getIntent().getStringExtra("cityAddr");
+        runInfo.setStartLocation(cityAddr);
+//        runInfo.setStartLocation("aa");
+        Log.d("RUNINFOCHECKCHECK", runInfo.getStartLocation());
 
         manager = new RunningManager(RunActivity.this, runInfo);
         manager.setState(RunningState.COUNT);

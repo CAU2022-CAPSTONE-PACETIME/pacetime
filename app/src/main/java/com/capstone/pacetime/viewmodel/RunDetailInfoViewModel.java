@@ -43,7 +43,7 @@ public class RunDetailInfoViewModel extends RunBasicInfoViewModel{
         ).ifPresent(step -> stepCountStr = "" + step.getCount());
 
         // 시작 장소
-        startLocationStr = "Dokdo";
+        startLocationStr = info.getStartLocation();
         // 시작 날짜 YYYY-MM-DD
         startDateStr = info.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd\nhh:mm"));
         // isBreathUsed

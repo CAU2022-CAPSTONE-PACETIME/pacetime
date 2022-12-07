@@ -22,22 +22,24 @@
         android:layout_marginBottom="15dp"
         tools:context=".activity.HistoryActivity">
 
-        <ImageView
-            android:id="@+id/textview_is_breath_used"
+        <View
+            android:id="@+id/view_is_breath_used"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="10dp"
+            android:backgroundTint="#53B036"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="center"
             android:visibility="@{model.isBreathUsed ? View.VISIBLE:View.INVISIBLE}"
-            android:src="@drawable/breath"/>
+            android:background="@drawable/breath"/>
         <TextView
             android:id="@+id/textview_run_date_time"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
+            android:textColor="#53B036"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/textview_run_start_place"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,19 +47,19 @@
             android:gravity="center"
             android:text="@{model.startDateStr}"/>
 
-        <TextView
-            android:id="@+id/textview_run_start_place_hold"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginBottom="10dp"
-            app:layout_constraintTop_toBottomOf="@id/textview_run_date_time"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/textview_run_distance"
-            android:gravity="center"
-            android:textColor="#999999"
-            android:text="start place\n\n"/>
+<!--        <TextView-->
+<!--            android:id="@+id/textview_run_start_place_hold"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:layout_marginBottom="10dp"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/textview_run_date_time"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/textview_run_distance"-->
+<!--            android:gravity="center"-->
+<!--            android:textColor="#999999"-->
+<!--            android:text="start place\n\n"/>-->
 
         <TextView
             android:id="@+id/textview_run_start_place"
@@ -70,7 +72,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/textview_run_distance"
             android:gravity="center"
-            android:text="@{`\n\n` + model.startLocationStr}"/>
+            android:textColor="#53B036"
+            android:text="@{model.startLocationStr}"/>
 
         <TextView
             android:id="@+id/textview_run_distance"
@@ -81,6 +84,7 @@
             android:gravity="center"
             android:textSize="20sp"
             android:text="@{model.distanceStr}"
+            android:textColor="#53B036"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/textview_run_time"
             app:layout_constraintStart_toEndOf="@id/textview_run_start_place"
@@ -112,6 +116,7 @@
             app:layout_constraintStart_toEndOf="@id/textview_run_distance"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="center"
+            android:textColor="#53B036"
             android:text="@{`\n\n` + model.paceStr}"/>
 
         <TextView
@@ -139,6 +144,7 @@
             app:layout_constraintStart_toEndOf="@id/textview_run_distance"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="center"
+            android:textColor="#53B036"
             android:text="@{`\n\n`+ model.runningTimeStr}"/>
 
         <!--        <ImageView android:cropToPadding="true"-->

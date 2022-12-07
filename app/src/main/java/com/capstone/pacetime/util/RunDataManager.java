@@ -62,6 +62,9 @@ public class RunDataManager {
         runData.put("isBreathUsed", runInfoParser.getIsBreathUsed()); //runInfo에 아직 isBreathUsed가 없음. 혹은 runInfo.getBreathItems가 null인지 판단하는 방법도 있을 듯.
         runData.put("breathItems", runInfoParser.getBreathItems());
         runData.put("dateEpochSecond", runInfoParser.getDateEpochSecond());
+        runData.put("inhale", runInfoParser.getInhale());
+        runData.put("exhale", runInfoParser.getExhale());
+        runData.put("startLocation", runInfoParser.getStartLocation());
 
         runInfos.add(0, runInfoParser.parserToOrigin());
 

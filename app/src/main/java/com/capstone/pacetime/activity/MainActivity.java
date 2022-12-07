@@ -105,14 +105,9 @@ public class MainActivity extends AppCompatActivity {
                 if (data.keySet().contains("location")) {
                     Location loc = data.getParcelable("location");
 
-                    if (!isStartClicked) {
-                        currentCityCall(loc.getLatitude(), loc.getLongitude());
-                        Log.i("Main_Activity", "GPS: " + loc);
-                    } else {
-                        isStartClicked = false;
-                        startIntent.putExtra("location", loc);
+                    currentCityCall(loc.getLatitude(), loc.getLongitude());
+                    Log.i("Main_Activity", "GPS: " + loc);
 
-                        Log.i("Main_Activity", "STARTGPS: " + loc);
 
 //                        if (binding.switchBreath.isChecked()) {
 //                            startIntent.putExtra("Inhale", breathPattern.getInhale());
@@ -121,6 +116,25 @@ public class MainActivity extends AppCompatActivity {
 //                            startIntent.putExtra("Inhale", 0);
 //                            startIntent.putExtra("Exhale", 0);
 //                        }
+
+
+                }
+                if (data.keySet().contains("city")) {
+                    String city = data.getString("city");
+                    StringTokenizer st1 = new StringTokenizer(city, ", ");
+                    ArrayList<String> pstr = new ArrayList<String>();
+                    while(st1.hasMoreTokens()){
+                        pstr.add(st1.nextToken());
+                    }
+                    currentWeatherCall(pstr.get(2));
+                    StringBuilder cityBuilder = new StringBuilder();
+                    if(!isStartClicked){
+                        cityBuilder.append(pstr.get(2)).append(", ").append(pstr.get(3));
+                        binding.textPlace.setText(cityBuilder.toString());
+                    } else {
+                        isStartClicked = false;
+                        cityBuilder.append(pstr.get(2)).append("\n").append(pstr.get(3));
+                        startIntent.putExtra("cityAddr", cityBuilder.toString());
 
                         if (binding.switchToggleBreath.isChecked()) {
                             startIntent.putExtra("Inhale", breathPattern.getInhale());
@@ -132,18 +146,6 @@ public class MainActivity extends AppCompatActivity {
 
                         startActivity(startIntent);
                     }
-                }
-                if (data.keySet().contains("city")) {
-                    String city = data.getString("city");
-                    StringTokenizer st1 = new StringTokenizer(city, ", ");
-                    ArrayList<String> pstr = new ArrayList<String>();
-                    while(st1.hasMoreTokens()){
-                        pstr.add(st1.nextToken());
-                    }
-                    currentWeatherCall(pstr.get(2));
-                    StringBuilder cityBuilder = new StringBuilder();
-                    cityBuilder.append(pstr.get(2)).append(", ").append(pstr.get(3));
-                    binding.textPlace.setText(cityBuilder.toString());
                 }
 
             }
@@ -443,8 +445,8 @@ public class MainActivity extends AppCompatActivity {
 //                    binding.pickerExhale.setVisibility(View.VISIBLE);
                     binding.pickerInhale.setEnabled(true);
                     binding.pickerExhale.setEnabled(true);
-                    binding.textInhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#000000")));
-                    binding.textExhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#000000")));
+                    binding.textInhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#53B036")));
+                    binding.textExhale.setTextColor(ColorStateList.valueOf(Color.parseColor("#53B036")));
 //                    binding.textInhale.setVisibility(View.VISIBLE);
 //                    binding.textExhale.setVisibility(View.VISIBLE);
 //                    binding.imageBreath.setVisibility(View.VISIBLE);

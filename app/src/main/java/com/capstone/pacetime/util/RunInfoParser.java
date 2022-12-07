@@ -32,8 +32,9 @@ public class RunInfoParser {
     protected long dateEpochSecond;
     protected int inhale;
     protected int exhale;
+    protected String startLocation;
 
-    public RunInfoParser(){
+    public RunInfoParser() {
         OffsetDateTimeParser startDateTime = new OffsetDateTimeParser();
         this.startDateTime = new OffsetDateTimeParser();
         this.endDateTime = new OffsetDateTimeParser();
@@ -48,6 +49,7 @@ public class RunInfoParser {
         this.dateEpochSecond = startDateTime.getDateEpochSecond();
         this.inhale = 0;
         this.exhale = 0;
+        this.startLocation = "";
     }
 
     public RunInfoParser(boolean isBreathUsed, int inhale, int exhale){
@@ -69,7 +71,8 @@ public class RunInfoParser {
             boolean isBreathUsed,
             long dateEpochSecond,
             int inhale,
-            int exhale
+            int exhale,
+            String startLocation
     ){
         this();
         this.startDateTime      = startDateTime;
@@ -85,6 +88,7 @@ public class RunInfoParser {
         this.dateEpochSecond    = dateEpochSecond;
         this.inhale             = inhale;
         this.exhale             = exhale;
+        this.startLocation      = startLocation;
     }
 
     public RunInfoParser(RunInfo runInfo){
@@ -103,6 +107,7 @@ public class RunInfoParser {
         this.dateEpochSecond    = startDateTime.getDateEpochSecond();
         this.inhale             = runInfo.getInhale();
         this.exhale             = runInfo.getExhale();
+        this.startLocation      = runInfo.getStartLocation();
     }
 
 
@@ -437,8 +442,11 @@ public class RunInfoParser {
     }
     public int getInhale() { return inhale; }
     public int getExhale() { return exhale; }
+    public String getStartLocation() {
+        return startLocation;
+    }
 
     public RunInfo parserToOrigin(){
-        return new RunInfo(startDateTime.parserToOrigin(), endDateTime.parserToOrigin(), listLocParserTolistLoc(trace), breathItems, stepCount, distance, runningTime, pace, cadence, isBreathUsed, inhale, exhale);
+        return new RunInfo(startDateTime.parserToOrigin(), endDateTime.parserToOrigin(), listLocParserTolistLoc(trace), breathItems, stepCount, distance, runningTime, pace, cadence, isBreathUsed, inhale, exhale, startLocation);
     }
 }
