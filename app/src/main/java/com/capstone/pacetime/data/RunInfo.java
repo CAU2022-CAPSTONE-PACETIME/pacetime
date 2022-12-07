@@ -32,7 +32,7 @@ public class RunInfo {
     protected boolean isBreathUsed;
     protected int inhale;
     protected int exhale;
-
+    protected String startLocation;
 
 
     public RunInfo(){
@@ -48,6 +48,7 @@ public class RunInfo {
         isBreathUsed = true;
         inhale = 0;
         exhale = 0;
+        startLocation = "";
     }
     public RunInfo(boolean isBreathUsed, int inhale, int exhale){
         this();
@@ -67,7 +68,8 @@ public class RunInfo {
             int cadence,
             boolean isBreathUsed,
             int inhale,
-            int exhale
+            int exhale,
+            String startLocation
     ){
         this();
         this.startDateTime   = startDateTime;
@@ -82,6 +84,7 @@ public class RunInfo {
         this.isBreathUsed    = isBreathUsed;
         this.inhale = inhale;
         this.exhale = exhale;
+        this.startLocation = startLocation;
     }
 
     public boolean getIsBreathUsed(){
@@ -119,5 +122,8 @@ public class RunInfo {
     }
     public int getExhale() {
         return exhale;
+    }
+    public String getStartLocation() {
+        return startLocation;
     }
 }
