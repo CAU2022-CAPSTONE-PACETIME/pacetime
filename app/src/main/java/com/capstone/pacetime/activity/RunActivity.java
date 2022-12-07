@@ -1,11 +1,13 @@
 package com.capstone.pacetime.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -13,6 +15,12 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.capstone.pacetime.BuildConfig;
 import com.capstone.pacetime.data.RunInfo;
 import com.capstone.pacetime.util.PermissionChecker;
 import com.capstone.pacetime.R;
@@ -34,8 +42,13 @@ import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -58,6 +71,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +104,49 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
             runInfo = new RealTimeRunInfo(true, inhaleCnt, exhaleCnt);
         }
         runInfo.setCommand(command);
+
+        {
+            Location loc = getIntent().getParcelableExtra("location", Location.class);;
+
+            String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+                    loc.getLatitude() + "," +
+                    loc.getLongitude() +
+                    "&key=" + BuildConfig.GEOCODE_API_KEY;
+            StringRequest req = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        Log.d("LOCATIONSTRING", response);
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray resultArray = jsonObject.getJSONArray("results");
+                        JSONObject addrObj = resultArray.getJSONObject(0);
+                        String cityAddr = addrObj.getString("formatted_address");
+
+                        Log.d("StartLocation: ", cityAddr);
+                        StringTokenizer st1 = new StringTokenizer(cityAddr, ", ");
+                        ArrayList<String> pstr = new ArrayList<String>();
+                        while (st1.hasMoreTokens()) {
+                            pstr.add(st1.nextToken());
+                            StringBuilder cityBuilder = new StringBuilder();
+                            cityBuilder.append(pstr.get(2)).append("\n").append(pstr.get(3));
+                        }
+                        runInfo.setStartLocation(cityAddr);
+                    } catch (JSONException e) {
+                        Log.d("LOCATIONFAIL1", "location fail 1");
+                        Log.d("LOCATIONFAIL1", e.toString());
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v("LOCATIONFAIL2", "location call failed!");
+                    Log.v("LOCATIONFAIL", error.toString());
+                }
+            });
+            req.setShouldCache(false);
+            Volley.newRequestQueue(getApplicationContext()).add(req);
+        }
+
 
         manager = new RunningManager(RunActivity.this, runInfo);
         manager.setState(RunningState.COUNT);

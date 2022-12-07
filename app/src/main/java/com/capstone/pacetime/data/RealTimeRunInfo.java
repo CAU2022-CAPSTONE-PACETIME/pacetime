@@ -28,6 +28,10 @@ public class RealTimeRunInfo extends RunInfo {
         this.startDateTime = startDateTime;
         this.lastDateTime = this.startDateTime;
     }
+    public void setStartLocation(String cityAddr){
+        startLocation = cityAddr;
+    }
+
     public void updateLastDateTime(){
         this.lastDateTime = endDateTime;
     }
