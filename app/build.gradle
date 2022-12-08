@@ -43,7 +43,9 @@ android {
 }
 
 dependencies {
-    implementation 'org.pytorch:pytorch_android:1.12.1'
+//    implementation 'org.pytorch:pytorch_android:1.12.1'
+
+    implementation(name:'pytorch_android-release', ext:'aar')
 
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
