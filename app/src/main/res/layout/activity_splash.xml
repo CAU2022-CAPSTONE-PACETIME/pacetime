@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pace\nTime"
-        android:textColor="#006D35"
+        android:textColor="#53B036"
         android:textSize="45sp"
         android:textStyle="bold"
         android:textAlignment="center"

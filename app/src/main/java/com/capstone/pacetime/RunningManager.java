@@ -376,6 +376,10 @@ public class RunningManager implements ReceiverLifeCycleInterface {
     }
 
     public ArrayList<BreathStability> getStabilities(){
-        return breathAnalyzer.getStabilities();
+        if(runInfo.getIsBreathUsed()){
+            return breathAnalyzer.getStabilities();
+        } else {
+            return null;
+        }
     }
 }

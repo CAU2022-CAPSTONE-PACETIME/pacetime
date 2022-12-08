@@ -1,12 +1,17 @@
 package com.capstone.pacetime.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 //import com.capstone.pacetime.command.RunDetailInfoUpdateCommand;
 import com.android.volley.Request;
@@ -29,12 +34,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ResultActivity extends AppCompatActivity implements OnMapReadyCallback, OnMapsSdkInitializedCallback {
 
@@ -48,16 +58,16 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
 
     RunDataManager runDataManager;
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MapsInitializer.initialize(ResultActivity.this, MapsInitializer.Renderer.LATEST, ResultActivity.this);
         runDataManager = RunDataManager.getInstance();
 
-        if(requestQueue == null){
+        if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
-
-        MapsInitializer.initialize(this, MapsInitializer.Renderer.LATEST, this);
 
 
         info = runDataManager.firebaseToRunInfo(getIntent().getIntExtra("index", -1));
@@ -99,7 +109,7 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         viewModel = new RunDetailInfoViewModel(info);
         binding.setDetailResultInfo(viewModel);
 
-        mapView = binding.includeDetailRunInfoResult.mapView;
+        mapView = binding.mapViewResult;
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
@@ -108,14 +118,7 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLng seoul = new LatLng(37.56, 126.97);
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(seoul);
-        markerOptions.title("서울");
-        mMap.addMarker(markerOptions);
-
-        mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(seoul, 10)));
+        drawUserTrace(info.getTrace());
     }
 
     @Override
@@ -128,5 +131,17 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
                 Log.d("MapsDemo", "The legacy version of the renderer is used.");
                 break;
         }
+    }
+
+    private void drawUserTrace(List<Location> trace){
+        ArrayList<LatLng> ll = new ArrayList<>();
+        trace.forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
+
+        PolylineOptions polyOptions = new PolylineOptions()
+                .clickable(false)
+                .addAll(ll);
+
+        mMap.addPolyline(polyOptions);
+        mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(ll.get(ll.size()-1), 15)));
     }
 }

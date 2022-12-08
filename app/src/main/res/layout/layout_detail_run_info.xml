@@ -9,7 +9,7 @@
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         <TextView
             android:id="@+id/textview_run_step_title"
             android:layout_width="wrap_content"
@@ -17,48 +17,42 @@
             app:layout_constraintStart_toStartOf="@id/textview_run_step"
             app:layout_constraintBottom_toTopOf="@id/textview_run_step"
             android:text="Step"
-            android:textSize="20sp"
+            android:textSize="15sp"
+            android:textColor="#999999"
             />
         <TextView
+            android:id="@+id/textview_run_cadence_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="@id/textview_run_cadence"
             app:layout_constraintBottom_toTopOf="@id/textview_run_cadence"
             android:text="Cadence"
-            android:textSize="20sp"
+            android:textSize="15sp"
+            android:textColor="#999999"
             />
 
         <TextView
             android:id="@+id/textview_run_step"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/mapView"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textview_run_step_title"
             android:text="@{detailRunInfo.stepCountStr , default=0}"
-            android:textSize="60sp"
+            android:textSize="45sp"
             android:layout_margin="10dp"
+            android:textColor="#53B036"
             />
 
         <TextView
             android:id="@+id/textview_run_cadence"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/textview_run_cadence_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/mapView"
             android:text="@{detailRunInfo.cadenceStr, default=0}"
-            android:textSize="60sp"
+            android:textSize="45sp"
             android:layout_margin="10dp"
-            />
-
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/mapView"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textview_run_step"
-            android:contentDescription="User Path"
+            android:textColor="#53B036"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
