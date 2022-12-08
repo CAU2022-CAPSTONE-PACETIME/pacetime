@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 public class BreathStability implements Parcelable {
     public static final int VERY_STABLE = 1;
-    public static final int QUIET_STABLE = 2;
+    public static final int QUITE_STABLE = 2;
     public static final int STABLE = 3;
     public static final int LITTLE_STABLE = 4;
     public static final int NOT_STABLE = 5;

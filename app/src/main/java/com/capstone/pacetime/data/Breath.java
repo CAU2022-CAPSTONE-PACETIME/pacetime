@@ -16,6 +16,7 @@ public class Breath {
     public Breath(){
         breathState = BreathState.INHALE;
         timestamp = 0;
+        value = 0.0f;
     }
 
     public Breath(BreathState state, long timestamp){

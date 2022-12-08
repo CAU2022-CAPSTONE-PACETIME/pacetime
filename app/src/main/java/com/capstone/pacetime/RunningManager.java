@@ -203,7 +203,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             }else if(var > threshold * 0.7){
                 return new BreathStability(BreathStability.STABLE, count);
             }else if(var > threshold * 0.6){
-                return new BreathStability(BreathStability.QUIET_STABLE, count);
+                return new BreathStability(BreathStability.QUITE_STABLE, count);
             }else{
                 return new BreathStability(BreathStability.VERY_STABLE, count);
             }
