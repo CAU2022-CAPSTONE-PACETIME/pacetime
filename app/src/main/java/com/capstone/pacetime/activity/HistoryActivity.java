@@ -235,6 +235,9 @@ public class HistoryActivity extends AppCompatActivity {
                 }
             }
             runOnUiThread(() -> {
+                if(adapter == null) {
+                    return;
+                }
                 adapter.setOnItemClickListener(
                         new OnItemClickListener() {
                             @Override
