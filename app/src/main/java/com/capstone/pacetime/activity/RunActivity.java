@@ -230,6 +230,9 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void drawUserTrace(List<Location> trace){
+        if(mMap == null){
+            return;
+        }
         ArrayList<LatLng> ll = new ArrayList<>();
         trace.forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
 

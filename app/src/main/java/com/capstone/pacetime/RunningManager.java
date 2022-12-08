@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.capstone.pacetime.data.Breath;
 import com.capstone.pacetime.data.RealTimeRunInfo;
 import com.capstone.pacetime.data.BreathStability;
+import com.capstone.pacetime.data.RunInfo;
 import com.capstone.pacetime.data.enums.BreathState;
 import com.capstone.pacetime.data.enums.RunningDataType;
 import com.capstone.pacetime.data.enums.RunningState;
@@ -106,7 +107,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
     }
 
-    public class BreathAnalyzer{
+    public static class BreathAnalyzer{
         private final int inhaleCnt;
         private final int exhaleCnt;
         private final int patternLen;
@@ -139,6 +140,14 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             for(int i = 0; i < exhaleCnt; i++){
                 preComputedArray[i + inhaleCnt] = (sin(PI * (i + 1) / (exhaleCnt + 2) + PI) /2 + 0.5f);
             }
+        }
+
+        public static ArrayList<BreathStability> getStabilityList(RunInfo info){
+            BreathAnalyzer ba = new BreathAnalyzer(info.getInhale(), info.getExhale());
+            for(Breath item: info.getBreathItems()){
+                ba.putBreathState(item);
+            }
+            return ba.getStabilities();
         }
 
         public void putBreathState(Breath breath){
@@ -191,9 +200,9 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                 return new BreathStability(BreathStability.NOT_STABLE, count);
             }else if(var >threshold * 0.8){
                 return new BreathStability(BreathStability.LITTLE_STABLE, count);
-            }else if(var > threshold * 0.6){
+            }else if(var > threshold * 0.7){
                 return new BreathStability(BreathStability.STABLE, count);
-            }else if(var > threshold * 0.4){
+            }else if(var > threshold * 0.6){
                 return new BreathStability(BreathStability.QUIET_STABLE, count);
             }else{
                 return new BreathStability(BreathStability.VERY_STABLE, count);
@@ -209,7 +218,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                 }
                 double var = 0;
                 Iterator<Double> iter = breathDeque.descendingIterator();
-                for(int i = 0; i < biasWindowSize; i++){
+                for(int i = 0; i < biasWindowSize/2; i++){
                     var += pow(preComputedArray[(b + count - i) % patternLen] - iter.next(), 2);
                 }
                 var /= biasWindowSize;
