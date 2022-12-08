@@ -8,6 +8,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,6 +51,9 @@ public class RunningManager implements ReceiverLifeCycleInterface {
     private final StepCounter stepCounter;
 
     private BreathAnalyzer breathAnalyzer;
+    private BreathAlarm breathAlarm;
+
+    private StepAnalyzer stepAnalyzer;
 
     private UpdateTask updateTask;
     private final Timer updateTimer;
@@ -75,6 +80,17 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                     if(msg.arg1 == RunningDataType.BREATH.ordinal() && runInfo.getIsBreathUsed()){
                         runInfo.addBreathItem((Breath)msg.obj);
                         breathAnalyzer.putBreathState((Breath)msg.obj);
+//                        breathAlarm.play();
+
+                        BreathStability latestStability =breathAnalyzer.getLatestStability();
+                        if(latestStability != null){
+                            if(latestStability.getValue() == BreathStability.NOT_STABLE){
+                                breathAlarm.play();
+                            }
+                            else{
+                                breathAlarm.stop();
+                            }
+                        }
                         Log.d(TAG, "Breath: " + ((Breath) msg.obj).getBreathState().name());
                     }
                     else if(msg.arg1 == RunningDataType.LOCATION.ordinal()){
@@ -88,11 +104,13 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                         runInfo.addTrace(loc);
 
                     }else if(msg.arg1 == RunningDataType.STEP.ordinal()){
-                        runInfo.addStepCount((Step)msg.obj);
-                        Log.d(TAG, "Step: " + ((Step) msg.obj).getCount());
+                        Step step = (Step)msg.obj;
+                        runInfo.addStepCount(step);
+                        stepAnalyzer.putStep(step);
+                        Log.d(TAG, "Step: " + step.getCount());
                         if(runInfo.getIsBreathUsed()) {
                             assert breathReceiver != null;
-                            breathReceiver.doConvert(System.currentTimeMillis());
+                            breathReceiver.doConvert(step.getTimestamp());
                         }
                     }
                 }
@@ -115,8 +133,9 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         private final double[] preComputedArray;
         private final int biasWindowSize, stableWindowSize;
         private int bias, count, trigger;
-        private Deque<Double> breathDeque, dSDeque;
-        private ArrayList<BreathStability> stabilities;
+        private final Deque<Double> breathDeque;
+        private final Deque<Double> dSDeque;
+        private final ArrayList<BreathStability> stabilities;
 
         public BreathAnalyzer(int inhaleCnt, int exhaleCnt){
             this.inhaleCnt = inhaleCnt;
@@ -167,7 +186,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             count++;
         }
         private boolean isBiased(){
-            final float threshold = 0.25f;
+            final float threshold = 0.2f;
 
             if(dSDeque.size() <20 ){
                 return false;
@@ -187,7 +206,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
 
         private BreathStability getStability(){
-            final float threshold = 0.2f;
+            final float threshold = 0.4f;
 
             OptionalDouble optVAR = dSDeque.stream().mapToDouble(d -> d).average();
 
@@ -237,15 +256,131 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             return stabilities;
         }
 
+        public BreathStability getLatestStability(){
+            if(stabilities.isEmpty()){
+                return null;
+            }
+            return stabilities.get(stabilities.size() - 1);
+        }
+
         public void clear(){
             breathDeque.clear();
             dSDeque.clear();
             trigger = count;
         }
     }
-//    class StepAnalyzer{
+
+    public static class BreathAlarm{
+//        private final AudioTrack track;
+//        private final int minSize;
+//        private final int SAMPLE_RATE=11025;
+//        private final short[] buffer;
+        private final Runnable playThread;
+
+        BreathAlarm(AudioManager audioManager){
+//            minSize = AudioTrack.getMinBufferSize(
+//                    SAMPLE_RATE,
+//                    AudioFormat.CHANNEL_OUT_MONO,
+//                    AudioFormat.ENCODING_PCM_16BIT
+//            );
 //
-//    }
+//            Log.d(TAG, "MINSIZE: " + minSize);
+//
+//            track = new AudioTrack.Builder()
+//                    .setAudioAttributes(
+//                            new AudioAttributes.Builder()
+//                                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+//                                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+//                                    .setAllowedCapturePolicy(AudioAttributes.ALLOW_CAPTURE_BY_SYSTEM)
+//                                    .build()
+//                    )
+//                    .setAudioFormat(new AudioFormat.Builder()
+//                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+//                            .setSampleRate(SAMPLE_RATE)
+//                            .build()
+//                    )
+//                    .setBufferSizeInBytes(minSize)
+//                    .build();
+
+            /*
+            *
+                    AudioManager.STREAM_MUSIC,
+                    SAMPLE_RATE,
+                    AudioFormat.CHANNEL_OUT_DEFAULT,
+                    AudioFormat.ENCODING_PCM_16BIT,
+                    minSize,
+                    AudioTrack.MODE_STREAM
+            * */
+//            buffer = new short[]{
+//                    8130, 15752, 32695, 12253, 4329,
+//                    -3865, -19032, -32722, -16160, -466,
+//                    8130, 15752, 22389, 27625, 31134, 32695, 32210,
+//                    29711, 25354, 19410, 12253, 4329, -3865, -11818, -19032,
+//                    -25055, -29511, -32121, -32722, -31276, -27874, -22728,
+//                    -16160, -8582, -466
+//            };
+
+            audioManager.setStreamVolume(AudioManager.STREAM_SYSTEM
+                    , (int)(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC))
+                    , AudioManager.FLAG_PLAY_SOUND);
+
+            playThread = () -> {
+//                track.write(buffer, 0, buffer.length);
+//                Log.d(TAG, "PLAY SOUND");
+                audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_DELETE, audioManager.getStreamVolumeDb(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioDeviceInfo.TYPE_BLUETOOTH_SCO));
+
+            };
+        }
+
+        private boolean run = false;
+        private long period;
+        public void play() {
+            Log.d(TAG, "PLAY SOUND");
+//            run=true;
+            new Thread(playThread).start();
+        }
+        public void stop(){
+            if(run){
+                Log.d(TAG, "STOP SOUND");
+
+                run = false;
+//                playThread.interrupt();
+            }
+        }
+    }
+
+    public static class StepAnalyzer{
+        private final Deque<Step> stepDeque;
+
+        private long period;
+
+        public StepAnalyzer(){
+            period = 0;
+            stepDeque = new ArrayDeque<>();
+        }
+
+        public void putStep(Step step){
+            long before = 0;
+            if(stepDeque.size() != 0){
+                before = stepDeque.getLast().getTimestamp();
+            }
+
+            stepDeque.add(step);
+
+            if(stepDeque.size() == 1)
+                return;
+            period += stepDeque.getLast().getTimestamp() - before;
+
+            if(stepDeque.size() > 100){
+                long first = stepDeque.getFirst().getTimestamp();
+                stepDeque.pollFirst();
+                period -= stepDeque.getFirst().getTimestamp() - first;
+            }
+        }
+        public long getPeriod(){
+            return period / 99;
+        }
+    }
 
     public RunningManager(AppCompatActivity activity, RealTimeRunInfo runInfo){
         this.runInfo = runInfo;
@@ -256,18 +391,24 @@ public class RunningManager implements ReceiverLifeCycleInterface {
 
         SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
-        gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity));
+        gpsReceiver = new GPSReceiver(
+                LocationServices.getFusedLocationProviderClient(activity),
+                (LocationManager)activity.getApplicationContext().getSystemService(Context.LOCATION_SERVICE)
+        );
         if(runInfo.getIsBreathUsed()) {
-            breathReceiver = new BreathReceiver((
-                    AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
+            breathReceiver = new BreathReceiver(
+                    (AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
                     activity.getApplicationContext()
             );
             breathAnalyzer = new BreathAnalyzer(runInfo.getInhale(), runInfo.getExhale());
+            breathAlarm = new BreathAlarm((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
         } else{
             breathReceiver = null;
             breathAnalyzer = null;
         }
         stepCounter = new StepCounter(sensorManager);
+        stepAnalyzer = new StepAnalyzer();
+
     }
 
     public void setState(RunningState state){
