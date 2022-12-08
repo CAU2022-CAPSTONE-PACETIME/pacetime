@@ -52,8 +52,6 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
     private RunDetailInfoViewModel viewModel;
     private RunInfo info;
     private static RequestQueue requestQueue;
-    private Handler uiHandler;
-    private Object lock;
 
     private MapView mapView;
     private GoogleMap mMap;
@@ -65,7 +63,6 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapsInitializer.initialize(ResultActivity.this, MapsInitializer.Renderer.LATEST, ResultActivity.this);
-//        MapsInitializer.initialize(this, MapsInitializer.Renderer.LATEST, this);
         runDataManager = RunDataManager.getInstance();
 
         if (requestQueue == null) {
@@ -112,39 +109,9 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         viewModel = new RunDetailInfoViewModel(info);
         binding.setDetailResultInfo(viewModel);
 
-//        uiHandler = new Handler(getMainLooper()) {
-//            @Override
-//            public void handleMessage(@NonNull Message msg) {git
-//                super.handleMessage(msg);
-//                if (msg.what == 1) {
-//                }
-//            }
-//        };
-
-
         mapView = binding.mapViewResult;
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-
-
-
-//        int i = 1;
-//        lock = new Object();
-//        synchronized (lock) {
-//            while (mMap != null) {
-//                try {
-//                    lock.wait(50);
-//                    Log.d("TTTTT", "" + i);
-//                    i++;
-//                } catch (InterruptedException e) {
-//                    Log.d("LOCKERROR", e.toString());
-//                }
-//                if (mMap == null) {
-//                    Log.d("TTTTT", "" + i);
-//                    drawUserTrace(info.getTrace());
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -152,15 +119,6 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         mMap = googleMap;
 
         drawUserTrace(info.getTrace());
-
-//        LatLng seoul = new LatLng(37.56, 126.97);
-//
-//        MarkerOptions markerOptions = new MarkerOptions();
-//        markerOptions.position(seoul);
-//        markerOptions.title("서울");
-//        mMap.addMarker(markerOptions);
-//
-//        mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(seoul, 10)));
     }
 
     @Override
