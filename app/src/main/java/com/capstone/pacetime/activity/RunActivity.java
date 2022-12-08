@@ -41,6 +41,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
@@ -138,6 +139,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (msg.what == READY_RUN) { // READY -> RUN
                     runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
+                        binding.mapView.setVisibility(View.GONE); // 추가
                         binding.buttonStop.setVisibility(View.INVISIBLE);
                         binding.constraintReady.setVisibility(View.GONE);
                         binding.constraintRun.setVisibility(View.VISIBLE);
@@ -146,12 +148,14 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
                     drawUserTrace(runInfo.getTrace());
                     runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.VISIBLE);
+                        binding.mapView.setVisibility(View.VISIBLE); // 추가
                         binding.buttonStop.setVisibility(View.VISIBLE);
                         binding.buttonRun.setSelected(true);
                     });
                 } else if (msg.what == PAUSE_RUN) { // PAUSE -> RUN
                     runOnUiThread(() -> {
                         binding.includeDetailRunInfo.getRoot().setVisibility(View.GONE);
+                        binding.mapView.setVisibility(View.GONE); // 추가
                         binding.buttonStop.setVisibility(View.INVISIBLE);
                         binding.buttonRun.setSelected(false);
                     });
@@ -193,7 +197,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        mapView = binding.includeDetailRunInfo.mapView;
+        mapView = binding.mapView;
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 

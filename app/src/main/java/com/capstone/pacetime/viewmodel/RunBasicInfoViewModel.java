@@ -25,6 +25,9 @@ public class RunBasicInfoViewModel extends RunInfoViewModel {
     }
 
     private String paceFormatter(long pace){
+        if((pace / 60) > 99){
+            return "----";
+        }
         return String.format(Locale.getDefault(), "%02d'%02d\"", pace / 60, pace % 60);
     }
 
