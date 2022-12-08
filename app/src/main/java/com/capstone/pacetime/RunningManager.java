@@ -92,7 +92,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
                         Log.d(TAG, "Step: " + ((Step) msg.obj).getCount());
                         if(runInfo.getIsBreathUsed()) {
                             assert breathReceiver != null;
-                            breathReceiver.doConvert(System.currentTimeMillis());
+                            breathReceiver.doConvert(((Step) msg.obj).getTimestamp());
                         }
                     }
                 }
