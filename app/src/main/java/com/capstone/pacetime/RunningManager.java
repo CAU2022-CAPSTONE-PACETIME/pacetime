@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -205,7 +206,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
 
         private BreathStability getStability(){
-            final float threshold = 0.2f;
+            final float threshold = 0.3f;
 
             OptionalDouble optVAR = dSDeque.stream().mapToDouble(d -> d).average();
 
@@ -348,7 +349,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
     }
 
-    public class StepAnalyzer{
+    public static class StepAnalyzer{
         private final Deque<Step> stepDeque;
 
         private long period;
@@ -390,13 +391,17 @@ public class RunningManager implements ReceiverLifeCycleInterface {
 
         SensorManager sensorManager = (SensorManager) activity.getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 
-        gpsReceiver = new GPSReceiver(LocationServices.getFusedLocationProviderClient(activity));
+        gpsReceiver = new GPSReceiver(
+                LocationServices.getFusedLocationProviderClient(activity),
+                (LocationManager)activity.getApplicationContext().getSystemService(Context.LOCATION_SERVICE)
+        );
         if(runInfo.getIsBreathUsed()) {
             breathReceiver = new BreathReceiver(
                     (AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE),
                     activity.getApplicationContext()
             );
             breathAnalyzer = new BreathAnalyzer(runInfo.getInhale(), runInfo.getExhale());
+            breathAlarm = new BreathAlarm((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
         } else{
             breathReceiver = null;
             breathAnalyzer = null;
@@ -404,7 +409,6 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         stepCounter = new StepCounter(sensorManager);
         stepAnalyzer = new StepAnalyzer();
 
-        breathAlarm = new BreathAlarm((AudioManager) activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE));
     }
 
     public void setState(RunningState state){
