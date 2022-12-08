@@ -217,7 +217,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
             }
 
         }
-        BreathState convert(FloatBuffer buf){
+        Breath convert(FloatBuffer buf, long timestamp){
             long start = System.currentTimeMillis();
             Tensor inputTensor = Tensor.fromBlob(buf, new long[]{1, 22050});
             Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
@@ -230,13 +230,19 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 
             if(val <= exhaleTh){
 //                Log.d(TAG, "Breath: EXHALE");
-                return BreathState.EXHALE;
+                Breath breath = new Breath(BreathState.EXHALE, timestamp);
+                breath.setValue(val);
+                return breath;
             }
             else if (val >= inhaleTh){
 //                Log.d(TAG, "Breath: INHALE");
-                return BreathState.INHALE;
+                Breath breath = new Breath(BreathState.INHALE, timestamp);
+                breath.setValue(val);
+                return breath;
             } else{
-                return BreathState.NONE;
+                Breath breath = new Breath(BreathState.NONE, timestamp);
+                breath.setValue(val);
+                return breath;
             }
         }
     }
@@ -259,7 +265,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
         @Override
         public void run() {
             Message msg = new Message();
-            msg.obj = new Breath(module.convert(sound), timestamp);
+            msg.obj = module.convert(sound, timestamp);
             msg.arg1 = RunningDataType.BREATH.ordinal();
             dataHandler.sendMessage(msg);
         }
