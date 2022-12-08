@@ -8,10 +8,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -152,7 +154,8 @@ public class MainActivity extends AppCompatActivity {
         };
 
 
-        gps = new GPSReceiver(LocationServices.getFusedLocationProviderClient(this));
+        gps = new GPSReceiver(LocationServices.getFusedLocationProviderClient(this),
+                (LocationManager) getSystemService(Context.LOCATION_SERVICE));
         gps.setDataHandler(handler);
         gps.getLocation();
         binding.viewWeatherFrame.setOnClickListener((view) -> {
