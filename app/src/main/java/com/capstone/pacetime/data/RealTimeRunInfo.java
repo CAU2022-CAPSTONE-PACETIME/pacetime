@@ -109,7 +109,7 @@ public class RealTimeRunInfo extends RunInfo {
     private int lastDistanceIdx = 0;
 
     private int calculateCadence(){
-        if(runningTime == 0){
+        if(runningTime == 0 || stepCount.isEmpty()){
             return 0;
         }
         return (int) (stepCount.get(stepCount.size()-1).getCount() / runningTime * 60);
