@@ -253,6 +253,17 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
 
         public ArrayList<BreathStability> getStabilities(){
+            if(stabilities.isEmpty()){
+                return null;
+            }
+            if(count != stabilities.get(stabilities.size()-1).getOffset()){
+                if(isBiased()){
+                    computeBias();
+                }
+                if(count >= stableWindowSize + trigger){
+                    stabilities.add(getStability());
+                }
+            }
             return stabilities;
         }
 
