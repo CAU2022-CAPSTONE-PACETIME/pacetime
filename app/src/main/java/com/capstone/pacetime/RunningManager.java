@@ -186,7 +186,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
             count++;
         }
         private boolean isBiased(){
-            final float threshold = 0.25f;
+            final float threshold = 0.2f;
 
             if(dSDeque.size() <20 ){
                 return false;
@@ -206,7 +206,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
         }
 
         private BreathStability getStability(){
-            final float threshold = 0.3f;
+            final float threshold = 0.4f;
 
             OptionalDouble optVAR = dSDeque.stream().mapToDouble(d -> d).average();
 
