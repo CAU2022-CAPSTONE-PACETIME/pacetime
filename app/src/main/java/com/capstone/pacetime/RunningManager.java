@@ -84,7 +84,7 @@ public class RunningManager implements ReceiverLifeCycleInterface {
 
                         BreathStability latestStability =breathAnalyzer.getLatestStability();
                         if(latestStability != null){
-                            if(latestStability.getValue() == BreathStability.NOT_STABLE){
+                            if(latestStability.getValue() >= BreathStability.LITTLE_STABLE){
                                 breathAlarm.play();
                             }
                             else{

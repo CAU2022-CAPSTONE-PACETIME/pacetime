@@ -24,17 +24,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.Buffer;
 import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentLinkedQueue;
+
 import uk.me.berndporr.iirj.Butterworth;
-import uk.me.berndporr.iirj.LayoutBase;
+import uk.me.berndporr.iirj.ChebyshevII;
 
 public class BreathReceiver implements ReceiverLifeCycleInterface {
     private static final String TAG = "BreathReceiver";
@@ -174,7 +172,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     }
 
     public void doConvert(long timestamp){
-        final int offset = 0;//(int) (AUDIO_SAMP_RATE * 0.3);
+        final int offset = (int) (AUDIO_SAMP_RATE * 0.25f);
         synchronized (soundQueue){
             if(soundQueue.position() >= (int)(AUDIO_SAMP_RATE * recordSeconds) || bufferOverflowFlag){
                 Log.d(TAG, "buf pos: " + soundQueue.position());
@@ -236,7 +234,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
                 breath.setValue(val);
                 return breath;
             }
-            else if (val >= inhaleTh){
+            else if (val > inhaleTh){
 //                Log.d(TAG, "Breath: INHALE");
                 Breath breath = new Breath(BreathState.INHALE, timestamp);
                 breath.setValue(val);
@@ -252,19 +250,20 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     class SoundToBreathRunnable implements Runnable{
         private final long timestamp;
         private final FloatBuffer sound;
-        private Butterworth butterworth = new Butterworth();
+//        private Butterworth filter = new Butterworth();
+        private ChebyshevII filter;
+
         public SoundToBreathRunnable(int offset, long timestamp){
+            filter  = new ChebyshevII();
             sound = ByteBuffer.allocateDirect((int)(AUDIO_SAMP_RATE * recordSeconds)*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-            butterworth.highPass(2, 44100, 800);
+            filter.highPass(1, 44100, 80, 1);
+//            filter.applyScale(1.1);
             synchronized (soundQueue){
                 for(int i = 0; i < (int)(AUDIO_SAMP_RATE * recordSeconds); offset++, i++){
-                    sound.put((float) butterworth.filter(soundQueue.get((offset + soundQueue.capacity()) % soundQueue.capacity())));
+                    sound.put((float) filter.filter(soundQueue.get((offset + soundQueue.capacity()) % soundQueue.capacity())));
+//                    sound.put(soundQueue.get((offset + soundQueue.capacity()) % soundQueue.capacity()));
                 }
             }
-
-
-
-
             this.timestamp = timestamp;
         }
         @Override
@@ -285,7 +284,8 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     @SuppressLint("MissingPermission")
     public BreathReceiver(AudioManager audioManager, Context context){
         try {
-            String asset = "BreathClassiifierVer1.9.pt";
+            String asset = "BreathClassifierVer2.1.pt";
+//            String asset = "BreathClassiifierVer1.9.pt";
 //            String asset = "CpuOptmodel.pt";
             File file = new File(context.getFilesDir(), asset);
             InputStream inStream = context.getAssets().open(asset);
