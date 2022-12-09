@@ -286,7 +286,6 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     public BreathReceiver(AudioManager audioManager, Context context){
         try {
             String asset = "BreathClassiifierVer1.9.pt";
-//            String asset = "CpuOptmodel.pt";
             File file = new File(context.getFilesDir(), asset);
             InputStream inStream = context.getAssets().open(asset);
 

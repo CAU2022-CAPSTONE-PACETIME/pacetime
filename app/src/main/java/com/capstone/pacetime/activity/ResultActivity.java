@@ -153,6 +153,10 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         ArrayList<LatLng> ll = new ArrayList<>();
         trace.forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
 
+        if(ll.isEmpty()){
+            return;
+        }
+
         MarkerOptions markerStart = new MarkerOptions();
         LatLng latLngStart = new LatLng(info.getTrace().get(0).getLatitude(), info.getTrace().get(0).getLongitude());
         markerStart.position(latLngStart);
@@ -224,6 +228,11 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
                                 locList.add(new LatLng(trace.get(i + 1).getLatitude(), trace.get(i + 1).getLongitude()));
                                 colorList.add(decideColor(breathStabilityList.get(j).getValue()));
                             }
+
+                            if(ll.isEmpty()){
+                                return;
+                            }
+
                             PolylineOptions polyOptions = new PolylineOptions()
                                     .clickable(false)
                                     .addAll(ll);
