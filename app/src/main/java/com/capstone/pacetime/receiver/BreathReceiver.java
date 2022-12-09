@@ -250,14 +250,14 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     class SoundToBreathRunnable implements Runnable{
         private final long timestamp;
         private final FloatBuffer sound;
-//        private Butterworth filter = new Butterworth();
-        private ChebyshevII filter;
+        private Butterworth filter = new Butterworth();
+//        private ChebyshevII filter;
 
         public SoundToBreathRunnable(int offset, long timestamp){
-            filter  = new ChebyshevII();
+//            filter  = new ChebyshevII();
             sound = ByteBuffer.allocateDirect((int)(AUDIO_SAMP_RATE * recordSeconds)*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-            filter.highPass(1, 44100, 80, 1);
-//            filter.applyScale(1.1);
+            filter.highPass(1, 44100, 800);
+//            filter.applyScale(1.3);
             synchronized (soundQueue){
                 for(int i = 0; i < (int)(AUDIO_SAMP_RATE * recordSeconds); offset++, i++){
                     sound.put((float) filter.filter(soundQueue.get((offset + soundQueue.capacity()) % soundQueue.capacity())));
@@ -285,7 +285,7 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
     public BreathReceiver(AudioManager audioManager, Context context){
         try {
             String asset = "BreathClassifierVer2.1.pt";
-//            String asset = "BreathClassiifierVer1.9.pt";
+//            String asset = "BreathClassifierVer1.9.pt";
 //            String asset = "CpuOptmodel.pt";
             File file = new File(context.getFilesDir(), asset);
             InputStream inStream = context.getAssets().open(asset);
