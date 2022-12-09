@@ -32,7 +32,7 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import uk.me.berndporr.iirj.Butterworth;
-import uk.me.berndporr.iirj.ChebyshevII;
+import uk.me.berndporr.iirj.LayoutBase;
 
 public class BreathReceiver implements ReceiverLifeCycleInterface {
     private static final String TAG = "BreathReceiver";
@@ -264,6 +264,10 @@ public class BreathReceiver implements ReceiverLifeCycleInterface {
 //                    sound.put(soundQueue.get((offset + soundQueue.capacity()) % soundQueue.capacity()));
                 }
             }
+
+
+
+
             this.timestamp = timestamp;
         }
         @Override
