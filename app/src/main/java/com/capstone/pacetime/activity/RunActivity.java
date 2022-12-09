@@ -256,6 +256,7 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         trace.forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
 
         if(ll.isEmpty()){
+            Log.d(TAG, "isNULL!!!!!");
             return;
         }
 
@@ -299,22 +300,26 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         List<Integer> colorList = new ArrayList<>();
         int count = 0;
 
+        if(breathStabilityList.isEmpty()){
+            return;
+        }
+
         for(int i = 0; i < trace.size() - 1; i++){
             for(int j = 0; j < breathStabilityList.size(); j++){
                 if(j == breathStabilityList.size() - 1){
-//                    if(breathList.get(breathList.size() - 1).getTimestamp() > trace.get(i + 1).getTime()) {
-//                        break;
-//                    } else if(breathList.get(breathList.size() - 1).getTimestamp() >= trace.get(i).getTime() && breathList.get(breathList.size() - 1).getTimestamp() <= trace.get(i + 1).getTime()){
-//                        if(breathList.get(breathList.size() - 1).getTimestamp() - trace.get(i).getTime() <= trace.get(i + 1).getTime() - breathList.get(breathList.size() - 1).getTimestamp()){
-//                            locList.add(new LatLng(trace.get(i).getLatitude(), trace.get(i).getLongitude()));
-//                            colorList.add(decideColor(breathStabilityList.get(j).getValue()));
-//                        } else {
-//                            locList.add(new LatLng(trace.get(i + 1).getLatitude(), trace.get(i + 1).getLongitude()));
-//                            colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+                    if(breathList.get(breathList.size() - 1).getTimestamp() > trace.get(i + 1).getTime()) {
+                        break;
+                    } else if(breathList.get(breathList.size() - 1).getTimestamp() >= trace.get(i).getTime() && breathList.get(breathList.size() - 1).getTimestamp() <= trace.get(i + 1).getTime()){
+                        if(breathList.get(breathList.size() - 1).getTimestamp() - trace.get(i).getTime() <= trace.get(i + 1).getTime() - breathList.get(breathList.size() - 1).getTimestamp()){
+                            locList.add(new LatLng(trace.get(i).getLatitude(), trace.get(i).getLongitude()));
+                            colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+                        } else {
+                            locList.add(new LatLng(trace.get(i + 1).getLatitude(), trace.get(i + 1).getLongitude()));
+                            colorList.add(decideColor(breathStabilityList.get(j).getValue()));
                     locList.add(new LatLng(trace.get(traceLastIndex).getLatitude(), trace.get(traceLastIndex).getLongitude()));
                     colorList.add(decideColor(breathStabilityList.get(j).getValue()));
-//                        }
-//                    }
+                        }
+                    }
                 } else {
                     if(breathList.get(10 * j + 100).getTimestamp() > trace.get(i + 1).getTime()) {
                         break;

@@ -197,6 +197,10 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         List<Integer> colorList = new ArrayList<>();
         int count = 0;
 
+        if(breathStabilityList.isEmpty()){
+            return;
+        }
+
         for(int i = 0; i < trace.size() - 1; i++){
             for(int j = 0; j < breathStabilityList.size(); j++){
                 if(j == breathStabilityList.size() - 1){
