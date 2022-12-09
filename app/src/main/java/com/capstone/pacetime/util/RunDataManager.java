@@ -69,7 +69,7 @@ public class RunDataManager {
         runInfos.add(0, runInfoParser.parserToOrigin());
 
         Log.d(TAG, "runinfos size = " + runInfos.size());
-        runDataStoreTest.document("" + runInfos.size())
+        runDataStoreTest.document("" + runInfoParser.getDateEpochSecond())
                 .set(runData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -142,6 +142,23 @@ public class RunDataManager {
 //    public void setIsAddLoading(boolean isAddLoading){
 //        this.isAddLoading = isAddLoading;
 //    }
+
+    public void deleteDocument(String documentId){
+        firestore.collection("runDataStoreTest").document(documentId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+    }
 
     public ArrayList<RunInfo> getRunInfos(){
         return (ArrayList<RunInfo>) runInfos;

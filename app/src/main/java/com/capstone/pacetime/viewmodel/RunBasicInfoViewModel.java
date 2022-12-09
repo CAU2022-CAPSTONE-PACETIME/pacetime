@@ -21,7 +21,7 @@ public class RunBasicInfoViewModel extends RunInfoViewModel {
     private String distanceFormatter(float distance){
         int n = (int)distance;
         int d = (int)(distance * 100) % 100;
-        return n + "." + d + "km";
+        return n + "." + String.format("%02d", d) + "km";
     }
 
     private String paceFormatter(long pace){
@@ -68,7 +68,4 @@ public class RunBasicInfoViewModel extends RunInfoViewModel {
         this.runningTimeStr = runningTimeFormatter(runningTime);
         notifyPropertyChanged(BR.runningTimeStr);
     }
-
-
-
 }

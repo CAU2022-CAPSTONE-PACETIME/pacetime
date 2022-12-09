@@ -64,7 +64,6 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private MapView mapView;
     private GoogleMap mMap;
-    private int count = 0;
 
     RunDataManager runDataManager;
 
@@ -176,9 +175,6 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void drawUserBreathTrace(List<Location> trace, List<Breath> breathList, List<BreathStability> breathStabilityList){
-        ArrayList<LatLng> ll = new ArrayList<>();
-        trace.forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
-
         MarkerOptions markerStart = new MarkerOptions();
         LatLng latLngStart = new LatLng(trace.get(0).getLatitude(), trace.get(0).getLongitude());
         markerStart.position(latLngStart);
@@ -192,41 +188,73 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         markerEnd.position(latLngEnd);
         mMap.addMarker(markerEnd);
 
-        PolylineOptions polyOptions = new PolylineOptions().clickable(false);
 
         List<LatLng> locList = new ArrayList<>();
         List<Integer> colorList = new ArrayList<>();
+        int count = 0;
 
         for(int i = 0; i < trace.size() - 1; i++){
             for(int j = 0; j < breathStabilityList.size(); j++){
-                if(breathList.get(10 * j + 100).getTimestamp() > trace.get(i + 1).getTime()) {
-                    break;
-                } else if(breathList.get(10 * j + 100).getTimestamp() >= trace.get(i).getTime() && breathList.get(10 * j + 100).getTimestamp() <= trace.get(i + 1).getTime()){
-                    if(breathList.get(10 * j + 100).getTimestamp() - trace.get(i).getTime() <= trace.get(i + 1).getTime() - breathList.get(10 * j + 100).getTimestamp()){
-                        locList.add(new LatLng(trace.get(i).getLatitude(), trace.get(i).getLongitude()));
-                        colorList.add(decideColor(breathStabilityList.get(j).getValue()));
-                    } else {
-                        locList.add(new LatLng(trace.get(i + 1).getLatitude(), trace.get(i + 1).getLongitude()));
-                        colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+                if(j == breathStabilityList.size() - 1){
+//                    if(breathList.get(breathList.size() - 1).getTimestamp() > trace.get(i + 1).getTime()) {
+//                        break;
+//                    } else if(breathList.get(breathList.size() - 1).getTimestamp() >= trace.get(i).getTime() && breathList.get(breathList.size() - 1).getTimestamp() <= trace.get(i + 1).getTime()){
+//                        if(breathList.get(breathList.size() - 1).getTimestamp() - trace.get(i).getTime() <= trace.get(i + 1).getTime() - breathList.get(breathList.size() - 1).getTimestamp()){
+//                            locList.add(new LatLng(trace.get(i).getLatitude(), trace.get(i).getLongitude()));
+//                            colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+//                        } else {
+//                            locList.add(new LatLng(trace.get(i + 1).getLatitude(), trace.get(i + 1).getLongitude()));
+//                            colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+                            locList.add(new LatLng(trace.get(traceLastIndex).getLatitude(), trace.get(traceLastIndex).getLongitude()));
+                            colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+//                        }
+//                    }
+                } else {
+                    if(breathList.get(10 * j + 100).getTimestamp() > trace.get(i + 1).getTime()) {
+                        break;
+                    } else if(breathList.get(10 * j + 100).getTimestamp() >= trace.get(i).getTime() && breathList.get(10 * j + 100).getTimestamp() <= trace.get(i + 1).getTime()){
+                        if(count == 0){
+                            ArrayList<LatLng> ll = new ArrayList<>();
+                            if(breathList.get(10 * j + 100).getTimestamp() - trace.get(i).getTime() <= trace.get(i + 1).getTime() - breathList.get(10 * j + 100).getTimestamp()){
+                                trace.subList(0, i).forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
+                                locList.add(new LatLng(trace.get(i).getLatitude(), trace.get(i).getLongitude()));
+                                colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+                            } else {
+                                trace.subList(0, i + 1).forEach((Location location) -> ll.add(new LatLng(location.getLatitude(), location.getLongitude())));
+                                locList.add(new LatLng(trace.get(i + 1).getLatitude(), trace.get(i + 1).getLongitude()));
+                                colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+                            }
+                            PolylineOptions polyOptions = new PolylineOptions()
+                                    .clickable(false)
+                                    .addAll(ll);
+
+                            mMap.addPolyline(polyOptions);
+                        } else {
+                            if(breathList.get(10 * j + 100).getTimestamp() - trace.get(i).getTime() <= trace.get(i + 1).getTime() - breathList.get(10 * j + 100).getTimestamp()){
+                                locList.add(new LatLng(trace.get(i).getLatitude(), trace.get(i).getLongitude()));
+                                colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+                            } else {
+                                locList.add(new LatLng(trace.get(i + 1).getLatitude(), trace.get(i + 1).getLongitude()));
+                                colorList.add(decideColor(breathStabilityList.get(j).getValue()));
+                            }
+                        }
+                        count++;
                     }
-                    count++;
                 }
             }
         }
 
-        int count = 0;
         for(int i = 0; i < locList.size() - 1; i++){
             Log.d("LASTLOC", i + ": " + locList.get(i).latitude + ", " + locList.get(i).longitude);
             colorGradation(locList.get(i), locList.get(i + 1), colorList.get(i), colorList.get(i + 1));
         }
 
         for(int i = 0; i < colorList.size(); i++){
-            count++;
             Log.d("COLORLISTSIZE", "" + count);
             Log.d("COLORS", ""+Integer.toHexString(colorList.get(i)));
         }
 
-        mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(ll.get(ll.size()-1), 15)));
+        mMap.moveCamera((CameraUpdateFactory.newLatLngZoom(new LatLng(trace.get(traceLastIndex).getLatitude(), trace.get(traceLastIndex).getLongitude()), 15)));
     }
 
     private int decideColor(int value){

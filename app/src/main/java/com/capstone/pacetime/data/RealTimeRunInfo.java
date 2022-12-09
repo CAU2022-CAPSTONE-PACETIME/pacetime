@@ -112,7 +112,7 @@ public class RealTimeRunInfo extends RunInfo {
         if(runningTime == 0 || stepCount.isEmpty()){
             return 0;
         }
-        return (int) (stepCount.get(stepCount.size()-1).getCount() / runningTime * 60);
+        return (int) (stepCount.get(stepCount.size()-1).getCount() * 60 / runningTime);
     }
 
     private float calculateDistance(){
