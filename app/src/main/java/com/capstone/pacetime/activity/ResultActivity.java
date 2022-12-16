@@ -84,38 +84,41 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         isBreathUsed = info.getIsBreathUsed();
         listBreathStability = RunningManager.BreathAnalyzer.getStabilityList(info);
 
-        Location loc = info.getTrace().get(0);
+        if(!info.getTrace().isEmpty()){
+            Location loc = info.getTrace().get(0);
 
-        String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-                loc.getLatitude() + "," +
-                loc.getLongitude() +
-                "&key=" + BuildConfig.GEOCODE_API_KEY;
-        StringRequest req = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    Log.d("LOCATIONSTRING", response);
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray resultArray = jsonObject.getJSONArray("results");
-                    JSONObject addrObj = resultArray.getJSONObject(0);
-                    String cityAddr = addrObj.getString("formatted_address");
+            String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+                    loc.getLatitude() + "," +
+                    loc.getLongitude() +
+                    "&key=" + BuildConfig.GEOCODE_API_KEY;
+            StringRequest req = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        Log.d("LOCATIONSTRING", response);
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray resultArray = jsonObject.getJSONArray("results");
+                        JSONObject addrObj = resultArray.getJSONObject(0);
+                        String cityAddr = addrObj.getString("formatted_address");
 
-                    Log.d("StartLocation: ", cityAddr);
-                    viewModel.setStartLocationStr(cityAddr);
-                } catch (JSONException e) {
-                    Log.d("LOCATIONFAIL1", "location fail 1");
-                    Log.d("LOCATIONFAIL1", e.toString());
+                        Log.d("StartLocation: ", cityAddr);
+                        viewModel.setStartLocationStr(cityAddr);
+                    } catch (JSONException e) {
+                        Log.d("LOCATIONFAIL1", "location fail 1");
+                        Log.d("LOCATIONFAIL1", e.toString());
+                    }
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v("LOCATIONFAIL2", "location call failed!");
-                Log.v("LOCATIONFAIL", error.toString());
-            }
-        });
-        req.setShouldCache(false);
-        requestQueue.add(req);
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v("LOCATIONFAIL2", "location call failed!");
+                    Log.v("LOCATIONFAIL", error.toString());
+                }
+            });
+            req.setShouldCache(false);
+            requestQueue.add(req);
+        }
+
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_result);
         viewModel = new RunDetailInfoViewModel(info);
@@ -179,6 +182,9 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void drawUserBreathTrace(List<Location> trace, List<Breath> breathList, List<BreathStability> breathStabilityList){
+        if(trace.isEmpty()){
+            return;
+        }
         MarkerOptions markerStart = new MarkerOptions();
         LatLng latLngStart = new LatLng(trace.get(0).getLatitude(), trace.get(0).getLongitude());
         markerStart.position(latLngStart);
@@ -196,7 +202,9 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         List<LatLng> locList = new ArrayList<>();
         List<Integer> colorList = new ArrayList<>();
         int count = 0;
-
+        if(breathStabilityList == null){
+            return;
+        }
         if(breathStabilityList.isEmpty()){
             return;
         }

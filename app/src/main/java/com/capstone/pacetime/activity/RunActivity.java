@@ -282,6 +282,9 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void drawUserBreathTrace(List<Location> trace, List<Breath> breathList, List<BreathStability> breathStabilityList){
+        if(trace.isEmpty()){
+            return;
+        }
         MarkerOptions markerStart = new MarkerOptions();
         LatLng latLngStart = new LatLng(trace.get(0).getLatitude(), trace.get(0).getLongitude());
         markerStart.position(latLngStart);
@@ -299,10 +302,13 @@ public class RunActivity extends AppCompatActivity implements OnMapReadyCallback
         List<LatLng> locList = new ArrayList<>();
         List<Integer> colorList = new ArrayList<>();
         int count = 0;
-
-        if(breathStabilityList.isEmpty()){
+        if(breathStabilityList == null) {
             return;
         }
+        if(breathStabilityList.isEmpty()) {
+            return;
+        }
+
 
         for(int i = 0; i < trace.size() - 1; i++){
             for(int j = 0; j < breathStabilityList.size(); j++){
